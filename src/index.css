@@ -1,0 +1,31 @@
+@import "galmuri/dist/galmuri.css";
+@import "pretendard/dist/web/static/pretendard.css";
+@import "tailwindcss";
+
+@theme {
+  /* 배경 */
+  --color-bg-deep: #15121F;
+  --color-bg-base: #2B2340;
+  --color-bg-raised: #3A3358;
+  --color-bg-dialog: #221E3A;
+  /* 포인트 */
+  --color-gold: #F2C14E;
+  --color-gold-dark: #D39A2A;
+  --color-gold-light: #FFE08A;
+  /* 카드·텍스트 */
+  --color-cream: #F4EAD5;
+  --color-sub: #B9B0D0;
+  /* 글꼴 */
+  --font-pixel: "Galmuri11", monospace;
+  --font-sans: "Pretendard", system-ui, sans-serif;
+  /* 레이아웃 */
+    /* 레이아웃 */
+  --container-mobile: 393px;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg-deep);
+  color: var(--color-cream);
+  font-family: var(--font-sans);
+}
