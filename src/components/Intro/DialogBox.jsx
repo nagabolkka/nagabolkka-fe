@@ -7,7 +7,7 @@ export default function DialogBox({ speaker, text }) {
         </span>
       )}
 
-      <p className="text-sm font-medium leading-5 text-cream">{text}</p>
+      <p className="text-sm font-medium leading-5 text-cream break-keep">{text}</p>
 
       <span className="absolute right-5 bottom-3 text-xs text-gold animate-pulse">
         ▼
