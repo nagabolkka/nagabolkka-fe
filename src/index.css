@@ -4,28 +4,53 @@
 
 @theme {
   /* 배경 */
-  --color-bg-deep: #15121F;
-  --color-bg-base: #2B2340;
-  --color-bg-raised: #3A3358;
-  --color-bg-dialog: #221E3A;
+  --color-bg-page: #1b1830; /* 일반 페이지 기본 배경 */
+  --color-bg-glow: #3b3366; /* 인트로 radial 중심색 */
+  --color-bg-deep: #15121f;
+  --color-bg-base: #2b2340;
+  --color-bg-raised: #3a3358;
+  --color-bg-dialog: #221e3a;
   /* 포인트 */
-  --color-gold: #F2C14E;
-  --color-gold-dark: #D39A2A;
-  --color-gold-light: #FFE08A;
+  --color-gold: #f2c14e;
+  --color-gold-dark: #d39a2a;
+  --color-gold-light: #ffe08a;
   /* 카드·텍스트 */
-  --color-cream: #F4EAD5;
-  --color-sub: #B9B0D0;
+  --color-cream: #f4ead5;
+  --color-sub: #b9b0d0;
   /* 글꼴 */
   --font-pixel: "Galmuri11", monospace;
   --font-sans: "Pretendard", system-ui, sans-serif;
   /* 레이아웃 */
-    /* 레이아웃 */
   --container-mobile: 393px;
+
+  /* 애니메이션 */
+  --animate-blink: blink 1s steps(1, end) infinite;
+  --animate-float: float 2s ease-in-out infinite;
+
+  @keyframes blink {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+  }
 }
 
 body {
   margin: 0;
-  background: var(--color-bg-deep);
+  background: var(--color-bg-page);
   color: var(--color-cream);
   font-family: var(--font-sans);
 }
