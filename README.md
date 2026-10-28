@@ -56,13 +56,16 @@ src/
 | 🎉 Start | 프로젝트 시작 |
 | ✨ Feat | 새로운 기능 추가 |
 | 🐛 Fix | 버그 수정 |
+| 🚑 Hotfix | 급하게 고쳐야 하는 치명적인 버그 수정 |
 | 🎨 Design | UI 디자인 변경 |
 | ♻️ Refactor | 코드 리팩토링 |
+| 🍱 Assets | 이미지, 아이콘, 폰트 등 리소스 추가 · 수정 |
 | 🔧 Settings | 설정 파일 수정 |
 | ➕ Dependency/Plugin | 라이브러리 추가 |
 | 📝 Docs | 문서 수정 |
 | 🚚 Rename | 파일 및 폴더 이름 수정 |
 | 🔥 Remove | 파일 삭제 |
+| 🔀 Merge | 브랜치 병합 |
 
 ## 🌲 Branch Convention
 
