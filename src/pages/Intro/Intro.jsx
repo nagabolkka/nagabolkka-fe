@@ -2,6 +2,7 @@ import lumi from "../../assets/icons/lumi.png";
 import { PIECE_COLORS } from "../../constants/intro";
 import Button from "../../components/common/Button/Button";
 import { INTRO_STEPS } from "../../constants/intro";
+import { goKakaoLogin } from "../../utils/kakao";
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -51,7 +52,12 @@ export default function Intro() {
       <Button title={current.buttonText} onClick={handleNext} />
       <p className="mt-[14px] font-pixel text-xs font-normal text-[#B9B0D0]">
         이미 모험가라면?{" "}
-        <span className="underline text-[#FEE500] cursor-pointer">카카오로 이어하기</span>
+        <span
+          onClick={() => goKakaoLogin()}
+          className="underline text-[#FEE500] cursor-pointer"
+        >
+          카카오로 이어하기
+        </span>
       </p>
     </div>
   );
