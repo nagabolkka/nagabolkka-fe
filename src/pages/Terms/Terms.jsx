@@ -1,6 +1,7 @@
 import CheckBox from "../../components/Terms/CheckBox";
 import { useState } from "react";
 import Button from "../../components/common/Button/Button";
+import { goKakaoLogin } from "../../utils/kakao";
 
 export default function Terms() {
   const [agreements, setAgreements] = useState({
@@ -18,6 +19,11 @@ export default function Terms() {
   const handleChange = (key) => () => {
     setAgreements((prev) => ({ ...prev, [key]: !prev[key] }));
   };
+
+  const handleKakaoStart = () => {
+    goKakaoLogin({ terms: agreements.service, privacy: agreements.privacy });
+  };
+
   return (
     <div className="flex-1 flex flex-col">
       <div className="flex flex-col pl-7">
@@ -70,6 +76,7 @@ export default function Terms() {
         <Button
           variant="kakao"
           disabled={!isAllChecked}
+          onClick={handleKakaoStart}
           title={
             isAllChecked ? "카카오로 시작하기" : "필수 항목에 동의해주세요"
           }
