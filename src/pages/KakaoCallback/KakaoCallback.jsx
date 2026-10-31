@@ -7,7 +7,7 @@ import { KAKAO_REDIRECT_URI, takeConsents } from "../../utils/kakao";
 export default function KakaoCallback() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const requested = useRef(false); // StrictMode 에서 useEffect 가 두 번 돌아도 한 번만 요청 
+  const requested = useRef(false); // StrictMode 에서 useEffect 가 두 번 돌아도 한 번만 요청
 
   useEffect(() => {
     if (requested.current) return;
@@ -27,7 +27,14 @@ export default function KakaoCallback() {
     })
       .then((data) => {
         localStorage.setItem(TOKEN_KEY, data.accessToken);
-        navigate("/home", { replace: true });
+
+        if (data.role === "ADMIN") {
+          navigate("/admin", { replace: true });
+        } else if (!data.onboardingCompleted) {
+          navigate("/start-check", { replace: true });
+        } else {
+          navigate("/home", { replace: true });
+        }
       })
       .catch((error) => {
         const errorCode = error.response?.data?.code;
