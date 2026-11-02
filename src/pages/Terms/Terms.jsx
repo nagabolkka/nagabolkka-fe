@@ -7,13 +7,14 @@ export default function Terms() {
   const [agreements, setAgreements] = useState({
     service: false,
     privacy: false,
+    location: false,
   });
 
   const isAllChecked = Object.values(agreements).every(Boolean); // agreements 안의 값이 전부 true 인지 확인
 
   const handleAllChange = () => {
     const next = !isAllChecked;
-    setAgreements({ service: next, privacy: next });
+    setAgreements({ service: next, privacy: next, location: next });
   };
 
   const handleChange = (key) => () => {
@@ -36,7 +37,7 @@ export default function Terms() {
           약속 몇 가지만 확인할게요
         </p>
         {/* 약관 동의 */}
-        <div className="w-[338px] h-[140px] border-2 border-[#E6D6B0] rounded-lg bg-[#F4EAD5] py-[19px] pl-[17px] pr-[14px] mt-[18px]">
+        <div className="w-[338px] h-[177px] border-2 border-[#E6D6B0] rounded-lg bg-[#F4EAD5] py-[19px] pl-[17px] pr-[14px] mt-[18px]">
           <CheckBox
             checked={isAllChecked}
             onChange={handleAllChange}
@@ -60,6 +61,16 @@ export default function Terms() {
               checked={agreements.privacy}
               onChange={handleChange("privacy")}
               label="개인정보 수집 및 이용"
+            />
+            <span className="text-[9px] text-[#B5523B] font-normal font-pixel">
+              필수
+            </span>
+          </div>
+          <div className="mt-[17px] flex items-center justify-between">
+            <CheckBox
+              checked={agreements.location}
+              onChange={handleChange("location")}
+              label="위치 기반 서비스 이용약관"
             />
             <span className="text-[9px] text-[#B5523B] font-normal font-pixel">
               필수
