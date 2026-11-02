@@ -210,6 +210,7 @@ export const MISSIONS = [
   },
 ];
 
-// 첫날 오늘의 퀘스트 = 현재 단계의 쉬움(slot 0)
-export const getTodayMission = (stageNo, slotNo = 0) =>
-  MISSIONS.find((m) => m.stageNo === stageNo && m.slotNo === slotNo);
+export const getTodayMission = (stageNo, isRainy = false) => {
+  const slotNo = isRainy ? (stageNo === 5 ? 2 : 3) : 0;
+  return MISSIONS.find((m) => m.stageNo === stageNo && m.slotNo === slotNo);
+};
