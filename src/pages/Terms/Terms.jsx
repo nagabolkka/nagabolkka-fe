@@ -79,7 +79,7 @@ export default function Terms() {
         </div>
 
         <p className="text-[#B9B0D0] text-xs font-medium font-sans break-keep leading-4 mt-5 mb-[379px]">
-          나가볼까는 나가볼까는 치료 · 진단이 아닌 일상 연습 도구에요. 기록은
+          나가볼까는 치료 · 진단이 아닌 일상 연습 도구예요. 기록은
           언제든지 지울 수 있어요.
         </p>
       </div>
