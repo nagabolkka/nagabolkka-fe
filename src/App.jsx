@@ -5,6 +5,7 @@ import Terms from "./pages/Terms/Terms";
 import KakaoCallback from "./pages/KakaoCallback/KakaoCallback";
 import StartCheck from "./pages/StartCheck/StartCheck";
 import StartCheckResult from "./pages/StartCheck/StartCheckResult";
+import MainLayout from "./layout/MainLayout";
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
           <Route path="/oauth/kakao" element={<KakaoCallback />} />
           <Route path="/start-check" element={<StartCheck />} />
           <Route path="/start-check/result" element={<StartCheckResult />} />
+          <Route element={<MainLayout />}></Route>
         </Route>
       </Routes>
     </BrowserRouter>
