@@ -16,6 +16,7 @@ import Maintenance from "./pages/Maintenance/Maintenance";
 import Admin from "./pages/Admin/Admin";
 import Records from "./pages/Records/Records";
 import MyPage from "./pages/MyPage/MyPage";
+import Help from "./pages/Help/Help";
 
 export default function App() {
   return (
@@ -34,6 +35,7 @@ export default function App() {
           <Route path="/quest/result" element={<QuestResult />} />
           <Route path="/maintenance" element={<Maintenance />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/help" element={<Help />} />
           <Route element={<MainLayout />}>
             <Route path="/home" element={<Home />} />
             <Route path="/records" element={<Records />} />
