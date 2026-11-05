@@ -20,3 +20,12 @@ export const NEXT_DIFFICULTY_MESSAGE = {
   4: "다음에도 지금처럼 편안한 난이도로 준비할게요.",
   5: "다음엔 살짝 도전해볼 만한 퀘스트도 준비해볼게요.",
 };
+
+// 기분 흐름 막대 색
+export const MOOD_COLORS = {
+  1: "#C9B8E8",
+  2: "#C3CFEA",
+  3: "#E8E2C0",
+  4: "#F0D27A",
+  5: "#E8B95A",
+};
