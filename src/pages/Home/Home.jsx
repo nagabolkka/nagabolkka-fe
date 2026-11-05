@@ -11,6 +11,12 @@ import { openNextRegion } from "../../utils/adventureStorage";
 import { getGoal } from "../../constants/goals";
 import { getHomeLumiMessage } from "../../constants/lumiMessages";
 import useTodayQuest from "../../hooks/useTodayQuest";
+import NoticePopup from "../../components/Home/NoticePopup";
+import { getActiveNotice } from "../../mocks/notices";
+import {
+  hideNoticeToday,
+  isNoticeHiddenToday,
+} from "../../utils/noticeStorage";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -56,8 +62,18 @@ export default function Home() {
     navigate("/home", { replace: true });
   };
 
+  const [notice, setNotice] = useState(() => {
+    const active = getActiveNotice();
+    return active && !isNoticeHiddenToday(active.noticeId) ? active : null;
+  });
+
+  const handleHideToday = () => {
+    hideNoticeToday(notice.noticeId);
+    setNotice(null);
+  };
+
   return (
-    <div className="flex flex-col pb-3">
+    <div className="relative flex flex-col pb-3">
       <RegionHeader
         region={region}
         restoration={restoration}
@@ -97,6 +113,13 @@ export default function Home() {
           onClick={() => navigate("/lumi-letter")}
         />
       </div>
+      {notice && (
+        <NoticePopup
+          notice={notice}
+          onClose={() => setNotice(null)}
+          onHideToday={handleHideToday}
+        />
+      )}
     </div>
   );
 }
