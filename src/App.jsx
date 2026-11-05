@@ -7,6 +7,9 @@ import StartCheck from "./pages/StartCheck/StartCheck";
 import StartCheckResult from "./pages/StartCheck/StartCheckResult";
 import MainLayout from "./layout/MainLayout";
 import Home from "./pages/Home/Home";
+import QuestDetail from "./pages/Quest/QuestDetail";
+import QuestSplit from "./pages/Quest/QuestSplit";
+import QuestProgress from "./pages/Quest/QuestProgress";
 
 export default function App() {
   return (
@@ -18,6 +21,9 @@ export default function App() {
           <Route path="/oauth/kakao" element={<KakaoCallback />} />
           <Route path="/start-check" element={<StartCheck />} />
           <Route path="/start-check/result" element={<StartCheckResult />} />
+          <Route path="/quest" element={<QuestDetail />} />
+          <Route path="/quest/progress" element={<QuestProgress />} />
+          <Route path="/quest/split" element={<QuestSplit />} />
           <Route element={<MainLayout />}>
             <Route path="/home" element={<Home />} />
           </Route>
