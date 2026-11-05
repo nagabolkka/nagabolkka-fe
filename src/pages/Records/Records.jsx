@@ -15,7 +15,7 @@ export default function Records() {
   } = useMemo(() => getRecords(month), [month]);
 
   return (
-    <div className="flex flex-col gap-4 px-4 pb-24 pt-8">
+    <div className="flex flex-col gap-4 px-4 pb-6 pt-8">
       <header>
         <p className="font-pixel text-sm text-[#E8C06A]">모험 일지</p>
         <h1 className="mt-1 font-pixel text-2xl text-[#F4EAD5]">

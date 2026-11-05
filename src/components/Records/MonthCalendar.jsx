@@ -14,7 +14,7 @@ export default function MonthCalendar({ month, days, onPrev, onNext }) {
   const canNext = month < currentMonth();
 
   return (
-    <section className="flex h-[232px] w-[351px] flex-col rounded-lg border-2 border-[#15121F] bg-[#2B2340] px-4 py-3">
+    <section className="flex h-[232px] flex-col rounded-lg border-2 border-[#15121F] bg-[#2B2340] px-4 py-3">
       <div className="flex items-center justify-between">
         <h2 className="font-pixel text-sm text-[#F4EAD5]">{formatMonth(month)}</h2>
         <div className="flex gap-1">
