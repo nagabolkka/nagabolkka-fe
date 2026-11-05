@@ -12,10 +12,10 @@ import { getGoal } from "../../constants/goals";
 import { getHomeLumiMessage } from "../../constants/lumiMessages";
 import useTodayQuest from "../../hooks/useTodayQuest";
 import NoticePopup from "../../components/Home/NoticePopup";
-import { getActiveNotice } from "../../mocks/notices";
 import {
   hideNoticeToday,
   isNoticeHiddenToday,
+  getActiveNotice
 } from "../../utils/noticeStorage";
 
 export default function Home() {
