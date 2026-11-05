@@ -5,7 +5,7 @@ import LumiBubble from "../../components/StartCheck/LumiBubble";
 import GoalChips from "../../components/StartCheck/GoalChips";
 import Button from "../../components/common/Button/Button";
 import { getStartRegion } from "../../utils/startCheckScore";
-import { saveAdventure } from "../../utils/adventureStorage";
+import { startAdventure } from "../../utils/adventureStorage";
 
 export default function StartCheckResult() {
   const { state } = useLocation();
@@ -18,7 +18,7 @@ export default function StartCheckResult() {
   const { score, region } = getStartRegion(answers);
 
   const handleStart = () => {
-    saveAdventure({ stageNo: region.stageNo, goalId: goal });
+    startAdventure({ stageNo: region.stageNo, goalId: goal });
     navigate("/home");
   };
 
