@@ -1,5 +1,6 @@
 const KEY = "nagabolkka:adventure";
 export const MAX_CHANGE = 2; // 바꾸기 하루 2회
+export const REST_PIECE_MISSION_ID = 5; // 쉼의 조각 (1단계 회고 보너스)
 
 const today = () => {
   const d = new Date();
@@ -23,7 +24,15 @@ export const saveAdventure = (next) => {
 export const startAdventure = ({ stageNo, goalId }) => {
   localStorage.setItem(
     KEY,
-    JSON.stringify({ stageNo, goalId, restoration: 0, pieceCount: 0, todayQuest: null })
+    JSON.stringify({
+      stageNo,
+      goalId,
+      restoration: 0,
+      pieceCount: 0,
+      foundPieceIds: [], // 받은 조각 (미션 번호 기준)
+      todayQuest: null,
+      lastResult: null, // 조각 획득 화면용
+    }),
   );
 };
 
@@ -42,7 +51,9 @@ export const getTodayQuest = (defaultMissionId) => {
 };
 
 const updateTodayQuest = (defaultMissionId, changes) => {
-  saveAdventure({ todayQuest: { ...getTodayQuest(defaultMissionId), ...changes } });
+  saveAdventure({
+    todayQuest: { ...getTodayQuest(defaultMissionId), ...changes },
+  });
 };
 
 // 수락 → 진행 중
@@ -51,7 +62,11 @@ export const acceptTodayQuest = (defaultMissionId) =>
 
 // 쪼개기 (수락 포함) — 체크 초기화
 export const splitTodayQuest = (defaultMissionId) =>
-  updateTodayQuest(defaultMissionId, { status: "IN_PROGRESS", isSplit: true, doneSteps: [] }); // ★
+  updateTodayQuest(defaultMissionId, {
+    status: "IN_PROGRESS",
+    isSplit: true,
+    doneSteps: [],
+  }); // ★
 
 // ★ 쪼갠 단계 체크 / 해제
 export const toggleSplitStep = (defaultMissionId, index) => {
@@ -70,7 +85,7 @@ export const changeTodayQuest = (defaultMissionId, newMissionId) => {
     missionId: newMissionId,
     status: "ASSIGNED",
     isSplit: false,
-    doneSteps: [], 
+    doneSteps: [],
     changeCount: changeCount + 1,
   });
   return true;
@@ -80,17 +95,48 @@ export const changeTodayQuest = (defaultMissionId, newMissionId) => {
 export const skipTodayQuest = (defaultMissionId) =>
   updateTodayQuest(defaultMissionId, { status: "SKIPPED" });
 
-// 완료 → 복원도 +20 (최대 100) · 조각 +1  (완료 · 기록 화면에서 사용)
-export const completeTodayQuest = (defaultMissionId) => {
-  const { restoration = 0, pieceCount = 0 } = loadAdventure();
+// 완료 → 복원도 +20 (최대 100) · 조각 지급 · 기록 저장
+export const completeTodayQuest = (defaultMissionId, { mood, reflection }) => {
+  const saved = loadAdventure();
+  const { restoration = 0, pieceCount = 0, foundPieceIds = [] } = saved;
+  const { missionId, doneSteps } = getTodayQuest(defaultMissionId);
+
+  // 받을 조각 : 오늘 미션 + (1단계 · 첫 회고면) 쉼의 조각
+  const pieceIds = [missionId];
+  if (reflection.trim() && canGetRestPiece())
+    pieceIds.push(REST_PIECE_MISSION_ID);
+
+  const newPieceIds = pieceIds.filter((id) => !foundPieceIds.includes(id));
+  const after = Math.min(restoration + 20, 100);
+
   saveAdventure({
-    restoration: Math.min(restoration + 20, 100),
-    pieceCount: pieceCount + 1,
+    restoration: after,
+    pieceCount: pieceCount + pieceIds.length,
+    foundPieceIds: [...foundPieceIds, ...newPieceIds],
+    lastResult: {
+      pieceIds,
+      newPieceIds,
+      before: restoration,
+      after,
+      mood,
+      reflection,
+    },
   });
-  updateTodayQuest(defaultMissionId, { status: "COMPLETED" });
+  updateTodayQuest(defaultMissionId, {
+    status: "COMPLETED",
+    mood,
+    reflection,
+    doneStepCount: doneSteps.length,
+  });
 };
 
 // 다음 지역 열기 → 단계 +1 · 복원도 0
 export const openNextRegion = (nextStageNo) => {
   saveAdventure({ stageNo: nextStageNo, restoration: 0 });
+};
+
+// 쉼의 조각 안내 · 지급 조건 : 1단계 · 아직 안 받음
+export const canGetRestPiece = () => {
+  const { stageNo, foundPieceIds = [] } = loadAdventure();
+  return stageNo === 1 && !foundPieceIds.includes(REST_PIECE_MISSION_ID);
 };
