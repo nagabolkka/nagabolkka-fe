@@ -1,19 +1,16 @@
 import Badge from "../common/Badge/Badge";
 import Button from "../common/Button/Button";
 import { DIFFICULTY } from "../../constants/difficulty";
-import {
-  formatQuestDate,
-  formatDistance,
-  formatMinutes,
-} from "../../utils/format";
+import { formatQuestDate, formatDistance, formatMinutes } from "../../utils/format";
 
 export default function TodayQuestCard({
   mission,
   region,
-  status = "ASSIGNED", // ASSIGNED · COMPLETED · SKIPPED
+  status = "ASSIGNED", // ASSIGNED · IN_PROGRESS · COMPLETED · SKIPPED
   date = new Date(),
   onClick,
 }) {
+  const isInProgress = status === "IN_PROGRESS";
   const isCompleted = status === "COMPLETED";
   const isSkipped = status === "SKIPPED";
   const isDone = isCompleted || isSkipped; // 오늘 퀘스트 끝남
@@ -64,9 +61,7 @@ export default function TodayQuestCard({
       {isSkipped && (
         /* 건너뜀 : 쉬어가는 날 */
         <div className="mt-4">
-          <p className="text-black text-xl font-normal font-pixel">
-            오늘은 쉬어가는 날
-          </p>
+          <p className="text-black text-xl font-normal font-pixel">오늘은 쉬어가는 날</p>
           <p className="mt-1 text-[#6B5E4A] text-sm font-medium font-sans break-keep">
             잃은 건 없어요. 내일은 조금 더 가벼운 퀘스트로 준비할게요.
           </p>
@@ -74,14 +69,10 @@ export default function TodayQuestCard({
       )}
 
       {!isDone && (
-        /* 진행 전 : 미션 정보 */
+        /* 수락 전 · 진행 중 : 미션 정보 */
         <>
-          <h1 className="text-black text-xl font-bold font-pixel mt-[6px]">
-            {mission.title}
-          </h1>
-          <p className="text-[#6B5E4A] text-sm font-medium font-sans mt-[6px]">
-            {meta}
-          </p>
+          <h1 className="text-black text-xl font-bold font-pixel mt-[6px]">{mission.title}</h1>
+          <p className="text-[#6B5E4A] text-sm font-medium font-sans mt-[6px]">{meta}</p>
           <div className="mt-4 flex items-center gap-[7.5px] pl-[11.5px] w-full h-[29.2px] bg-[#EAD9B4]/70 rounded-[10px]">
             <div
               className="w-3 h-3 rotate-45 border-2 border-[#2B2340]"
@@ -91,6 +82,16 @@ export default function TodayQuestCard({
               보상 <span className="font-semibold">{mission.reward.name}</span>
             </p>
           </div>
+
+          {/* 진행 중 표시 */}
+          {isInProgress && (
+            <div className="mt-2.5 flex items-center gap-2 pl-1">
+              <span className="w-3 h-3 rounded-full bg-[#6BAE75] animate-pulse" />
+              <p className="text-[#2B2340] text-sm font-medium font-sans">
+                퀘스트 진행 중 · 다녀오면 기록해줘
+              </p>
+            </div>
+          )}
         </>
       )}
 
@@ -98,7 +99,7 @@ export default function TodayQuestCard({
         {isDone ? (
           <Button title="내일 새 조각이 떨어져요" />
         ) : (
-          <Button title="퀘스트 확인하기" onClick={onClick} />
+          <Button title={isInProgress ? "이어서 하기" : "퀘스트 확인하기"} onClick={onClick} />
         )}
       </div>
     </div>
