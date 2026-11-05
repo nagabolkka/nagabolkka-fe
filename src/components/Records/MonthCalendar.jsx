@@ -1,16 +1,46 @@
-import { WEEKDAYS, formatMonth, getCalendarDays, todayString } from "../../utils/calendar";
+import {
+  WEEKDAYS,
+  currentMonth,
+  formatMonth,
+  getCalendarDays,
+  todayString,
+} from "../../utils/calendar";
 
-export default function MonthCalendar({ month, days }) {
+export default function MonthCalendar({ month, days, onPrev, onNext }) {
   const today = todayString();
-  const completed = new Set(days.filter((d) => d.status === "COMPLETED").map((d) => d.date));
+  const completed = new Set(
+    days.filter((d) => d.status === "COMPLETED").map((d) => d.date)
+  );
+  const canNext = month < currentMonth();
 
   return (
-    <section className="flex h-[232px] flex-col rounded-lg border-2 border-[#15121F] bg-[#2B2340] px-4 py-3">
-      <h2 className="font-pixel text-sm text-[#F4EAD5]">{formatMonth(month)}</h2>
+    <section className="flex h-[232px] w-[351px] flex-col rounded-lg border-2 border-[#15121F] bg-[#2B2340] px-4 py-3">
+      <div className="flex items-center justify-between">
+        <h2 className="font-pixel text-sm text-[#F4EAD5]">{formatMonth(month)}</h2>
+        <div className="flex gap-1">
+          <button
+            type="button"
+            onClick={onPrev}
+            className="px-1.5 text-sm text-[#F4EAD5]/70"
+          >
+            ‹
+          </button>
+          <button
+            type="button"
+            onClick={onNext}
+            disabled={!canNext}
+            className="px-1.5 text-sm text-[#F4EAD5]/70 disabled:opacity-20"
+          >
+            ›
+          </button>
+        </div>
+      </div>
 
       <div className="mt-2 grid grid-cols-7 gap-x-2 text-center">
         {WEEKDAYS.map((w) => (
-          <span key={w} className="text-xs text-[#F4EAD5]/70">{w}</span>
+          <span key={w} className="text-xs text-[#F4EAD5]/70">
+            {w}
+          </span>
         ))}
       </div>
 
