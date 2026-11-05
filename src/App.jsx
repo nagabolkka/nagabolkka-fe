@@ -15,6 +15,7 @@ import QuestResult from "./pages/Quest/QuestResult";
 import Maintenance from "./pages/Maintenance/Maintenance";
 import Admin from "./pages/Admin/Admin";
 import Records from "./pages/Records/Records";
+import MyPage from "./pages/MyPage/MyPage";
 
 export default function App() {
   return (
@@ -36,6 +37,7 @@ export default function App() {
           <Route element={<MainLayout />}>
             <Route path="/home" element={<Home />} />
             <Route path="/records" element={<Records />} />
+            <Route path="/mypage" element={<MyPage />} />
           </Route>
         </Route>
       </Routes>
