@@ -8,7 +8,12 @@ import MenuList from "../../components/MyPage/MenuList";
 import AccountActions from "../../components/MyPage/AccountActions";
 import ConfirmModal from "../../components/common/ConfirmModal/ConfimModal";
 import { getMe } from "../../mocks/me";
-import { changeGoal, clearAllRecords, savePlusInterest } from "../../utils/userStorage";
+import {
+  changeGoal,
+  clearAllRecords,
+  savePlusInterest,
+} from "../../utils/userStorage";
+import { logout } from "../../api/auth";
 
 export default function MyPage() {
   const navigate = useNavigate();
@@ -37,7 +42,10 @@ export default function MyPage() {
     showToast(isFirst ? "첫 발견 조각을 받았어요!" : "응답을 바꿨어요.");
   };
 
-  const handleLogout = () => navigate("/", { replace: true });
+  const handleLogout = async () => {
+    await logout();
+    navigate("/", { replace: true });
+  };
 
   const handleDeleteAll = () => {
     clearAllRecords();
@@ -52,13 +60,18 @@ export default function MyPage() {
       <MenuList />
 
       <div className="mt-40">
-        <AccountActions onLogout={() => setModal("logout")} onDeleteAll={() => setModal("delete")} />
+        <AccountActions
+          onLogout={() => setModal("logout")}
+          onDeleteAll={() => setModal("delete")}
+        />
       </div>
 
       {modal === "logout" && (
         <ConfirmModal
           title="로그아웃 할까요?"
-          description={"모든 조각과 기록은 그대로 저장돼요. 다음에\n'카카오로 이어하기'로 바로 돌아올 수 있어요."}
+          description={
+            "모든 조각과 기록은 그대로 저장돼요. 다음에\n'카카오로 이어하기'로 바로 돌아올 수 있어요."
+          }
           confirmText="로그아웃"
           onCancel={() => setModal(null)}
           onConfirm={handleLogout}
@@ -68,7 +81,9 @@ export default function MyPage() {
       {modal === "delete" && (
         <ConfirmModal
           title="기록을 모두 지울까요?"
-          description={"모든 조각, 복원도, 기분 · 회고 기록이 모두 삭제되고\n처음 화면으로 돌아가요. 되돌릴 수 없어요."}
+          description={
+            "모든 조각, 복원도, 기분 · 회고 기록이 모두 삭제되고\n처음 화면으로 돌아가요. 되돌릴 수 없어요."
+          }
           confirmText="모두 삭제"
           variant="danger"
           onCancel={() => setModal(null)}

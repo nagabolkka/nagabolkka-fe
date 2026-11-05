@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { kakaoLogin } from "../../api/auth";
 import { TOKEN_KEY } from "../../api/api";
 import { KAKAO_REDIRECT_URI, takeConsents } from "../../utils/kakao";
+import { saveTokens } from "../../api/api";
 
 export default function KakaoCallback() {
   const [searchParams] = useSearchParams();
@@ -26,7 +27,7 @@ export default function KakaoCallback() {
       consents: takeConsents(),
     })
       .then((data) => {
-        localStorage.setItem(TOKEN_KEY, data.accessToken);
+        saveTokens(data); // accessToken · refreshToken 둘 다 저장
 
         if (data.role === "ADMIN") {
           navigate("/admin", { replace: true });
