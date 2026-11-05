@@ -13,6 +13,7 @@ import QuestProgress from "./pages/Quest/QuestProgress";
 import QuestRecord from "./pages/Quest/QuestRecord";
 import QuestResult from "./pages/Quest/QuestResult";
 import Maintenance from "./pages/Maintenance/Maintenance";
+import Admin from "./pages/Admin/Admin";
 
 export default function App() {
   return (
@@ -30,6 +31,7 @@ export default function App() {
           <Route path="/quest/record" element={<QuestRecord />} />
           <Route path="/quest/result" element={<QuestResult />} />
           <Route path="/maintenance" element={<Maintenance />} />
+          <Route path="/admin" element={<Admin />} />
           <Route element={<MainLayout />}>
             <Route path="/home" element={<Home />} />
           </Route>
