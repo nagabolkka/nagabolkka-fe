@@ -60,6 +60,7 @@ src/
 | 🎨 Design | UI 디자인 변경 |
 | 📦 Chore | 빌드 · 배포 설정, 패키지 등 기능과 상관없는 작업 |
 | ♻️ Refactor | 코드 리팩토링 |
+| 🚀 Deploy | 배포 관련 작업 |
 | 🍱 Assets | 이미지, 아이콘, 폰트 등 리소스 추가 · 수정 |
 | 🔧 Settings | 설정 파일 수정 |
 | ➕ Dependency/Plugin | 라이브러리 추가 |
