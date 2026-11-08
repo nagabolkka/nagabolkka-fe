@@ -6,20 +6,46 @@ import GoalChips from "../../components/StartCheck/GoalChips";
 import Button from "../../components/common/Button/Button";
 import { getStartRegion } from "../../utils/startCheckScore";
 import { startAdventure } from "../../utils/adventureStorage";
+import { submitStartCheck } from "../../api/onboarding";
+
+const SEONGBUK_DISTRICT_ID = 1;
 
 export default function StartCheckResult() {
   const { state } = useLocation();
   const navigate = useNavigate();
   const [goal, setGoal] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
 
   const answers = state?.answers;
   if (!answers) return <Navigate to="/start-check" replace />;
 
   const { score, region } = getStartRegion(answers);
 
-  const handleStart = () => {
-    startAdventure({ stageNo: region.stageNo, goalId: goal });
-    navigate("/home");
+  const handleStart = async () => {
+    if (submitting) return;
+    setSubmitting(true);
+    try {
+      const data = await submitStartCheck({
+        answers,
+        districtId: SEONGBUK_DISTRICT_ID,
+        goalId: goal,
+      });
+
+      startAdventure({
+        stageNo: data.region.stageNo,
+        goalId: data.goal.goalId,
+      });
+      navigate("/home", { replace: true });
+    } catch (error) {
+      const code = error.response?.data?.code;
+      if (code === "ONBOARDING_ALREADY_DONE") {
+        // 이미 시작 체크를 마친 계정은 홈으로 이동
+        navigate("/home", { replace: true });
+        return;
+      }
+      alert("저장하지 못했어요. 잠시 후 다시 시도해 주세요.");
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -41,7 +67,11 @@ export default function StartCheckResult() {
         </p>
       </div>
       <div className="flex justify-center mt-[282px]">
-        <Button title="모험 시작하기" disabled={!goal} onClick={handleStart} />
+        <Button
+          title="모험 시작하기"
+          disabled={!goal || submitting}
+          onClick={handleStart}
+        />
       </div>
     </div>
   );
