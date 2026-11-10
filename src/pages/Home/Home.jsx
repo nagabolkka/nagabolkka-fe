@@ -15,7 +15,7 @@ import NoticePopup from "../../components/Home/NoticePopup";
 import {
   hideNoticeToday,
   isNoticeHiddenToday,
-  getActiveNotice
+  getActiveNotice,
 } from "../../utils/noticeStorage";
 
 export default function Home() {
@@ -31,6 +31,7 @@ export default function Home() {
     mission,
     todayQuest,
     questStatus,
+    isSavedPlace,
   } = useTodayQuest();
 
   const nextRegion = stageNo < 5 ? getRegion(stageNo + 1) : null;
@@ -41,6 +42,7 @@ export default function Home() {
     isRainy,
     pieceName: mission.reward.name,
     regionName: region.name,
+    isSavedPlace,
   });
 
   const goal = {
@@ -94,6 +96,7 @@ export default function Home() {
         region={region}
         status={questStatus}
         onClick={() => navigate(questPath)}
+        isSavedPlace={isSavedPlace}
       />
       <AdventurePath regions={getPathRegions(stageNo, restoration)} />
       <div className="flex gap-[17px] pl-3 mt-2.5">
