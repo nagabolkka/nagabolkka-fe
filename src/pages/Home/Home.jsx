@@ -8,14 +8,14 @@ import AdventurePath from "../../components/Home/AdventurePath";
 import ShortcutCard from "../../components/Home/ShortcutCard";
 import { getRegion, getPathRegions } from "../../mocks/regions";
 import { openNextRegion } from "../../utils/adventureStorage";
-import { getGoal } from "../../constants/goals";
+import { getMyGoal } from "../../mocks/goals";
 import { getHomeLumiMessage } from "../../constants/lumiMessages";
 import useTodayQuest from "../../hooks/useTodayQuest";
 import NoticePopup from "../../components/Home/NoticePopup";
 import {
   hideNoticeToday,
   isNoticeHiddenToday,
-  getActiveNotice
+  getActiveNotice,
 } from "../../utils/noticeStorage";
 
 export default function Home() {
@@ -31,6 +31,7 @@ export default function Home() {
     mission,
     todayQuest,
     questStatus,
+    isSavedPlace,
   } = useTodayQuest();
 
   const nextRegion = stageNo < 5 ? getRegion(stageNo + 1) : null;
@@ -41,12 +42,14 @@ export default function Home() {
     isRainy,
     pieceName: mission.reward.name,
     regionName: region.name,
+    isSavedPlace,
   });
 
+  const myGoal = getMyGoal();
   const goal = {
-    name: getGoal(saved.goalId)?.name ?? "목표 없음",
-    checked: 0,
-    total: 4,
+    name: myGoal?.name ?? "목표 없음",
+    checked: myGoal?.checked ?? 0,
+    total: myGoal?.total ?? 4,
   };
 
   // 진행 중이면 진행 화면으로, 아니면 상세로
@@ -94,6 +97,7 @@ export default function Home() {
         region={region}
         status={questStatus}
         onClick={() => navigate(questPath)}
+        isSavedPlace={isSavedPlace}
       />
       <AdventurePath regions={getPathRegions(stageNo, restoration)} />
       <div className="flex gap-[17px] pl-3 mt-2.5">
@@ -105,12 +109,12 @@ export default function Home() {
         <ShortcutCard
           title="목표 준비"
           description={`${goal.name} · ${goal.checked}/${goal.total}`}
-          onClick={() => navigate("/target")}
+          onClick={() => navigate("/goals")}
         />
         <ShortcutCard
           title="루미의 편지"
           description="이번 주 이야기"
-          onClick={() => navigate("/lumi-letter")}
+          onClick={() => navigate("/letter")}
         />
       </div>
       {notice && (

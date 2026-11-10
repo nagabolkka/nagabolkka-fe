@@ -36,20 +36,6 @@ export const startAdventure = ({ stageNo, goalId }) => {
   );
 };
 
-// 오늘 퀘스트 조회 — 오늘 기록이 없으면 기본 미션으로 새로 배정
-export const getTodayQuest = (defaultMissionId) => {
-  const { todayQuest } = loadAdventure();
-  if (todayQuest?.date === today()) return { doneSteps: [], ...todayQuest }; // ★ 예전 저장값에도 doneSteps 보장
-  return {
-    date: today(),
-    missionId: defaultMissionId,
-    status: "ASSIGNED",
-    changeCount: 0,
-    isSplit: false,
-    doneSteps: [], // ★ 쪼갠 단계 중 체크한 번호 (0 · 1 · 2)
-  };
-};
-
 const updateTodayQuest = (defaultMissionId, changes) => {
   saveAdventure({
     todayQuest: { ...getTodayQuest(defaultMissionId), ...changes },
@@ -83,6 +69,8 @@ export const changeTodayQuest = (defaultMissionId, newMissionId) => {
   if (changeCount >= MAX_CHANGE) return false;
   updateTodayQuest(defaultMissionId, {
     missionId: newMissionId,
+    source: null,
+    placeId: null,
     status: "ASSIGNED",
     isSplit: false,
     doneSteps: [],
@@ -139,4 +127,54 @@ export const openNextRegion = (nextStageNo) => {
 export const canGetRestPiece = () => {
   const { stageNo, foundPieceIds = [] } = loadAdventure();
   return stageNo === 1 && !foundPieceIds.includes(REST_PIECE_MISSION_ID);
+};
+
+// 오늘 퀘스트 조회 — 오늘 기록이 없으면 (어제 담아둔 장소 > 기본 미션) 으로 새로 배정
+export const getTodayQuest = (defaultMissionId) => {
+  const { todayQuest, waitingPlace } = loadAdventure();
+  if (todayQuest?.date === today()) return { doneSteps: [], ...todayQuest }; // ★ 예전 저장값에도 doneSteps 보장
+
+  const base = {
+    date: today(),
+    status: "ASSIGNED",
+    changeCount: 0,
+    isSplit: false,
+    doneSteps: [], // ★ 쪼갠 단계 중 체크한 번호 (0 · 1 · 2)
+  };
+
+  // 어제 이전에 담아둔 장소 → 오늘 퀘스트로 배정하고 대기 해제
+  if (waitingPlace && waitingPlace.savedDate < today()) {
+    const placeQuest = {
+      ...base,
+      missionId: waitingPlace.slotMissionId,
+      placeId: waitingPlace.placeId,
+      source: "SAVED_PLACE",
+    };
+    saveAdventure({ todayQuest: placeQuest, waitingPlace: null });
+    return placeQuest;
+  }
+
+  return { ...base, missionId: defaultMissionId };
+};
+
+// 오늘 퀘스트 배정됨 · 진행 중 → 즉시 교체 (바꾸기 횟수 차감 없음) : "REPLACED_TODAY"
+// 오늘 이미 완료 · 건너뜀 → 내일 배정 예약 (대기는 항상 1개) : "RESERVED_TOMORROW"
+export const savePlaceQuest = (defaultMissionId, { placeId, slotMissionId }) => {
+  const { status } = getTodayQuest(defaultMissionId);
+
+  if (status === "COMPLETED" || status === "SKIPPED") {
+    saveAdventure({ waitingPlace: { placeId, slotMissionId, savedDate: today() } });
+    return "RESERVED_TOMORROW";
+  }
+
+  updateTodayQuest(defaultMissionId, {
+    missionId: slotMissionId,
+    placeId,
+    source: "SAVED_PLACE",
+    status: "ASSIGNED",
+    isSplit: false,
+    doneSteps: [],
+  });
+  saveAdventure({ waitingPlace: null });
+  return "REPLACED_TODAY";
 };
