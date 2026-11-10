@@ -20,6 +20,7 @@ import Help from "./pages/Help/Help";
 import Collection from "./pages/Collection/Collection";
 import Map from "./pages/Map/Map";
 import PlaceDetail from "./pages/Map/PlaceDetail";
+import Letter from "./pages/Letter/Letter";
 
 export default function App() {
   return (
@@ -40,6 +41,7 @@ export default function App() {
           <Route path="/admin" element={<Admin />} />
           <Route path="/help" element={<Help />} />
           <Route path="/map/:placeId" element={<PlaceDetail />} />
+          <Route path="/letter" element={<Letter />} />
           <Route element={<MainLayout />}>
             <Route path="/home" element={<Home />} />
             <Route path="/records" element={<Records />} />
