@@ -18,6 +18,7 @@ import Records from "./pages/Records/Records";
 import MyPage from "./pages/MyPage/MyPage";
 import Help from "./pages/Help/Help";
 import Collection from "./pages/Collection/Collection";
+import Map from "./pages/Map/Map";
 
 export default function App() {
   return (
@@ -42,6 +43,7 @@ export default function App() {
             <Route path="/records" element={<Records />} />
             <Route path="/mypage" element={<MyPage />} />
             <Route path="/collection" element={<Collection />} />
+            <Route path="/map" element={<Map />} />
           </Route>
         </Route>
       </Routes>
