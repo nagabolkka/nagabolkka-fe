@@ -21,6 +21,7 @@ import Collection from "./pages/Collection/Collection";
 import Map from "./pages/Map/Map";
 import PlaceDetail from "./pages/Map/PlaceDetail";
 import Letter from "./pages/Letter/Letter";
+import Goals from "./pages/Goals/Goals";
 
 export default function App() {
   return (
@@ -42,6 +43,7 @@ export default function App() {
           <Route path="/help" element={<Help />} />
           <Route path="/map/:placeId" element={<PlaceDetail />} />
           <Route path="/letter" element={<Letter />} />
+          <Route path="/goals" element={<Goals />} />
           <Route element={<MainLayout />}>
             <Route path="/home" element={<Home />} />
             <Route path="/records" element={<Records />} />

@@ -8,7 +8,7 @@ import AdventurePath from "../../components/Home/AdventurePath";
 import ShortcutCard from "../../components/Home/ShortcutCard";
 import { getRegion, getPathRegions } from "../../mocks/regions";
 import { openNextRegion } from "../../utils/adventureStorage";
-import { getGoal } from "../../constants/goals";
+import { getMyGoal } from "../../mocks/goals";
 import { getHomeLumiMessage } from "../../constants/lumiMessages";
 import useTodayQuest from "../../hooks/useTodayQuest";
 import NoticePopup from "../../components/Home/NoticePopup";
@@ -45,10 +45,11 @@ export default function Home() {
     isSavedPlace,
   });
 
+  const myGoal = getMyGoal();
   const goal = {
-    name: getGoal(saved.goalId)?.name ?? "목표 없음",
-    checked: 0,
-    total: 4,
+    name: myGoal?.name ?? "목표 없음",
+    checked: myGoal?.checked ?? 0,
+    total: myGoal?.total ?? 4,
   };
 
   // 진행 중이면 진행 화면으로, 아니면 상세로
@@ -108,12 +109,12 @@ export default function Home() {
         <ShortcutCard
           title="목표 준비"
           description={`${goal.name} · ${goal.checked}/${goal.total}`}
-          onClick={() => navigate("/target")}
+          onClick={() => navigate("/goals")}
         />
         <ShortcutCard
           title="루미의 편지"
           description="이번 주 이야기"
-          onClick={() => navigate("/lumi-letter")}
+          onClick={() => navigate("/letter")}
         />
       </div>
       {notice && (
