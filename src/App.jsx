@@ -22,6 +22,9 @@ import Map from "./pages/Map/Map";
 import PlaceDetail from "./pages/Map/PlaceDetail";
 import Letter from "./pages/Letter/Letter";
 import Goals from "./pages/Goals/Goals";
+import Practice from "./pages/Practice/Practice";
+import PracticeChat from "./pages/Practice/PracticeChat";
+import PracticeFeedback from "./pages/Practice/PracticeFeedback";
 
 export default function App() {
   return (
@@ -44,6 +47,12 @@ export default function App() {
           <Route path="/map/:placeId" element={<PlaceDetail />} />
           <Route path="/letter" element={<Letter />} />
           <Route path="/goals" element={<Goals />} />
+          <Route path="/practice" element={<Practice />} />
+          <Route path="/practice/:code" element={<PracticeChat />} />
+          <Route
+            path="/practice/:code/feedback"
+            element={<PracticeFeedback />}
+          />
           <Route element={<MainLayout />}>
             <Route path="/home" element={<Home />} />
             <Route path="/records" element={<Records />} />
