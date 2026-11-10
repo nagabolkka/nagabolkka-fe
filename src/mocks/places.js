@@ -1,3 +1,5 @@
+import { MISSIONS } from "./missions";
+
 // 내 위치 = 성북구 중심 (구청 인근)
 export const MY_LOCATION = { lat: 37.5894, lng: 127.0167 };
 
@@ -124,7 +126,9 @@ const getDistanceM = (from, to) => {
   const dLng = toRad(to.lng - from.lng);
   const a =
     Math.sin(dLat / 2) ** 2 +
-    Math.cos(toRad(from.lat)) * Math.cos(toRad(to.lat)) * Math.sin(dLng / 2) ** 2;
+    Math.cos(toRad(from.lat)) *
+      Math.cos(toRad(to.lat)) *
+      Math.sin(dLng / 2) ** 2;
   return Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
 };
 
@@ -132,5 +136,34 @@ const getDistanceM = (from, to) => {
 export const getPlaces = () =>
   RAW_PLACES.map((place) => {
     const distanceM = getDistanceM(MY_LOCATION, place);
-    return { ...place, distanceM, walkMinutes: Math.max(1, Math.round(distanceM / 67)) };
+    return {
+      ...place,
+      distanceM,
+      walkMinutes: Math.max(1, Math.round(distanceM / 67)),
+    };
   }).sort((a, b) => a.distanceM - b.distanceM);
+
+export const getPlace = (placeId) =>
+  getPlaces().find((place) => place.placeId === Number(placeId));
+
+// 담은 장소 퀘스트의 보상 칸 : 1~3계단 담기 칸(SAVED_PLACE) · 4~5계단 도전 칸(CHALLENGE)
+export const getSavedPlaceSlotMission = (stageNo) => {
+  const type = stageNo <= 3 ? "SAVED_PLACE" : "CHALLENGE";
+  return MISSIONS.find((m) => m.stageNo === stageNo && m.type === type);
+};
+
+// 장소 → 오늘 퀘스트용 미션 (보상 · 난이도는 칸 미션 그대로)
+export const toPlaceMission = (place, slotMission) => ({
+  ...slotMission,
+  title: `${place.name} 다녀오기`,
+  placeName: place.name,
+  distanceM: place.distanceM,
+  estMinutes: 60,
+  isIndoor: false,
+  description: place.description,
+  steps: [
+    "가는 길 한 번 확인하기",
+    `${place.name} 입구까지 가기`,
+    "안에 들어가 잠깐 머물기",
+  ],
+});

@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import MapHeader from "../../components/Map/MapHeader";
 import MockMap from "../../components/Map/MockMap";
 import CategoryTabs from "../../components/Map/CategoryTabs";
@@ -10,7 +11,13 @@ import { NEAR_DISTANCE_M } from "../../constants/placeCategory";
 export default function Map() {
   const allPlaces = useMemo(() => getPlaces(), []);
   const [category, setCategory] = useState("ALL");
-  const [filters, setFilters] = useState({ free: false, solo: false, near: false });
+  const [filters, setFilters] = useState({
+    free: false,
+    solo: false,
+    near: false,
+  });
+
+  const navigate = useNavigate();
 
   const places = useMemo(
     () =>
@@ -24,7 +31,8 @@ export default function Map() {
     [allPlaces, category, filters],
   );
 
-  const toggleFilter = (key) => setFilters((prev) => ({ ...prev, [key]: !prev[key] }));
+  const toggleFilter = (key) =>
+    setFilters((prev) => ({ ...prev, [key]: !prev[key] }));
 
   return (
     <div className="flex flex-col pb-6">
@@ -37,7 +45,10 @@ export default function Map() {
       </div>
 
       <div className="px-4 pt-4">
-        <PlaceList places={places} />
+        <PlaceList
+          places={places}
+          onSelect={(placeId) => navigate(`/map/${placeId}`)}
+        />
       </div>
     </div>
   );

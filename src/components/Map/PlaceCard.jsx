@@ -1,12 +1,16 @@
 import { getCategory } from "../../constants/placeCategory";
 import { formatDistance } from "../../utils/format";
 
-export default function PlaceCard({ place }) {
+export default function PlaceCard({ place, onClick }) {
   const { category, name, distanceM, isFree, soloOk } = place;
   const { label, color } = getCategory(category);
 
   return (
-    <div className="flex items-center gap-[15px] rounded-[10px] border-2 border-[#E6D6B0] bg-[#F4EAD5] px-3.5 py-2.5">
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex w-full cursor-pointer items-center gap-[15px] rounded-[10px] border-2 border-[#E6D6B0] bg-[#F4EAD5] px-3.5 py-2.5 text-left"
+    >
       <div
         className="ml-1 h-5 w-5 shrink-0 rotate-45 border-2 border-black"
         style={{ backgroundColor: color }}
@@ -23,6 +27,6 @@ export default function PlaceCard({ place }) {
         </p>
       </div>
       <span className="text-[10px] text-[#484848]">▶</span>
-    </div>
+    </button>
   );
 }

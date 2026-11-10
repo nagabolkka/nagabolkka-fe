@@ -1,6 +1,6 @@
 import PlaceCard from "./PlaceCard";
 
-export default function PlaceList({ places }) {
+export default function PlaceList({ places, onSelect }) {
   if (places.length === 0) {
     return (
       <p className="py-10 text-center text-xs text-[#B9B0D0]">
@@ -15,7 +15,7 @@ export default function PlaceList({ places }) {
     <ul className="flex flex-col gap-[17px]">
       {places.map((place) => (
         <li key={place.placeId}>
-          <PlaceCard place={place} />
+          <PlaceCard place={place} onClick={() => onSelect(place.placeId)} />
         </li>
       ))}
     </ul>
