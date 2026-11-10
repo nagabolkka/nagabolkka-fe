@@ -19,6 +19,7 @@ import MyPage from "./pages/MyPage/MyPage";
 import Help from "./pages/Help/Help";
 import Collection from "./pages/Collection/Collection";
 import Map from "./pages/Map/Map";
+import PlaceDetail from "./pages/Map/PlaceDetail";
 
 export default function App() {
   return (
@@ -38,6 +39,7 @@ export default function App() {
           <Route path="/maintenance" element={<Maintenance />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/help" element={<Help />} />
+          <Route path="/map/:placeId" element={<PlaceDetail />} />
           <Route element={<MainLayout />}>
             <Route path="/home" element={<Home />} />
             <Route path="/records" element={<Records />} />
