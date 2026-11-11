@@ -1,4 +1,4 @@
-import { useReducer, useState } from "react";
+import { useReducer, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ProfileCard from "../../components/MyPage/ProfileCard";
 import MyGoalChips from "../../components/MyPage/MyGoalChips";
@@ -8,31 +8,47 @@ import MenuList from "../../components/MyPage/MenuList";
 import AccountActions from "../../components/MyPage/AccountActions";
 import ConfirmModal from "../../components/common/ConfirmModal/ConfimModal";
 import { getMe } from "../../mocks/me";
-import {
-  changeGoal,
-  clearAllRecords,
-  savePlusInterest,
-} from "../../utils/userStorage";
+import { clearAllRecords, savePlusInterest } from "../../utils/userStorage";
 import { logout } from "../../api/auth";
+import { getMyInfo, updateMyGoal } from "../../api/users";
 
 export default function MyPage() {
   const navigate = useNavigate();
   const [, refresh] = useReducer((x) => x + 1, 0);
-  const [modal, setModal] = useState(null); // "logout" | "delete" | null
+  const [modal, setModal] = useState(null); 
   const [isPlusOpen, setIsPlusOpen] = useState(false);
   const [toast, setToast] = useState("");
 
-  const me = getMe();
+  // 서버에서 받은 내 정보 -> 처음엔 null 이고 받아오면 채워짐
+  const [me, setMe] = useState(null);
+  const [isChanging, setIsChanging] = useState(false);
+
+  const localPlusInterest = getMe().plusInterest;
 
   const showToast = (message) => {
     setToast(message);
     setTimeout(() => setToast(""), 2000);
   };
 
-  const handleGoalChange = (goalId) => {
-    changeGoal(goalId);
-    refresh();
-    showToast("목표를 바꿨어요. 체크한 단계는 그대로 남아 있어요.");
+  useEffect(() => {
+    getMyInfo()
+      .then(setMe)
+      .catch(() => showToast("내 정보를 불러오지 못했어요. 잠시 후 다시 시도해 주세요."));
+  }, []);
+
+  // 내 목표 칩 → 목표 변경
+  const handleGoalClick = async (goalId) => {
+    if (isChanging || me?.goal?.goalId === goalId) return; // 같은 칩 · 연속 클릭 무시
+    setIsChanging(true);
+    try {
+      const updated = await updateMyGoal(goalId);
+      setMe(updated);
+      showToast("목표를 바꿨어요. 체크한 단계는 그대로 남아 있어요.");
+    } catch {
+      showToast("목표를 바꾸지 못했어요. 잠시 후 다시 시도해 주세요.");
+    } finally {
+      setIsChanging(false);
+    }
   };
 
   const handlePlusSubmit = (answer) => {
@@ -47,15 +63,29 @@ export default function MyPage() {
     navigate("/", { replace: true });
   };
 
+  // 탈퇴 API 전까지 기존 로컬 삭제 그대로
   const handleDeleteAll = () => {
     clearAllRecords();
     navigate("/", { replace: true });
   };
 
+  // 불러오는 중
+  if (!me) {
+    return (
+      <div className="flex flex-col gap-4 px-4 pt-[33px]">
+        {toast && (
+          <div className="fixed w-[300px] px-6 bottom-24 left-1/2 z-50 -translate-x-1/2 rounded-full bg-[#15121F]/90 py-2 text-xs text-[#F4EAD5]">
+            {toast}
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-4 px-4 pt-[33px]">
       <ProfileCard me={me} />
-      <MyGoalChips goalId={me.goal?.goalId} onChange={handleGoalChange} />
+      <MyGoalChips goalId={me.goal?.goalId} onChange={handleGoalClick} />
       <PlusCard onClick={() => setIsPlusOpen(true)} />
       <MenuList />
 
@@ -93,7 +123,7 @@ export default function MyPage() {
 
       {isPlusOpen && (
         <PlusSheet
-          plusInterest={me.plusInterest}
+          plusInterest={localPlusInterest}
           onClose={() => setIsPlusOpen(false)}
           onSubmit={handlePlusSubmit}
         />
