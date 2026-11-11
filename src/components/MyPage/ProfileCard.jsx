@@ -1,6 +1,11 @@
 export default function ProfileCard({ me }) {
   const { nickname, currentRegion, pieceCount, collection } = me;
 
+  // 시작 체크 전이면 currentRegion 이 null
+  const regionText = currentRegion
+    ? `계단 ${currentRegion.stageNo} · ${currentRegion.realLabel} · `
+    : "";
+
   return (
     <section className="flex w-[357px] h-[84px] p-[15px] items-center gap-[15px] rounded-[10px] border-2 border-[#15121F] bg-[#2C2745]">
       <div className="flex h-[50px] w-[50px] items-center justify-center rounded-lg border-1 border-black bg-[#F2C14E] font-pixel text-xl text-black">
@@ -11,8 +16,7 @@ export default function ProfileCard({ me }) {
           탐험가 {nickname}
         </p>
         <p className="mt-0.5 text-xs font-normal font-pixel leading-5 text-[#B9B0D0]">
-          계단 {currentRegion.stageNo} · {currentRegion.realLabel} · 조각{" "}
-          {pieceCount}개 · 도감 {collection}
+          {regionText}조각 {pieceCount}개 · 도감 {collection}
         </p>
       </div>
     </section>
