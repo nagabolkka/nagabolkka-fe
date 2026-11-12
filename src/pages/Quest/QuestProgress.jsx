@@ -1,18 +1,38 @@
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 import QuestHeader from "../../components/Quest/QuestHeader";
 import QuestInfoCards from "../../components/Quest/QuestInfoCards";
 import ProgressCard from "../../components/Quest/ProgressCard";
 import QuestBottomBar from "../../components/Quest/QuestBottomBar";
-import useTodayQuest from "../../hooks/useTodayQuest";
-import { splitTodayQuest } from "../../utils/adventureStorage";
+import PageLoading from "../../components/common/PageLoading/PageLoading";
+import useQuest from "../../hooks/useQuest";
+import { actTodayQuest } from "../../api/quests";
+import { saveSplitSteps } from "../../utils/splitStepStorage";
 
 export default function QuestProgress() {
   const navigate = useNavigate();
-  const { region, mission, isRainy, defaultMissionId } = useTodayQuest();
+  const { quest, mission, region, error } = useQuest();
+  const [busy, setBusy] = useState(false);
 
-  const handleSplit = () => {
-    splitTodayQuest(defaultMissionId);
-    navigate("/quest/split");
+  if (!quest) return <PageLoading error={error} />;
+  if (quest.status === "COMPLETED" || quest.status === "SKIPPED") {
+    return <Navigate to="/home" replace />;
+  }
+  if (quest.isSplit) return <Navigate to="/quest/split" replace />;
+
+  const handleSplit = async () => {
+    if (busy) return;
+    setBusy(true);
+    try {
+      const updated = await actTodayQuest("SPLIT");
+      saveSplitSteps(updated.questId, []);
+      navigate("/quest/split");
+    } catch (e) {
+      if (e.response?.data?.code === "QUEST_ALREADY_DONE") {
+        navigate("/home", { replace: true });
+      }
+      setBusy(false);
+    }
   };
 
   return (
@@ -20,7 +40,7 @@ export default function QuestProgress() {
       <QuestHeader
         region={region}
         mission={mission}
-        isRainy={isRainy}
+        isRainy={false}
         status="IN_PROGRESS"
         onBack={() => navigate("/home")}
       />

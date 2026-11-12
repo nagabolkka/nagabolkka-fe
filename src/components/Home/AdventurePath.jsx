@@ -4,6 +4,12 @@ const ACTIVE_FILL = "#3A3550";
 const LOCKED_TEXT = "#F4EAD5";
 const LINE_COLOR = "#4A4370";
 
+// 색칠 : 완료 · 지나온 곳 · 복원도 100% 인 현재 지역
+const isFilled = (region) =>
+  region.status === "COMPLETED" ||
+  region.status === "PASSED" ||
+  (region.isCurrent && region.restoration === 100);
+
 export default function AdventurePath({ regions }) {
   return (
     <section className="px-2 mt-4">
@@ -14,14 +20,14 @@ export default function AdventurePath({ regions }) {
       <ol className="mt-1 flex">
         {regions.map((region, i) => {
           const isLocked = region.status === "LOCKED";
-          const isCompleted = region.status === "COMPLETED";
+          const isCompleted = isFilled(region);
           const isCurrent = region.isCurrent;
 
           const isFirst = i === 0;
           const isLast = i === regions.length - 1;
 
           const prev = regions[i - 1];
-          const leftColor = prev?.status === "COMPLETED" ? prev.color : LINE_COLOR;
+          const leftColor = prev && isFilled(prev) ? prev.color : LINE_COLOR;
           const rightColor = isCompleted ? region.color : LINE_COLOR;
 
           return (
@@ -29,7 +35,7 @@ export default function AdventurePath({ regions }) {
               <div className="w-full h-[52px] flex items-center">
                 <Line color={leftColor} hidden={isFirst} side="left" />
 
-                {/* 크기 : 현재 지역만 크게 / 색 : 잠김 · 진행 중 · 완료 */}
+                {/* 크기 : 현재 지역만 크게 / 색 : 잠김 · 진행 중 · 완료(지나온 곳 포함) */}
                 <div className={`shrink-0 flex items-center justify-center ${isCurrent ? "w-12" : "w-10"}`}>
                   <div
                     className={`rotate-45 border-[3px] transition-all duration-500 ${
