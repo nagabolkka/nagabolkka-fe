@@ -35,7 +35,7 @@ export default function StartCheckResult() {
         stageNo: data.region.stageNo,
         goalId: data.goal.goalId,
       });
-      navigate("/home", { replace: true });
+      navigate("/guide?first=1", { replace: true }); // 첫 모험 → 사용법 안내 → 홈
     } catch (error) {
       const code = error.response?.data?.code;
       if (code === "ONBOARDING_ALREADY_DONE") {
