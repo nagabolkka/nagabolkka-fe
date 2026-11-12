@@ -25,6 +25,7 @@ import Goals from "./pages/Goals/Goals";
 import Practice from "./pages/Practice/Practice";
 import PracticeChat from "./pages/Practice/PracticeChat";
 import PracticeFeedback from "./pages/Practice/PracticeFeedback";
+import Guide from "./pages/Guide/Guide";
 
 export default function App() {
   return (
@@ -53,6 +54,7 @@ export default function App() {
             path="/practice/:code/feedback"
             element={<PracticeFeedback />}
           />
+          <Route path="/guide" element={<Guide />} />
           <Route element={<MainLayout />}>
             <Route path="/home" element={<Home />} />
             <Route path="/records" element={<Records />} />
