@@ -89,7 +89,7 @@ export default function MyPage() {
       <PlusCard onClick={() => setIsPlusOpen(true)} />
       <MenuList />
 
-      <div className="mt-40">
+      <div className="mt-30">
         <AccountActions
           onLogout={() => setModal("logout")}
           onDeleteAll={() => setModal("delete")}
