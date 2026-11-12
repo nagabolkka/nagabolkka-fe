@@ -9,10 +9,12 @@ import {
   completeTodayQuest,
   canGetRestPiece,
 } from "../../utils/adventureStorage";
+import useQuest from "../../hooks/useQuest";
 
 export default function QuestRecord() {
   const navigate = useNavigate();
   const { mission, defaultMissionId } = useTodayQuest();
+  const { mission: serverMission } = useQuest();
   const [mood, setMood] = useState(null);
   const [reflection, setReflection] = useState("");
 
@@ -37,7 +39,7 @@ export default function QuestRecord() {
 
       <section className="flex flex-col mt-2.5 pl-[22px]">
         <p className="text-[#F2C14E] text-xs font-normal leading-8 font-pixel">
-          {mission.title}
+          {serverMission?.title ?? mission.title}
         </p>
         <h1 className="text-[#F4EAD5] text-xl font-normal leading-8 font-pixel">
           다녀와서 기분이 어땠어?

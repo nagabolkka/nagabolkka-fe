@@ -7,20 +7,13 @@ export const HOME_LUMI_MESSAGE = {
   COMPLETED: ({ pieceName, regionName }) =>
     `${pieceName} 고마워! ${regionName}${iGa(regionName)} 조금 더 밝아졌어.`,
   SKIPPED: () => "괜찮아. 쉬는 것도 모험의 일부야.",
+  IN_PROGRESS: () => "천천히 다녀와. 여기서 기다릴게.",
+  WELCOME_BACK: () => "다시 와줘서 고마워. 오늘은 가볍게 시작해 볼까?",
 };
 
-// 우선순위 : 오늘 퀘스트 결과(완료 · 건너뜀) > 담은 장소 > 비 > 기본
-export const getHomeLumiMessage = ({
-  questStatus,
-  isRainy,
-  isSavedPlace,
-  pieceName,
-  regionName,
-}) => {
-  if (questStatus === "COMPLETED")
-    return HOME_LUMI_MESSAGE.COMPLETED({ pieceName, regionName });
-  if (questStatus === "SKIPPED") return HOME_LUMI_MESSAGE.SKIPPED();
-  if (isSavedPlace) return HOME_LUMI_MESSAGE.SAVED_PLACE();
-  if (isRainy) return HOME_LUMI_MESSAGE.RAINY();
-  return HOME_LUMI_MESSAGE.DEFAULT();
-};
+// COMPLETED > SKIPPED > IN_PROGRESS > WELCOME_BACK > SAVED_PLACE > RAINY > DEFAULT
+export const getHomeLumiMessage = ({ homeState, pieceName, regionName }) =>
+  (HOME_LUMI_MESSAGE[homeState] ?? HOME_LUMI_MESSAGE.DEFAULT)({
+    pieceName,
+    regionName,
+  });

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import RegionHeader from "../../components/Home/RegionHeader";
 import LumiMessage from "../../components/common/LumiMessage/LumiMessage";
@@ -6,12 +6,11 @@ import NextRegionCard from "../../components/Home/NextRegionCard";
 import TodayQuestCard from "../../components/Home/TodayQuestCard";
 import AdventurePath from "../../components/Home/AdventurePath";
 import ShortcutCard from "../../components/Home/ShortcutCard";
-import { getRegion, getPathRegions } from "../../mocks/regions";
-import { openNextRegion } from "../../utils/adventureStorage";
-import { getMyGoal } from "../../mocks/goals";
-import { getHomeLumiMessage } from "../../constants/lumiMessages";
-import useTodayQuest from "../../hooks/useTodayQuest";
 import NoticePopup from "../../components/Home/NoticePopup";
+import PageLoading from "../../components/common/PageLoading/PageLoading";
+import { getHome } from "../../api/home";
+import { getRegion } from "../../mocks/regions";
+import { getHomeLumiMessage } from "../../constants/lumiMessages";
 import {
   hideNoticeToday,
   isNoticeHiddenToday,
@@ -20,55 +19,84 @@ import {
 
 export default function Home() {
   const navigate = useNavigate();
+  const [home, setHome] = useState(null);
+  const [error, setError] = useState(false);
   const [stayed, setStayed] = useState(false); // "지금이 좋아요" 누름
-  const {
-    saved,
-    stageNo,
-    restoration,
-    pieceCount,
-    isRainy,
-    region,
-    mission,
-    todayQuest,
-    questStatus,
-    isSavedPlace,
-  } = useTodayQuest();
-
-  const nextRegion = stageNo < 5 ? getRegion(stageNo + 1) : null;
-  const showNextRegion = restoration === 100 && nextRegion && !stayed;
-
-  const lumiMessage = getHomeLumiMessage({
-    questStatus,
-    isRainy,
-    pieceName: mission.reward.name,
-    regionName: region.name,
-    isSavedPlace,
-  });
-
-  const myGoal = getMyGoal();
-  const goal = {
-    name: myGoal?.name ?? "목표 없음",
-    checked: myGoal?.checked ?? 0,
-    total: myGoal?.total ?? 4,
-  };
-
-  // 진행 중이면 진행 화면으로, 아니면 상세로
-  const questPath =
-    questStatus === "IN_PROGRESS"
-      ? todayQuest.isSplit
-        ? "/quest/split"
-        : "/quest/progress"
-      : "/quest";
-
-  const handleOpenNext = () => {
-    openNextRegion(nextRegion.stageNo);
-    navigate("/home", { replace: true });
-  };
 
   const [notice, setNotice] = useState(() => {
     const active = getActiveNotice();
     return active && !isNoticeHiddenToday(active.noticeId) ? active : null;
   });
+
+  useEffect(() => {
+    let ignore = false;
+    getHome()
+      .then((data) => {
+        if (!ignore) setHome(data);
+      })
+      .catch((e) => {
+        if (ignore) return;
+        const code = e.response?.data?.code;
+        if (code === "ONBOARDING_REQUIRED") {
+          navigate("/start-check", { replace: true });
+          return;
+        }
+        // 응답 없음 (서버 꺼짐 · 15초 초과) · 500번대 → 점검 화면
+        if (!e.response || e.response.status >= 500) {
+          navigate("/maintenance", { replace: true });
+          return;
+        }
+        setError(true); 
+      });
+    return () => {
+      ignore = true;
+    };
+  }, [navigate]);
+
+  if (!home) return <PageLoading error={error} />;
+
+  const {
+    weather,
+    currentRegion,
+    pieceCount,
+    homeState,
+    todayQuest,
+    regions,
+    goal,
+    nextRegionSuggestion,
+  } = home;
+
+  // 지역 정보는 서버, 이미지는 프론트 에셋
+  const localRegion = getRegion(currentRegion.stageNo);
+  const region = {
+    ...currentRegion,
+    imageUrl: localRegion.imageUrl,
+    rainyImageUrl: localRegion.rainyImageUrl,
+  };
+
+  // 오늘 퀘스트의 지역 (지나온 계단 미션이면 그 계단 색)
+  const questRegion = getRegion(todayQuest.stageNo);
+
+  const lumiMessage = getHomeLumiMessage({
+    homeState,
+    pieceName: todayQuest.reward.name,
+    regionName: questRegion.name,
+  });
+
+  const pathRegions = regions.map((r) => ({
+    ...r,
+    isCurrent: r.stageNo === currentRegion.stageNo,
+  }));
+
+  const showNextRegion = Boolean(nextRegionSuggestion) && !stayed;
+
+  // 진행 중이면 진행 화면으로, 아니면 상세로
+  const questPath =
+    todayQuest.status === "IN_PROGRESS"
+      ? todayQuest.isSplit
+        ? "/quest/split"
+        : "/quest/progress"
+      : "/quest";
 
   const handleHideToday = () => {
     hideNoticeToday(notice.noticeId);
@@ -79,27 +107,27 @@ export default function Home() {
     <div className="relative flex flex-col pb-3">
       <RegionHeader
         region={region}
-        restoration={restoration}
-        isRainy={isRainy}
+        restoration={currentRegion.restoration}
+        isRainy={weather.isRainy}
         pieceCount={pieceCount}
       />
       <LumiMessage message={lumiMessage} />
       {showNextRegion && (
         <NextRegionCard
           region={region}
-          nextRegion={nextRegion}
+          nextRegion={nextRegionSuggestion}
           onStay={() => setStayed(true)}
-          onOpen={handleOpenNext}
+          onOpen={() => setStayed(true)} // TODO : 다음 지역 API(8번) 연동 때 교체
         />
       )}
       <TodayQuestCard
-        mission={mission}
-        region={region}
-        status={questStatus}
+        mission={todayQuest}
+        region={questRegion}
+        status={todayQuest.status}
         onClick={() => navigate(questPath)}
-        isSavedPlace={isSavedPlace}
+        isSavedPlace={todayQuest.source === "SAVED_PLACE"}
       />
-      <AdventurePath regions={getPathRegions(stageNo, restoration)} />
+      <AdventurePath regions={pathRegions} />
       <div className="flex gap-[17px] pl-3 mt-2.5">
         <ShortcutCard
           title="연습실"
@@ -108,7 +136,9 @@ export default function Home() {
         />
         <ShortcutCard
           title="목표 준비"
-          description={`${goal.name} · ${goal.checked}/${goal.total}`}
+          description={
+            goal ? `${goal.name} · ${goal.checked}/${goal.total}` : "목표 없음"
+          }
           onClick={() => navigate("/goals")}
         />
         <ShortcutCard

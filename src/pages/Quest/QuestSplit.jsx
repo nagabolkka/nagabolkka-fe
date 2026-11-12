@@ -1,20 +1,41 @@
-import { useReducer } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 import QuestHeader from "../../components/Quest/QuestHeader";
 import QuestInfoCards from "../../components/Quest/QuestInfoCards";
 import SplitSteps from "../../components/Quest/SplitSteps";
 import QuestBottomBar from "../../components/Quest/QuestBottomBar";
-import useTodayQuest from "../../hooks/useTodayQuest";
-import { toggleSplitStep } from "../../utils/adventureStorage";
+import PageLoading from "../../components/common/PageLoading/PageLoading";
+import useQuest from "../../hooks/useQuest";
+import {
+  loadSplitSteps,
+  saveSplitSteps,
+} from "../../utils/splitStepStorage";
 
 export default function QuestSplit() {
+  const { quest, mission, region, error } = useQuest();
+
+  if (!quest) return <PageLoading error={error} />;
+  if (quest.status === "COMPLETED" || quest.status === "SKIPPED") {
+    return <Navigate to="/home" replace />;
+  }
+  if (!quest.isSplit) return <Navigate to="/quest" replace />;
+
+  return <SplitBody quest={quest} mission={mission} region={region} />;
+}
+
+// 퀘스트를 받은 뒤에 그려서 저장된 체크를 처음 값으로 바로 읽는다
+function SplitBody({ quest, mission, region }) {
   const navigate = useNavigate();
-  const [, refresh] = useReducer((x) => x + 1, 0);
-  const { region, mission, isRainy, todayQuest, defaultMissionId } = useTodayQuest();
+  const [doneSteps, setDoneSteps] = useState(() =>
+    loadSplitSteps(quest.questId),
+  );
 
   const handleToggle = (index) => {
-    toggleSplitStep(defaultMissionId, index);
-    refresh();
+    const next = doneSteps.includes(index)
+      ? doneSteps.filter((i) => i !== index)
+      : [...doneSteps, index];
+    setDoneSteps(next);
+    saveSplitSteps(quest.questId, next);
   };
 
   return (
@@ -22,14 +43,14 @@ export default function QuestSplit() {
       <QuestHeader
         region={region}
         mission={mission}
-        isRainy={isRainy}
+        isRainy={false}
         status="IN_PROGRESS"
         onBack={() => navigate("/home")}
       />
       <QuestInfoCards mission={mission} />
-      <SplitSteps steps={mission.steps} doneSteps={todayQuest.doneSteps} onToggle={handleToggle} />
+      <SplitSteps steps={mission.steps} doneSteps={doneSteps} onToggle={handleToggle} />
       <QuestBottomBar
-        canRecord={todayQuest.doneSteps.length > 0}
+        canRecord={doneSteps.length > 0}
         onRecord={() => navigate("/quest/record")}
         onBack={() => navigate("/home")}
       />
