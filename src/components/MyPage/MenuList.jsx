@@ -4,6 +4,7 @@ const MENUS = [
   { label: "사회 연결 목표", path: "/goals" },
   { label: "연습실", path: "/practice" },
   { label: "루미의 편지", path: "/letter" },
+  { label: "나가볼까 사용법", path: "/guide" },
   { label: "도움 받기", path: "/help" },
 ];
 
