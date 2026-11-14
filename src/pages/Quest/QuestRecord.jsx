@@ -9,9 +9,6 @@ import useQuest from "../../hooks/useQuest";
 import { completeQuest } from "../../api/quests";
 import { loadSplitSteps } from "../../utils/splitStepStorage";
 
-// 쉼의 조각 : 시작의 방(1계단) 미션에서 처음 한 줄을 남기면
-const REST_PIECE_STAGE = 1;
-
 export default function QuestRecord() {
   const navigate = useNavigate();
   const { quest, mission, error } = useQuest();
@@ -99,7 +96,7 @@ export default function QuestRecord() {
       <ReflectionInput
         value={reflection}
         onChange={setReflection}
-        showRestPieceGuide={quest.region.stageNo === REST_PIECE_STAGE}
+        showRestPieceGuide={quest.restPieceAvailable}
       />
 
       {/* 하단 버튼 */}
