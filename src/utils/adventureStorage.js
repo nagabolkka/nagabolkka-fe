@@ -1,6 +1,5 @@
 const KEY = "nagabolkka:adventure";
 export const MAX_CHANGE = 2; // 바꾸기 하루 2회
-export const REST_PIECE_MISSION_ID = 5; // 쉼의 조각 (1단계 회고 보너스)
 
 const today = () => {
   const d = new Date();
@@ -31,7 +30,6 @@ export const startAdventure = ({ stageNo, goalId }) => {
       pieceCount: 0,
       foundPieceIds: [], // 받은 조각 (미션 번호 기준)
       todayQuest: null,
-      lastResult: null, // 조각 획득 화면용
     }),
   );
 };
@@ -83,50 +81,10 @@ export const changeTodayQuest = (defaultMissionId, newMissionId) => {
 export const skipTodayQuest = (defaultMissionId) =>
   updateTodayQuest(defaultMissionId, { status: "SKIPPED" });
 
-// 완료 → 복원도 +20 (최대 100) · 조각 지급 · 기록 저장
-export const completeTodayQuest = (defaultMissionId, { mood, reflection }) => {
-  const saved = loadAdventure();
-  const { restoration = 0, pieceCount = 0, foundPieceIds = [] } = saved;
-  const { missionId, doneSteps } = getTodayQuest(defaultMissionId);
-
-  // 받을 조각 : 오늘 미션 + (1단계 · 첫 회고면) 쉼의 조각
-  const pieceIds = [missionId];
-  if (reflection.trim() && canGetRestPiece())
-    pieceIds.push(REST_PIECE_MISSION_ID);
-
-  const newPieceIds = pieceIds.filter((id) => !foundPieceIds.includes(id));
-  const after = Math.min(restoration + 20, 100);
-
-  saveAdventure({
-    restoration: after,
-    pieceCount: pieceCount + pieceIds.length,
-    foundPieceIds: [...foundPieceIds, ...newPieceIds],
-    lastResult: {
-      pieceIds,
-      newPieceIds,
-      before: restoration,
-      after,
-      mood,
-      reflection,
-    },
-  });
-  updateTodayQuest(defaultMissionId, {
-    status: "COMPLETED",
-    mood,
-    reflection,
-    doneStepCount: doneSteps.length,
-  });
-};
 
 // 다음 지역 열기 → 단계 +1 · 복원도 0
 export const openNextRegion = (nextStageNo) => {
   saveAdventure({ stageNo: nextStageNo, restoration: 0 });
-};
-
-// 쉼의 조각 안내 · 지급 조건 : 1단계 · 아직 안 받음
-export const canGetRestPiece = () => {
-  const { stageNo, foundPieceIds = [] } = loadAdventure();
-  return stageNo === 1 && !foundPieceIds.includes(REST_PIECE_MISSION_ID);
 };
 
 // 오늘 퀘스트 조회 — 오늘 기록이 없으면 (어제 담아둔 장소 > 기본 미션) 으로 새로 배정
