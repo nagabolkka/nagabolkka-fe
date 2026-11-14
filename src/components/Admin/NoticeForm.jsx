@@ -1,5 +1,4 @@
 import { useState } from "react";
-import Button from "../common/Button/Button";
 
 export default function NoticeForm({ onSubmit }) {
   const [title, setTitle] = useState("");

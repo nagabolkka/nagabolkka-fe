@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { kakaoLogin } from "../../api/auth";
-import { TOKEN_KEY } from "../../api/api";
 import { KAKAO_REDIRECT_URI, takeConsents } from "../../utils/kakao";
 import { saveTokens } from "../../api/api";
 
