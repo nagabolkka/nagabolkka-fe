@@ -81,12 +81,6 @@ export const changeTodayQuest = (defaultMissionId, newMissionId) => {
 export const skipTodayQuest = (defaultMissionId) =>
   updateTodayQuest(defaultMissionId, { status: "SKIPPED" });
 
-
-// 다음 지역 열기 → 단계 +1 · 복원도 0
-export const openNextRegion = (nextStageNo) => {
-  saveAdventure({ stageNo: nextStageNo, restoration: 0 });
-};
-
 // 오늘 퀘스트 조회 — 오늘 기록이 없으면 (어제 담아둔 장소 > 기본 미션) 으로 새로 배정
 export const getTodayQuest = (defaultMissionId) => {
   const { todayQuest, waitingPlace } = loadAdventure();
