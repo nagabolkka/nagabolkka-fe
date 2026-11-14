@@ -16,12 +16,14 @@ import {
   isNoticeHiddenToday,
   getActiveNotice,
 } from "../../utils/noticeStorage";
+import { respondNextRegion } from "../../api/regions";
 
 export default function Home() {
   const navigate = useNavigate();
   const [home, setHome] = useState(null);
   const [error, setError] = useState(false);
   const [stayed, setStayed] = useState(false); // "지금이 좋아요" 누름
+  const [answering, setAnswering] = useState(false); // 다음 지역 응답 중 (연타 방지)
 
   const [notice, setNotice] = useState(() => {
     const active = getActiveNotice();
@@ -46,7 +48,7 @@ export default function Home() {
           navigate("/maintenance", { replace: true });
           return;
         }
-        setError(true); 
+        setError(true);
       });
     return () => {
       ignore = true;
@@ -103,6 +105,30 @@ export default function Home() {
     setNotice(null);
   };
 
+  // 다음 지역 : 열기 → 홈 다시 불러오기 (새 지역 · 모험의 길) / 머물기 → 카드 숨김 (7일 뒤 다시)
+  const handleNextRegion = async (accept) => {
+    if (answering) return;
+    setAnswering(true);
+    try {
+      await respondNextRegion(accept);
+      if (accept) {
+        setHome(await getHome());
+      } else {
+        setStayed(true);
+      }
+    } catch (e) {
+      // 응답 없음 (서버 꺼짐 · 15초 초과) · 500번대 → 점검 화면
+      if (!e.response || e.response.status >= 500) {
+        navigate("/maintenance", { replace: true });
+        return;
+      }
+      // REGION_NOT_SUGGESTED (다른 화면에서 이미 응답 등) → 최신 홈으로
+      setHome(await getHome().catch(() => home));
+    } finally {
+      setAnswering(false);
+    }
+  };
+
   return (
     <div className="relative flex flex-col pb-3">
       <RegionHeader
@@ -116,8 +142,8 @@ export default function Home() {
         <NextRegionCard
           region={region}
           nextRegion={nextRegionSuggestion}
-          onStay={() => setStayed(true)}
-          onOpen={() => setStayed(true)} // TODO : 다음 지역 API(8번) 연동 때 교체
+          onStay={() => handleNextRegion(false)}
+          onOpen={() => handleNextRegion(true)}
         />
       )}
       <TodayQuestCard
