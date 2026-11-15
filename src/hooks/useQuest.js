@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getTodayQuest } from "../api/quests";
 import { getRegion } from "../mocks/regions";
+import { loadWeather } from "../utils/weatherStorage";
 
 export const toMission = (quest) => ({
   title: quest.title,
@@ -52,5 +53,6 @@ export default function useQuest() {
     error,
     mission: quest ? toMission(quest) : null,
     region: quest ? getRegion(quest.region.stageNo) : null,
+    isRainy: loadWeather().isRainy, // 홈에서 받은 날씨
   };
 }
