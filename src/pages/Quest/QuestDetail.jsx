@@ -12,7 +12,7 @@ import { saveSplitSteps } from "../../utils/splitStepStorage";
 
 export default function QuestDetail() {
   const navigate = useNavigate();
-  const { quest, setQuest, mission, region, error } = useQuest();
+  const { quest, setQuest, mission, region, isRainy, error } = useQuest();
   const [busy, setBusy] = useState(false);
   const [toast, setToast] = useState("");
 
@@ -77,7 +77,12 @@ export default function QuestDetail() {
           {toast}
         </div>
       )}
-      <QuestHeader region={region} mission={mission} isRainy={false} onBack={() => navigate("/home")} />
+      <QuestHeader
+        region={region}
+        mission={mission}
+        isRainy={isRainy}
+        onBack={() => navigate("/home")}
+      />
       <QuestInfoCards mission={mission} />
       <QuestMap mission={mission} />
       <p className="mx-4 mt-4 text-[#F4EAD5] text-sm font-normal font-pixel leading-6 break-keep">

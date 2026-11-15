@@ -17,6 +17,7 @@ import {
   getActiveNotice,
 } from "../../utils/noticeStorage";
 import { respondNextRegion } from "../../api/regions";
+import { saveWeather } from "../../utils/weatherStorage";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -34,7 +35,9 @@ export default function Home() {
     let ignore = false;
     getHome()
       .then((data) => {
-        if (!ignore) setHome(data);
+        if (ignore) return;
+        saveWeather(data.weather);
+        setHome(data);
       })
       .catch((e) => {
         if (ignore) return;
@@ -83,6 +86,7 @@ export default function Home() {
     homeState,
     pieceName: todayQuest.reward.name,
     regionName: questRegion.name,
+    sky: weather.sky,
   });
 
   const pathRegions = regions.map((r) => ({
@@ -135,6 +139,7 @@ export default function Home() {
         region={region}
         restoration={currentRegion.restoration}
         isRainy={weather.isRainy}
+        sky={weather.sky}
         pieceCount={pieceCount}
       />
       <LumiMessage message={lumiMessage} />
