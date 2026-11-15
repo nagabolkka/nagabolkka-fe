@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { getTodayQuest } from "../api/quests";
 import { getRegion } from "../mocks/regions";
 import { loadWeather } from "../utils/weatherStorage";
+import { getLocation } from "../utils/location";
 
 export const toMission = (quest) => ({
   title: quest.title,
@@ -10,7 +11,10 @@ export const toMission = (quest) => ({
   difficulty: quest.difficulty,
   isIndoor: quest.isIndoor,
   placeName: quest.place.name,
+  placeLat: quest.place.lat,
+  placeLng: quest.place.lng,
   distanceM: quest.place.distanceM,
+  walkMinutes: quest.place.walkMinutes,
   estMinutes: quest.estMinutes,
   reward: quest.reward,
   steps: quest.steps.map((step) => step.content),
@@ -24,7 +28,8 @@ export default function useQuest() {
 
   useEffect(() => {
     let ignore = false;
-    getTodayQuest()
+    getLocation()
+      .then((location) => getTodayQuest(location))
       .then((data) => {
         if (!ignore) setQuest(data);
       })
@@ -40,7 +45,7 @@ export default function useQuest() {
           navigate("/maintenance", { replace: true });
           return;
         }
-        setError(true); 
+        setError(true);
       });
     return () => {
       ignore = true;
