@@ -2,7 +2,10 @@ import { iGa } from "../utils/josa";
 
 export const HOME_LUMI_MESSAGE = {
   DEFAULT: () => "오늘도 조각이 떨어졌대. 같이 보러 갈래?",
-  RAINY: () => "오늘은 비가 와. 가까운 곳으로 골라봤어.",
+  RAINY: ({ sky }) =>
+    sky === "SNOW"
+      ? "오늘은 눈이 와. 가까운 곳으로 골라봤어."
+      : "오늘은 비가 와. 가까운 곳으로 골라봤어.",
   SAVED_PLACE: () => "네가 담아둔 곳으로 퀘스트를 바꿨어.",
   COMPLETED: ({ pieceName, regionName }) =>
     `${pieceName} 고마워! ${regionName}${iGa(regionName)} 조금 더 밝아졌어.`,
@@ -12,8 +15,9 @@ export const HOME_LUMI_MESSAGE = {
 };
 
 // COMPLETED > SKIPPED > IN_PROGRESS > WELCOME_BACK > SAVED_PLACE > RAINY > DEFAULT
-export const getHomeLumiMessage = ({ homeState, pieceName, regionName }) =>
+export const getHomeLumiMessage = ({ homeState, pieceName, regionName, sky }) =>
   (HOME_LUMI_MESSAGE[homeState] ?? HOME_LUMI_MESSAGE.DEFAULT)({
     pieceName,
     regionName,
+    sky,
   });
