@@ -18,6 +18,7 @@ import {
 } from "../../utils/noticeStorage";
 import { respondNextRegion } from "../../api/regions";
 import { saveWeather } from "../../utils/weatherStorage";
+import { getLocation } from "../../utils/location";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -33,7 +34,8 @@ export default function Home() {
 
   useEffect(() => {
     let ignore = false;
-    getHome()
+    getLocation()
+      .then((location) => getHome(location))
       .then((data) => {
         if (ignore) return;
         saveWeather(data.weather);
