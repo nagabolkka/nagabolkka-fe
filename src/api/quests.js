@@ -6,9 +6,13 @@ export async function getTodayQuest(location) {
   return data;
 }
 
-// 오늘 퀘스트 동작 : ACCEPT · SPLIT · CHANGE · SKIP → 바뀐 오늘 퀘스트 (CHANGE 는 위치 기준 새 장소)
-export async function actTodayQuest(type, location) {
-  const { data } = await api.post("/api/quests/today/actions", { type }, { params: location ?? undefined });
+// 오늘 퀘스트 동작 : ACCEPT · SPLIT · CHANGE · SKIP · REVISIT(stageNo) → 바뀐 오늘 퀘스트
+export async function actTodayQuest(type, location, extra = {}) {
+  const { data } = await api.post(
+    "/api/quests/today/actions",
+    { type, ...extra },
+    { params: location ?? undefined },
+  );
   return data;
 }
 
