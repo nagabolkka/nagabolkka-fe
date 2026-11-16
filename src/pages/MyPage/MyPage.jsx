@@ -1,4 +1,4 @@
-import { useReducer, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ProfileCard from "../../components/MyPage/ProfileCard";
 import MyGoalChips from "../../components/MyPage/MyGoalChips";
@@ -7,15 +7,14 @@ import PlusSheet from "../../components/MyPage/PlusSheet";
 import MenuList from "../../components/MyPage/MenuList";
 import AccountActions from "../../components/MyPage/AccountActions";
 import ConfirmModal from "../../components/common/ConfirmModal/ConfimModal";
-import { getMe } from "../../mocks/me";
-import { clearAllRecords, savePlusInterest } from "../../utils/userStorage";
+import { clearAllRecords } from "../../utils/userStorage";
 import { logout } from "../../api/auth";
 import { clearTokens } from "../../api/api";
 import { deleteMe, getMyInfo, updateMyGoal } from "../../api/users";
+import { savePlusInterest } from "../../api/plus";
 
 export default function MyPage() {
   const navigate = useNavigate();
-  const [, refresh] = useReducer((x) => x + 1, 0);
   const [modal, setModal] = useState(null);
   const [isPlusOpen, setIsPlusOpen] = useState(false);
   const [toast, setToast] = useState("");
@@ -26,7 +25,7 @@ export default function MyPage() {
 
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const localPlusInterest = getMe().plusInterest;
+  const [isPlusSaving, setIsPlusSaving] = useState(false);
 
   const showToast = (message) => {
     setToast(message);
@@ -56,11 +55,33 @@ export default function MyPage() {
     }
   };
 
-  const handlePlusSubmit = (answer) => {
-    const isFirst = savePlusInterest(answer);
-    setIsPlusOpen(false);
-    refresh();
-    showToast(isFirst ? "첫 발견 조각을 받았어요!" : "응답을 바꿨어요.");
+  // 플러스 설문 → 서버 저장 · 첫 응답이면 첫 발견 조각
+  const handlePlusSubmit = async (answer) => {
+    if (isPlusSaving) return; // 연속 클릭 무시
+    setIsPlusSaving(true);
+    try {
+      const { plusInterest, rewardPiece } = await savePlusInterest(answer);
+      setMe((prev) => ({
+        ...prev,
+        plusInterest,
+        pieceCount: rewardPiece ? prev.pieceCount + 1 : prev.pieceCount,
+      }));
+      setIsPlusOpen(false);
+      showToast(
+        rewardPiece
+          ? `${rewardPiece.name}을 받았어요! 도감에서 볼 수 있어요.`
+          : "응답을 바꿨어요.",
+      );
+    } catch (e) {
+      const code = e.response?.data?.code;
+      showToast(
+        code === "PLUS_CUSTOM_PRICE_REQUIRED"
+          ? "원하는 가격을 0 ~ 50,000원 사이로 적어 주세요."
+          : "저장하지 못했어요. 잠시 후 다시 시도해 주세요.",
+      );
+    } finally {
+      setIsPlusSaving(false);
+    }
   };
 
   const handleLogout = async () => {
@@ -145,7 +166,8 @@ export default function MyPage() {
 
       {isPlusOpen && (
         <PlusSheet
-          plusInterest={localPlusInterest}
+          plusInterest={me.plusInterest}
+          submitting={isPlusSaving}
           onClose={() => setIsPlusOpen(false)}
           onSubmit={handlePlusSubmit}
         />
