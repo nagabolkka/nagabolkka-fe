@@ -12,12 +12,10 @@ import LumiMessage from "../../components/common/LumiMessage/LumiMessage";
 import Button from "../../components/common/Button/Button";
 import ConfirmModal from "../../components/common/ConfirmModal/ConfimModal";
 import PageLoading from "../../components/common/PageLoading/PageLoading";
-import useTodayQuest from "../../hooks/useTodayQuest";
-import { getPlaces } from "../../api/places";
 import { getLocation } from "../../utils/location";
-import { getSavedPlaceSlotMission } from "../../mocks/places";
 import { getCategory } from "../../constants/placeCategory";
-import { savePlaceQuest } from "../../utils/adventureStorage";
+import { getPlaces, savePlace } from "../../api/places";
+import { getTodayQuest } from "../../api/quests";
 
 export default function PlaceDetail() {
   const navigate = useNavigate();
@@ -28,10 +26,9 @@ export default function PlaceDetail() {
   const [place, setPlace] = useState(state?.place ?? null);
   const [notFound, setNotFound] = useState(false);
 
-  // 담기 (목업 · 담기 API 연동 전까지 그대로)
-  const { stageNo, defaultMissionId, questStatus } = useTodayQuest();
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [toast, setToast] = useState("");
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (place) return;
@@ -57,26 +54,52 @@ export default function PlaceDetail() {
 
   const { label, color } = getCategory(place.category);
 
-  const save = () => {
-    const slotMission = getSavedPlaceSlotMission(stageNo);
-    const result = savePlaceQuest(defaultMissionId, {
-      placeId: place.placeId,
-      slotMissionId: slotMission.missionId,
-    });
-
-    if (result === "REPLACED_TODAY") {
-      navigate("/home");
-      return;
-    }
-
-    setIsConfirmOpen(false);
-    setToast("오늘 퀘스트는 끝났어요. 내일 퀘스트로 담아둘게요.");
+  const showToast = (message) => {
+    setToast(message);
     setTimeout(() => setToast(""), 2000);
   };
 
-  const handleSave = () => {
-    if (questStatus === "IN_PROGRESS") setIsConfirmOpen(true);
-    else save();
+  // 담기 → 오늘 교체면 홈, 내일 예약이면 안내
+  const save = async () => {
+    if (saving) return;
+    setSaving(true);
+    setIsConfirmOpen(false);
+    try {
+      const location = await getLocation();
+      const { result } = await savePlace(place.placeId, location);
+      if (result === "REPLACED_TODAY") {
+        navigate("/home");
+        return;
+      }
+      showToast("오늘 퀘스트는 끝났어요. 내일 퀘스트로 담아둘게요.");
+    } catch (e) {
+      if (!e.response || e.response.status >= 500) {
+        navigate("/maintenance", { replace: true });
+        return;
+      }
+      if (e.response.status === 404) {
+        showToast("지금은 담을 수 없는 장소예요.");
+        return;
+      }
+      showToast("잠시 후 다시 시도해 주세요.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // 진행 중인 퀘스트가 있으면 확인창 먼저 (누를 때 오늘 퀘스트 상태 확인)
+  const handleSave = async () => {
+    if (saving) return;
+    try {
+      const quest = await getTodayQuest();
+      if (quest.status === "IN_PROGRESS") {
+        setIsConfirmOpen(true);
+        return;
+      }
+    } catch {
+      // 상태를 못 가져와도 담기는 시도 (서버가 판단)
+    }
+    save();
   };
 
   return (
@@ -106,7 +129,11 @@ export default function PlaceDetail() {
       <LumiMessage message="여기 조각이 숨어있대. 담으면 오늘 퀘스트야!" />
 
       <div className="flex justify-center mt-35">
-        <Button title="퀘스트로 담기" onClick={handleSave} />
+        <Button
+          title={saving ? "담는 중…" : "퀘스트로 담기"}
+          onClick={handleSave}
+          disabled={saving}
+        />
       </div>
 
       {isConfirmOpen && (

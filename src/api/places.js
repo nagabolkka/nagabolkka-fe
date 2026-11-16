@@ -5,3 +5,11 @@ export async function getPlaces(location) {
   const { data } = await api.get("/api/places", { params: location ?? undefined });
   return data.places;
 }
+
+// 미션으로 담기 → { result: "REPLACED_TODAY" | "RESERVED_TOMORROW", questId }
+export async function savePlace(placeId, location) {
+  const { data } = await api.post(`/api/places/${placeId}/save`, null, {
+    params: location ?? undefined,
+  });
+  return data;
+}
