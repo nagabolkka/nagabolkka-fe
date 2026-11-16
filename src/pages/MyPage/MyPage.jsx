@@ -1,4 +1,4 @@
-import { useReducer, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ProfileCard from "../../components/MyPage/ProfileCard";
 import MyGoalChips from "../../components/MyPage/MyGoalChips";
@@ -7,15 +7,15 @@ import PlusSheet from "../../components/MyPage/PlusSheet";
 import MenuList from "../../components/MyPage/MenuList";
 import AccountActions from "../../components/MyPage/AccountActions";
 import ConfirmModal from "../../components/common/ConfirmModal/ConfimModal";
-import { getMe } from "../../mocks/me";
-import { clearAllRecords, savePlusInterest } from "../../utils/userStorage";
+import { clearAllRecords } from "../../utils/userStorage";
 import { logout } from "../../api/auth";
-import { getMyInfo, updateMyGoal } from "../../api/users";
+import { clearTokens } from "../../api/api";
+import { deleteMe, getMyInfo, updateMyGoal } from "../../api/users";
+import { savePlusInterest } from "../../api/plus";
 
 export default function MyPage() {
   const navigate = useNavigate();
-  const [, refresh] = useReducer((x) => x + 1, 0);
-  const [modal, setModal] = useState(null); 
+  const [modal, setModal] = useState(null);
   const [isPlusOpen, setIsPlusOpen] = useState(false);
   const [toast, setToast] = useState("");
 
@@ -23,7 +23,9 @@ export default function MyPage() {
   const [me, setMe] = useState(null);
   const [isChanging, setIsChanging] = useState(false);
 
-  const localPlusInterest = getMe().plusInterest;
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const [isPlusSaving, setIsPlusSaving] = useState(false);
 
   const showToast = (message) => {
     setToast(message);
@@ -33,7 +35,9 @@ export default function MyPage() {
   useEffect(() => {
     getMyInfo()
       .then(setMe)
-      .catch(() => showToast("내 정보를 불러오지 못했어요. 잠시 후 다시 시도해 주세요."));
+      .catch(() =>
+        showToast("내 정보를 불러오지 못했어요. 잠시 후 다시 시도해 주세요."),
+      );
   }, []);
 
   // 내 목표 칩 → 목표 변경
@@ -51,11 +55,33 @@ export default function MyPage() {
     }
   };
 
-  const handlePlusSubmit = (answer) => {
-    const isFirst = savePlusInterest(answer);
-    setIsPlusOpen(false);
-    refresh();
-    showToast(isFirst ? "첫 발견 조각을 받았어요!" : "응답을 바꿨어요.");
+  // 플러스 설문 → 서버 저장 · 첫 응답이면 첫 발견 조각
+  const handlePlusSubmit = async (answer) => {
+    if (isPlusSaving) return; // 연속 클릭 무시
+    setIsPlusSaving(true);
+    try {
+      const { plusInterest, rewardPiece } = await savePlusInterest(answer);
+      setMe((prev) => ({
+        ...prev,
+        plusInterest,
+        pieceCount: rewardPiece ? prev.pieceCount + 1 : prev.pieceCount,
+      }));
+      setIsPlusOpen(false);
+      showToast(
+        rewardPiece
+          ? `${rewardPiece.name}을 받았어요! 도감에서 볼 수 있어요.`
+          : "응답을 바꿨어요.",
+      );
+    } catch (e) {
+      const code = e.response?.data?.code;
+      showToast(
+        code === "PLUS_CUSTOM_PRICE_REQUIRED"
+          ? "원하는 가격을 0 ~ 50,000원 사이로 적어 주세요."
+          : "저장하지 못했어요. 잠시 후 다시 시도해 주세요.",
+      );
+    } finally {
+      setIsPlusSaving(false);
+    }
   };
 
   const handleLogout = async () => {
@@ -63,10 +89,27 @@ export default function MyPage() {
     navigate("/", { replace: true });
   };
 
-  // 탈퇴 API 전까지 기존 로컬 삭제 그대로
-  const handleDeleteAll = () => {
-    clearAllRecords();
-    navigate("/", { replace: true });
+  // 내 기록 모두 삭제 = 탈퇴 : 서버 삭제 성공 → 토큰 · 로컬 기록 삭제 → 처음 화면
+  const handleDeleteAll = async () => {
+    if (isDeleting) return; // 연속 클릭 무시
+    setIsDeleting(true);
+    try {
+      await deleteMe();
+      clearTokens();
+      clearAllRecords();
+      navigate("/", { replace: true });
+    } catch (e) {
+      // 401 (이미 탈퇴 · 토큰 만료) 은 api.js 가 로그인 화면으로 보냄
+      setIsDeleting(false);
+      setModal(null);
+      if (e.response?.status === 403) {
+        showToast("관리자 계정은 여기서 삭제할 수 없어요.");
+        return;
+      }
+      showToast(
+        "삭제하지 못했어요. 기록은 그대로예요. 잠시 후 다시 시도해 주세요.",
+      );
+    }
   };
 
   // 불러오는 중
@@ -114,7 +157,7 @@ export default function MyPage() {
           description={
             "모든 조각, 복원도, 기분 · 회고 기록이 모두 삭제되고\n처음 화면으로 돌아가요. 되돌릴 수 없어요."
           }
-          confirmText="모두 삭제"
+          confirmText={isDeleting ? "삭제하는 중..." : "모두 삭제"}
           variant="danger"
           onCancel={() => setModal(null)}
           onConfirm={handleDeleteAll}
@@ -123,7 +166,8 @@ export default function MyPage() {
 
       {isPlusOpen && (
         <PlusSheet
-          plusInterest={localPlusInterest}
+          plusInterest={me.plusInterest}
+          submitting={isPlusSaving}
           onClose={() => setIsPlusOpen(false)}
           onSubmit={handlePlusSubmit}
         />

@@ -16,25 +16,8 @@ export const loadUser = () => {
   }
 };
 
-const saveUser = (data) => {
-  localStorage.setItem(USER_KEY, JSON.stringify({ ...loadUser(), ...data }));
-};
-
 // 목표 변경
 export const changeGoal = (goalId) => saveAdventure({ goalId });
-
-// 플러스 설문 응답 
-export const savePlusInterest = ({ priceOption, customPrice = null }) => {
-  const isFirst = !loadUser().plusInterest;
-  saveUser({
-    plusInterest: {
-      priceOption,
-      customPrice: priceOption === "CUSTOM" ? customPrice : null,
-      respondedAt: new Date().toISOString(),
-    },
-  });
-  return isFirst;
-};
 
 // 내 기록 모두 삭제 
 export const clearAllRecords = () => {

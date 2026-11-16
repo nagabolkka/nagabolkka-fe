@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CollectionHeader from "../../components/Collection/CollectionHeader";
 import RegionPieces from "../../components/Collection/RegionPieces";
+import BonusPieces from "../../components/Collection/BonusPieces";
 import PieceSheet from "../../components/Collection/PieceSheet";
 import PageLoading from "../../components/common/PageLoading/PageLoading";
 import { getCollection } from "../../api/collection";
@@ -39,17 +40,27 @@ export default function Collection() {
 
   if (!collection) return <PageLoading error={error} />;
 
-  const { foundCount, total, regions } = collection;
+  // 응답이 온 뒤에만 꺼냄 (위에서 꺼내면 처음 렌더 때 collection 이 null 이라 에러)
+  const { foundCount, total, regions, bonusPieces } = collection;
 
   return (
     <div className="flex flex-col gap-4 px-4 pb-6 pt-8">
       <CollectionHeader foundCount={foundCount} total={total} />
 
       {regions.map((region) => (
-        <RegionPieces key={region.stageNo} region={region} onSelect={setSelected} />
+        <RegionPieces
+          key={region.stageNo}
+          region={region}
+          onSelect={setSelected}
+        />
       ))}
 
-      {selected && <PieceSheet piece={selected} onClose={() => setSelected(null)} />}
+      {/* 도감 25칸 밖 보너스 조각 (받은 것만 · 없으면 안 그림) */}
+      <BonusPieces pieces={bonusPieces} />
+
+      {selected && (
+        <PieceSheet piece={selected} onClose={() => setSelected(null)} />
+      )}
     </div>
   );
 }
