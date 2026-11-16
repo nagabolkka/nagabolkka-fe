@@ -1,47 +1,74 @@
-import {
-  Navigate,
-  useLocation,
-  useNavigate,
-  useParams,
-} from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import FeedbackPieceCard from "../../components/Practice/FeedbackPieceCard";
 import FeedbackSection from "../../components/Practice/FeedbackSection";
 import Button from "../../components/common/Button/Button";
-import { getScenario } from "../../mocks/practiceScenarios";
-import { getMission } from "../../mocks/missions";
+import ConfirmModal from "../../components/common/ConfirmModal/ConfimModal";
 import { getRegion } from "../../mocks/regions";
-import { PRACTICE_PIECE_MISSION_ID } from "../../constants/practice";
+import { actTodayQuest } from "../../api/quests";
+import { getLocation } from "../../utils/location";
 
 export default function PracticeFeedback() {
   const navigate = useNavigate();
-  const { code } = useParams();
   const { state } = useLocation();
-  const scenario = getScenario(code);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [toast, setToast] = useState("");
+  const toastTimer = useRef(null);
 
-  // 새로고침 등으로 피드백 정보가 없으면 연습실로
-  if (!scenario || !state?.feedback) return <Navigate to="/practice" replace />;
+  useEffect(() => () => clearTimeout(toastTimer.current), []);
 
-  const piece = getMission(PRACTICE_PIECE_MISSION_ID);
-  const region = getRegion(piece.stageNo);
-  const { feedback, isNew } = state;
+  // 새로고침 등으로 결과가 없으면 연습실로 (서버는 이미 끝 처리됨)
+  if (!state?.feedback) return <Navigate to="/practice" replace />;
+
+  const { title, feedback, piece, followMission } = state;
+  const color = piece ? getRegion(piece.stageNo)?.color : undefined;
+
+  const showToast = (message) => {
+    clearTimeout(toastTimer.current);
+    setToast(message);
+    toastTimer.current = setTimeout(() => setToast(""), 2500);
+  };
+
+  // 연습 후 실제 미션 → 오늘 퀘스트 교체 (바꾸기 횟수 그대로)
+  const handleSaveMission = async () => {
+    if (saving) return;
+    setSaving(true);
+    try {
+      const location = await getLocation(); // 첫 방문 미션 → 근처 도서관
+      await actTodayQuest("PRACTICE_MISSION", location, { missionId: followMission.missionId });
+      navigate("/home", { replace: true });
+    } catch (e) {
+      setSaving(false);
+      setIsConfirmOpen(false);
+      if (!e.response || e.response.status >= 500) {
+        navigate("/maintenance", { replace: true });
+        return;
+      }
+      const code = e.response.data?.code;
+      showToast(
+        code === "QUEST_ALREADY_DONE"
+          ? "오늘 퀘스트는 이미 마쳤어요. 내일 또 연습해 봐요!"
+          : "담지 못했어요. 다시 시도해 주세요.",
+      );
+    }
+  };
 
   return (
-    <div className="flex flex-1 flex-col bg-bg-page px-4 pb-8 pt-10">
-      <p className="font-pixel text-xs text-[#E8C06A]">
-        {scenario.title} · 연습 완료
-      </p>
-      <h1 className="mt-1 font-pixel text-2xl text-[#F4EAD5]">
-        끝까지 해냈어!
-      </h1>
+    <div className="relative flex flex-1 flex-col bg-bg-page px-4 pb-8 pt-10">
+      <p className="font-pixel text-xs text-[#E8C06A]">{title} · 연습 완료</p>
+      <h1 className="mt-1 font-pixel text-2xl text-[#F4EAD5]">끝까지 해냈어!</h1>
 
-      <div className="mt-5">
-        <FeedbackPieceCard
-          name={piece.reward.name}
-          regionName={region.name}
-          color={region.color}
-          isNew={isNew}
-        />
-      </div>
+      {piece && (
+        <div className="mt-5">
+          <FeedbackPieceCard
+            name={piece.name}
+            regionName={piece.regionName}
+            color={color}
+            isNew={piece.isNew}
+          />
+        </div>
+      )}
 
       <div className="mt-4 flex flex-col gap-3">
         <FeedbackSection title="잘한 점" items={feedback.good} />
@@ -51,7 +78,17 @@ export default function PracticeFeedback() {
         />
       </div>
 
+      {followMission && (
+        <section className="mt-4 rounded-lg border-2 border-[#15121F] bg-[#2B2340] px-4 py-3">
+          <p className="font-pixel text-[10px] text-[#B9B0D0]">이제 진짜로 해볼까?</p>
+          <p className="mt-1 text-sm text-[#F4EAD5] break-keep">{followMission.title}</p>
+        </section>
+      )}
+
       <div className="mt-auto flex flex-col items-center gap-3 pt-10">
+        {followMission && (
+          <Button title="실제 미션으로 담기" onClick={() => setIsConfirmOpen(true)} disabled={saving} />
+        )}
         <button
           type="button"
           onClick={() => navigate("/practice", { replace: true })}
@@ -59,8 +96,30 @@ export default function PracticeFeedback() {
         >
           다른 연습 해보기
         </button>
-        <Button title="모험 지도로" onClick={() => navigate("/home")} />
+        <button
+          type="button"
+          onClick={() => navigate("/home")}
+          className="cursor-pointer text-[11px] text-[#B9B0D0] underline"
+        >
+          모험 지도로
+        </button>
       </div>
+
+      {isConfirmOpen && (
+        <ConfirmModal
+          title="오늘 퀘스트로 담을까요?"
+          description={"오늘 퀘스트가 이 미션으로 바뀌어요.\n바꾸기 횟수는 줄지 않아요."}
+          confirmText={saving ? "담는 중..." : "담기"}
+          onCancel={() => setIsConfirmOpen(false)}
+          onConfirm={handleSaveMission}
+        />
+      )}
+
+      {toast && (
+        <div className="fixed bottom-10 left-1/2 z-50 w-[300px] -translate-x-1/2 rounded-full bg-[#15121F]/90 px-6 py-2 text-center text-xs text-[#F4EAD5]">
+          {toast}
+        </div>
+      )}
     </div>
   );
 }
