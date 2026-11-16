@@ -78,13 +78,13 @@ api.interceptors.response.use(
         config.headers.Authorization = `Bearer ${accessToken}`;
         return api(config);
       } catch {
-        goLogin(); // AUTH_REFRESH_EXPIRED · 네트워크 오류
+        if (!config.silentAuth) goLogin(); // AUTH_REFRESH_EXPIRED · 네트워크 오류
         return Promise.reject(error);
       }
     }
 
     // 위조 · 탈퇴 · 재발급 불가 → 로그인 화면 (KAKAO_LOGIN_FAILED 는 여기 안 걸림)
-    if (LOGIN_REQUIRED_CODES.includes(code)) {
+    if (LOGIN_REQUIRED_CODES.includes(code) && !config?.silentAuth) {
       goLogin();
     }
     return Promise.reject(error);

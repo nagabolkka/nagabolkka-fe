@@ -1,14 +1,23 @@
+import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import HelpNotice from "../../components/Help/HelpNotice";
 import HotlineCard from "../../components/Help/HotlineCard";
 import CenterCard from "../../components/Help/CenterCard";
 import { HELP_NOTICE, HOTLINES, NEARBY_CENTER } from "../../constants/help";
+import { recordHelpOpened } from "../../api/safety";
 import backButton from "../../assets/images/backButton.svg";
 
 export default function Help() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
-  const notice = HELP_NOTICE[params.get("from")] ?? HELP_NOTICE.default;
+  const from = params.get("from");
+  const notice = HELP_NOTICE[from] ?? HELP_NOTICE.default;
+
+  // 직접 연 경우만 기록 (회고 · 연습 위기 감지는 서버가 이미 기록)
+  useEffect(() => {
+    if (from) return;
+    recordHelpOpened().catch(() => {}); // 실패해도 도움 받기 화면은 그대로
+  }, [from]);
 
   return (
     <div className="flex min-h-screen flex-col px-4 pb-8 pt-[27px] bg-[#1F2233]">
