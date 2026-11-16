@@ -1,25 +1,59 @@
-import { useState } from "react";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import {
+  Navigate,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 import PlaceHero from "../../components/Map/PlaceHero";
 import PlaceTags from "../../components/Map/PlaceTags";
 import PlaceInfoTable from "../../components/Map/PlaceInfoTable";
 import LumiMessage from "../../components/common/LumiMessage/LumiMessage";
 import Button from "../../components/common/Button/Button";
 import ConfirmModal from "../../components/common/ConfirmModal/ConfimModal";
+import PageLoading from "../../components/common/PageLoading/PageLoading";
 import useTodayQuest from "../../hooks/useTodayQuest";
-import { getPlace, getSavedPlaceSlotMission } from "../../mocks/places";
+import { getPlaces } from "../../api/places";
+import { getLocation } from "../../utils/location";
+import { getSavedPlaceSlotMission } from "../../mocks/places";
 import { getCategory } from "../../constants/placeCategory";
 import { savePlaceQuest } from "../../utils/adventureStorage";
 
 export default function PlaceDetail() {
   const navigate = useNavigate();
   const { placeId } = useParams();
-  const place = getPlace(placeId);
+  const { state } = useLocation();
+
+  // 목록에서 넘겨받은 장소 → 없으면(새로고침 · 주소 직접 입력) 목록을 다시 받아 찾기
+  const [place, setPlace] = useState(state?.place ?? null);
+  const [notFound, setNotFound] = useState(false);
+
+  // 담기 (목업 · 담기 API 연동 전까지 그대로)
   const { stageNo, defaultMissionId, questStatus } = useTodayQuest();
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [toast, setToast] = useState("");
 
-  if (!place) return <Navigate to="/map" replace />;
+  useEffect(() => {
+    if (place) return;
+    let ignore = false;
+    getLocation()
+      .then((location) => getPlaces(location))
+      .then((places) => {
+        if (ignore) return;
+        const found = places.find((p) => p.placeId === Number(placeId));
+        if (found) setPlace(found);
+        else setNotFound(true); // 없는 장소 · 기간이 끝난 프로그램
+      })
+      .catch(() => {
+        if (!ignore) setNotFound(true);
+      });
+    return () => {
+      ignore = true;
+    };
+  }, [place, placeId]);
+
+  if (notFound) return <Navigate to="/map" replace />;
+  if (!place) return <PageLoading />;
 
   const { label, color } = getCategory(place.category);
 
@@ -47,7 +81,7 @@ export default function PlaceDetail() {
 
   return (
     <div className="relative flex flex-1 flex-col bg-bg-page pb-[110px]">
-      <PlaceHero color={color} onBack={() => navigate(-1)} />
+      <PlaceHero place={place} color={color} onBack={() => navigate(-1)} />
 
       <section className="px-4 pt-5">
         <p className="font-pixel text-sm text-[#E8C06A]">{label}</p>
@@ -63,9 +97,11 @@ export default function PlaceDetail() {
         <PlaceInfoTable place={place} />
       </div>
 
-      <p className="px-5 pt-4 text-sm leading-6 text-[#F4EAD5] break-keep">
-        {place.description}
-      </p>
+      {place.description && (
+        <p className="px-5 pt-4 text-sm leading-6 text-[#F4EAD5] break-keep">
+          {place.description}
+        </p>
+      )}
 
       <LumiMessage message="여기 조각이 숨어있대. 담으면 오늘 퀘스트야!" />
 

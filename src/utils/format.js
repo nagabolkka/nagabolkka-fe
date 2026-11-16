@@ -6,6 +6,13 @@ export const formatQuestDate = (date) => {
 export const formatDistance = (m) =>
   m >= 1000 ? `${(m / 1000).toFixed(1).replace(/\.0$/, "")}km` : `${m}m`;
 
+export const WALK_LIMIT_MIN = 25;
+
+export const formatTravel = (distanceM, walkMinutes) =>
+  walkMinutes != null && walkMinutes <= WALK_LIMIT_MIN
+    ? `${formatDistance(distanceM)} · 걸어서 ${walkMinutes}분`
+    : `${formatDistance(distanceM)} · 버스·지하철 추천`;
+
 export const formatMinutes = (min) => {
   if (min < 60) return `${min}분`;
   const h = Math.floor(min / 60);

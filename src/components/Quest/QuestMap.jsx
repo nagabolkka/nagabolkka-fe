@@ -3,9 +3,9 @@ export default function QuestMap({ mission }) {
 
   const guide = isIndoor
     ? "집 안에서 할 수 있어요."
-    : walkMinutes != null
+    : walkMinutes != null && walkMinutes <= WALK_LIMIT_MIN
       ? `${placeName}까지 걸어서 약 ${walkMinutes}분`
-      : `${placeName}까지 다녀와요.`;
+      : `${placeName}까지 버스·지하철로 다녀와요.`;
 
   // 실제 장소를 찾았을 때만 카카오맵 길찾기 (새 탭)
   const mapUrl =
