@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import backButton from "../../assets/images/backButton.svg";
-import { loadKakaoMap } from "../../utils/kakaomap";
+import { loadKakaoMap } from "../../utils/kakaoMap";
 
 // 장소 상세 상단 : 그 장소 위치 지도 (실패하면 카테고리 색 마름모)
 export default function PlaceHero({ place, color, onBack }) {

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import MockMap from "./MockMap";
-import { loadKakaoMap } from "../../utils/kakaomap";
+import { loadKakaoMap } from "../../utils/kakaoMap";
 import { getCategory } from "../../constants/placeCategory";
 
 // 내 위치가 없으면 성북구 중심
