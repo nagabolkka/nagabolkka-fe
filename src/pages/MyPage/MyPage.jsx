@@ -10,18 +10,21 @@ import ConfirmModal from "../../components/common/ConfirmModal/ConfimModal";
 import { getMe } from "../../mocks/me";
 import { clearAllRecords, savePlusInterest } from "../../utils/userStorage";
 import { logout } from "../../api/auth";
-import { getMyInfo, updateMyGoal } from "../../api/users";
+import { clearTokens } from "../../api/api";
+import { deleteMe, getMyInfo, updateMyGoal } from "../../api/users";
 
 export default function MyPage() {
   const navigate = useNavigate();
   const [, refresh] = useReducer((x) => x + 1, 0);
-  const [modal, setModal] = useState(null); 
+  const [modal, setModal] = useState(null);
   const [isPlusOpen, setIsPlusOpen] = useState(false);
   const [toast, setToast] = useState("");
 
   // 서버에서 받은 내 정보 -> 처음엔 null 이고 받아오면 채워짐
   const [me, setMe] = useState(null);
   const [isChanging, setIsChanging] = useState(false);
+
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const localPlusInterest = getMe().plusInterest;
 
@@ -33,7 +36,9 @@ export default function MyPage() {
   useEffect(() => {
     getMyInfo()
       .then(setMe)
-      .catch(() => showToast("내 정보를 불러오지 못했어요. 잠시 후 다시 시도해 주세요."));
+      .catch(() =>
+        showToast("내 정보를 불러오지 못했어요. 잠시 후 다시 시도해 주세요."),
+      );
   }, []);
 
   // 내 목표 칩 → 목표 변경
@@ -63,10 +68,27 @@ export default function MyPage() {
     navigate("/", { replace: true });
   };
 
-  // 탈퇴 API 전까지 기존 로컬 삭제 그대로
-  const handleDeleteAll = () => {
-    clearAllRecords();
-    navigate("/", { replace: true });
+  // 내 기록 모두 삭제 = 탈퇴 : 서버 삭제 성공 → 토큰 · 로컬 기록 삭제 → 처음 화면
+  const handleDeleteAll = async () => {
+    if (isDeleting) return; // 연속 클릭 무시
+    setIsDeleting(true);
+    try {
+      await deleteMe();
+      clearTokens();
+      clearAllRecords();
+      navigate("/", { replace: true });
+    } catch (e) {
+      // 401 (이미 탈퇴 · 토큰 만료) 은 api.js 가 로그인 화면으로 보냄
+      setIsDeleting(false);
+      setModal(null);
+      if (e.response?.status === 403) {
+        showToast("관리자 계정은 여기서 삭제할 수 없어요.");
+        return;
+      }
+      showToast(
+        "삭제하지 못했어요. 기록은 그대로예요. 잠시 후 다시 시도해 주세요.",
+      );
+    }
   };
 
   // 불러오는 중
@@ -114,7 +136,7 @@ export default function MyPage() {
           description={
             "모든 조각, 복원도, 기분 · 회고 기록이 모두 삭제되고\n처음 화면으로 돌아가요. 되돌릴 수 없어요."
           }
-          confirmText="모두 삭제"
+          confirmText={isDeleting ? "삭제하는 중..." : "모두 삭제"}
           variant="danger"
           onCancel={() => setModal(null)}
           onConfirm={handleDeleteAll}

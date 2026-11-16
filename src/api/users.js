@@ -11,3 +11,8 @@ export async function updateMyGoal(goalId) {
   const { data } = await api.patch("/api/users/me", { goalId });
   return data;
 }
+
+// 탈퇴 (내 기록 모두 삭제) → 204
+export async function deleteMe() {
+  await api.delete("/api/users/me");
+}
