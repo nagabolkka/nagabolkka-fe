@@ -21,3 +21,31 @@ export const loadKakaoMap = () => {
   });
   return loading;
 };
+
+// 장소 핀 (카테고리 · 지역 색 물방울 + 이름표) — CustomOverlay content 로, yAnchor: 1
+export const createPlacePin = (color, name) => {
+  const marker = document.createElement("div");
+  marker.className = "flex flex-col items-center";
+
+  if (name) {
+    const label = document.createElement("div");
+    label.className =
+      "mb-1 max-w-[160px] truncate rounded-full bg-[#15121F]/85 px-2 py-0.5 text-[11px] text-[#F4EAD5] shadow";
+    label.textContent = name;
+    marker.appendChild(label);
+  }
+
+  const pin = document.createElement("div");
+  pin.className =
+    "flex h-7 w-7 items-center justify-center border-2 border-white shadow-[0_2px_6px_rgba(0,0,0,0.35)]";
+  pin.style.backgroundColor = color;
+  pin.style.borderRadius = "50% 50% 50% 0";
+  pin.style.transform = "rotate(-45deg)";
+
+  const dot = document.createElement("div");
+  dot.className = "h-2.5 w-2.5 rounded-full bg-white";
+  pin.appendChild(dot);
+
+  marker.appendChild(pin);
+  return marker;
+};

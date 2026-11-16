@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import backButton from "../../assets/images/backButton.svg";
-import { loadKakaoMap } from "../../utils/kakaoMap";
+import { createPlacePin, loadKakaoMap } from "../../utils/kakaoMap";
 
 // 장소 상세 상단 : 그 장소 위치 지도 (실패하면 카테고리 색 마름모)
 export default function PlaceHero({ place, color, onBack }) {
@@ -20,29 +20,12 @@ export default function PlaceHero({ place, color, onBack }) {
           scrollwheel: false,
           disableDoubleClickZoom: true,
         });
-
-        // 핀(카테고리 색 물방울) + 이름표 — 핀 끝이 장소 위치
-        const marker = document.createElement("div");
-        marker.className = "flex flex-col items-center";
-
-        const label = document.createElement("div");
-        label.className =
-          "mb-1 max-w-[160px] truncate rounded-full bg-[#15121F]/85 px-2 py-0.5 text-[11px] text-[#F4EAD5] shadow";
-        label.textContent = place.name;
-
-        const pin = document.createElement("div");
-        pin.className =
-          "flex h-7 w-7 items-center justify-center border-2 border-white shadow-[0_2px_6px_rgba(0,0,0,0.35)]";
-        pin.style.backgroundColor = color;
-        pin.style.borderRadius = "50% 50% 50% 0";
-        pin.style.transform = "rotate(-45deg)";
-
-        const dot = document.createElement("div");
-        dot.className = "h-2.5 w-2.5 rounded-full bg-white";
-        pin.appendChild(dot);
-
-        marker.append(label, pin);
-        new kakao.maps.CustomOverlay({ map, position, content: marker, yAnchor: 1 }); // 아래 끝 = 장소
+        new kakao.maps.CustomOverlay({
+          map,
+          position,
+          content: createPlacePin(color, place.name),
+          yAnchor: 1,
+        });
       })
       .catch(() => {
         if (!ignore) setFailed(true); // 키 · 도메인 · 네트워크 문제 → 색 마름모
@@ -59,7 +42,9 @@ export default function PlaceHero({ place, color, onBack }) {
       {failed ? (
         <div
           className="absolute inset-0"
-          style={{ background: `linear-gradient(180deg, ${color}80 0%, ${color}26 100%)` }}
+          style={{
+            background: `linear-gradient(180deg, ${color}80 0%, ${color}26 100%)`,
+          }}
         >
           <div
             className="absolute left-1/2 top-1/2 h-16 w-16 -translate-x-1/2 -translate-y-1/2 rotate-45 border-[3px] border-[#15121F]"

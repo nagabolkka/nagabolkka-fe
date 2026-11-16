@@ -87,7 +87,7 @@ export default function QuestDetail() {
         onBack={() => navigate("/home")}
       />
       <QuestInfoCards mission={mission} />
-      <QuestMap mission={mission} />
+      <QuestMap mission={mission} color={region.color} />
       <p className="mx-4 mt-4 text-[#F4EAD5] text-sm font-normal font-pixel leading-6 break-keep">
         {mission.description}
       </p>
