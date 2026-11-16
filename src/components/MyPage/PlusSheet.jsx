@@ -1,20 +1,41 @@
 import { useState } from "react";
-import { CUSTOM_PRICE_MAX, PLUS_FEATURES, PRICE_OPTIONS } from "../../constants/plus";
+import {
+  CUSTOM_PRICE_MAX,
+  PLUS_FEATURES,
+  PRICE_OPTIONS,
+} from "../../constants/plus";
 
-export default function PlusSheet({ plusInterest, onClose, onSubmit }) {
+export default function PlusSheet({
+  plusInterest,
+  submitting = false,
+  onClose,
+  onSubmit,
+}) {
   const [option, setOption] = useState(plusInterest?.priceOption ?? null);
-  const [customPrice, setCustomPrice] = useState(plusInterest?.customPrice?.toString() ?? "");
+  const [customPrice, setCustomPrice] = useState(
+    plusInterest?.customPrice?.toString() ?? "",
+  );
 
   const price = Number(customPrice);
-  const isCustomValid = customPrice !== "" && Number.isInteger(price) && price >= 0 && price <= CUSTOM_PRICE_MAX;
+  const isCustomValid =
+    customPrice !== "" &&
+    Number.isInteger(price) &&
+    price >= 0 &&
+    price <= CUSTOM_PRICE_MAX;
   const canSubmit = option && (option !== "CUSTOM" || isCustomValid);
 
   const handleSubmit = () => {
-    onSubmit({ priceOption: option, customPrice: option === "CUSTOM" ? price : null });
+    onSubmit({
+      priceOption: option,
+      customPrice: option === "CUSTOM" ? price : null,
+    });
   };
 
   return (
-    <div className="absolute inset-0 z-50 flex items-end bg-black/50" onClick={onClose}>
+    <div
+      className="absolute inset-0 z-50 flex items-end bg-black/50"
+      onClick={onClose}
+    >
       <div
         className="w-full rounded-t-2xl bg-[#F4EAD5] px-5 pb-8 pt-3"
         onClick={(e) => e.stopPropagation()}
@@ -22,11 +43,16 @@ export default function PlusSheet({ plusInterest, onClose, onSubmit }) {
         <div className="mx-auto h-1 w-10 rounded-full bg-[#C9B48E]" />
 
         <h2 className="mt-4 font-pixel text-xl text-[#15121F]">루미 플러스</h2>
-        <p className="mt-1 text-xs text-[#15121F]/60">조금 더 깊은 모험을 위한 추가 기능 · 준비 중</p>
+        <p className="mt-1 text-xs text-[#15121F]/60">
+          조금 더 깊은 모험을 위한 추가 기능 · 준비 중
+        </p>
 
         <ul className="mt-4 flex flex-col gap-2">
           {PLUS_FEATURES.map(({ title, desc, color }) => (
-            <li key={title} className="flex items-center gap-3 rounded-md bg-[#E8DCC0] px-3 py-2.5">
+            <li
+              key={title}
+              className="flex items-center gap-3 rounded-md bg-[#E8DCC0] px-3 py-2.5"
+            >
               <div
                 className="ml-1 h-3.5 w-3.5 shrink-0 rotate-45 border-2 border-[#15121F]"
                 style={{ backgroundColor: color }}
@@ -83,16 +109,22 @@ export default function PlusSheet({ plusInterest, onClose, onSubmit }) {
         </div>
 
         <p className="mt-5 text-center text-[11px] text-[#15121F]/70">
-          {plusInterest ? "관심 남겼어요 ✓ 응답은 언제든 바꿀 수 있어요" : "🎁 관심을 남기면 '첫 발견 조각'을 바로 드려요!"}
+          {plusInterest
+            ? "관심 남겼어요 ✓ 응답은 언제든 바꿀 수 있어요"
+            : "🎁 관심을 남기면 '첫 발견 조각'을 바로 드려요!"}
         </p>
 
         <button
           type="button"
           onClick={handleSubmit}
-          disabled={!canSubmit}
+          disabled={!canSubmit || submitting}
           className="mt-2 w-full rounded-lg border-2 border-[#15121F] bg-[#E8C06A] py-3 font-pixel text-base text-[#15121F] disabled:opacity-40"
         >
-          {plusInterest ? "응답 바꾸기" : "관심 있어요"}
+          {submitting
+            ? "저장하는 중..."
+            : plusInterest
+              ? "응답 바꾸기"
+              : "관심 있어요"}
         </button>
       </div>
     </div>
