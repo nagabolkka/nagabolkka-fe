@@ -19,6 +19,8 @@ import {
 import { respondNextRegion } from "../../api/regions";
 import { saveWeather } from "../../utils/weatherStorage";
 import { getLocation } from "../../utils/location";
+import ConfirmModal from "../../components/common/ConfirmModal/ConfimModal";
+import { actTodayQuest } from "../../api/quests";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -31,6 +33,9 @@ export default function Home() {
     const active = getActiveNotice();
     return active && !isNoticeHiddenToday(active.noticeId) ? active : null;
   });
+
+  const [revisitRegion, setRevisitRegion] = useState(null); // 누른 지나온 계단
+  const [toast, setToast] = useState("");
 
   useEffect(() => {
     let ignore = false;
@@ -135,6 +140,44 @@ export default function Home() {
     }
   };
 
+  const showToast = (message) => {
+    setToast(message);
+    setTimeout(() => setToast(""), 2000);
+  };
+
+  // 지나온 계단 누름 : 오늘 퀘스트가 끝났으면 안내만, 아니면 모달
+  const handleSelectPassed = (passedRegion) => {
+    if (todayQuest.status === "COMPLETED" || todayQuest.status === "SKIPPED") {
+      showToast(`내일 ${passedRegion.name} 미션에 도전해 봐요!`);
+      return;
+    }
+    setRevisitRegion(passedRegion);
+  };
+
+  // 이 계단 미션 받기 → 오늘 퀘스트 교체 → 홈 다시 불러오기
+  const handleRevisit = async () => {
+    if (answering) return;
+    setAnswering(true);
+    const stageNo = revisitRegion.stageNo;
+    setRevisitRegion(null);
+    try {
+      const location = await getLocation();
+      await actTodayQuest("REVISIT", location, { stageNo });
+      setHome(await getHome(location));
+    } catch (e) {
+      const code = e.response?.data?.code;
+      if (code === "QUEST_CHANGE_LIMIT") {
+        showToast("오늘은 더 바꿀 수 없어요.");
+      } else if (code === "QUEST_ALREADY_DONE") {
+        showToast("오늘 퀘스트를 이미 마쳤어요.");
+      } else {
+        showToast("잠시 후 다시 시도해 주세요.");
+      }
+    } finally {
+      setAnswering(false);
+    }
+  };
+
   return (
     <div className="relative flex flex-col pb-3">
       <RegionHeader
@@ -160,7 +203,10 @@ export default function Home() {
         onClick={() => navigate(questPath)}
         isSavedPlace={todayQuest.source === "SAVED_PLACE"}
       />
-      <AdventurePath regions={pathRegions} />
+      <AdventurePath
+        regions={pathRegions}
+        onSelectPassed={handleSelectPassed}
+      />
       <div className="flex gap-[17px] pl-3 mt-2.5">
         <ShortcutCard
           title="연습실"
@@ -186,6 +232,21 @@ export default function Home() {
           onClose={() => setNotice(null)}
           onHideToday={handleHideToday}
         />
+      )}
+      {revisitRegion && (
+        <ConfirmModal
+          title={`${revisitRegion.name} 미션도 도전할 수 있어요!`}
+          description={`지나온 계단에서 아직 못 찾은 조각을 모을 수 있어요.\n오늘 퀘스트를 이 계단 미션으로 바꿀까요?\n(바꾸기 1번을 써요)`}
+          confirmText="이 계단 미션 받기"
+          onCancel={() => setRevisitRegion(null)}
+          onConfirm={handleRevisit}
+        />
+      )}
+
+      {toast && (
+        <div className="fixed w-[300px] px-6 bottom-24 left-1/2 z-50 -translate-x-1/2 rounded-full bg-[#15121F]/90 py-2 text-center text-xs text-[#F4EAD5]">
+          {toast}
+        </div>
       )}
     </div>
   );
