@@ -1,53 +1,110 @@
-import { useState } from "react";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import {
+  Navigate,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 import PlaceHero from "../../components/Map/PlaceHero";
 import PlaceTags from "../../components/Map/PlaceTags";
 import PlaceInfoTable from "../../components/Map/PlaceInfoTable";
 import LumiMessage from "../../components/common/LumiMessage/LumiMessage";
 import Button from "../../components/common/Button/Button";
 import ConfirmModal from "../../components/common/ConfirmModal/ConfimModal";
-import useTodayQuest from "../../hooks/useTodayQuest";
-import { getPlace, getSavedPlaceSlotMission } from "../../mocks/places";
+import PageLoading from "../../components/common/PageLoading/PageLoading";
+import { getLocation } from "../../utils/location";
 import { getCategory } from "../../constants/placeCategory";
-import { savePlaceQuest } from "../../utils/adventureStorage";
+import { getPlaces, savePlace } from "../../api/places";
+import { getTodayQuest } from "../../api/quests";
 
 export default function PlaceDetail() {
   const navigate = useNavigate();
   const { placeId } = useParams();
-  const place = getPlace(placeId);
-  const { stageNo, defaultMissionId, questStatus } = useTodayQuest();
+  const { state } = useLocation();
+
+  // 목록에서 넘겨받은 장소 → 없으면(새로고침 · 주소 직접 입력) 목록을 다시 받아 찾기
+  const [place, setPlace] = useState(state?.place ?? null);
+  const [notFound, setNotFound] = useState(false);
+
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [toast, setToast] = useState("");
+  const [saving, setSaving] = useState(false);
 
-  if (!place) return <Navigate to="/map" replace />;
+  useEffect(() => {
+    if (place) return;
+    let ignore = false;
+    getLocation()
+      .then((location) => getPlaces(location))
+      .then((places) => {
+        if (ignore) return;
+        const found = places.find((p) => p.placeId === Number(placeId));
+        if (found) setPlace(found);
+        else setNotFound(true); // 없는 장소 · 기간이 끝난 프로그램
+      })
+      .catch(() => {
+        if (!ignore) setNotFound(true);
+      });
+    return () => {
+      ignore = true;
+    };
+  }, [place, placeId]);
+
+  if (notFound) return <Navigate to="/map" replace />;
+  if (!place) return <PageLoading />;
 
   const { label, color } = getCategory(place.category);
 
-  const save = () => {
-    const slotMission = getSavedPlaceSlotMission(stageNo);
-    const result = savePlaceQuest(defaultMissionId, {
-      placeId: place.placeId,
-      slotMissionId: slotMission.missionId,
-    });
-
-    if (result === "REPLACED_TODAY") {
-      navigate("/home");
-      return;
-    }
-
-    setIsConfirmOpen(false);
-    setToast("오늘 퀘스트는 끝났어요. 내일 퀘스트로 담아둘게요.");
+  const showToast = (message) => {
+    setToast(message);
     setTimeout(() => setToast(""), 2000);
   };
 
-  const handleSave = () => {
-    if (questStatus === "IN_PROGRESS") setIsConfirmOpen(true);
-    else save();
+  // 담기 → 오늘 교체면 홈, 내일 예약이면 안내
+  const save = async () => {
+    if (saving) return;
+    setSaving(true);
+    setIsConfirmOpen(false);
+    try {
+      const location = await getLocation();
+      const { result } = await savePlace(place.placeId, location);
+      if (result === "REPLACED_TODAY") {
+        navigate("/home");
+        return;
+      }
+      showToast("오늘 퀘스트는 끝났어요. 내일 퀘스트로 담아둘게요.");
+    } catch (e) {
+      if (!e.response || e.response.status >= 500) {
+        navigate("/maintenance", { replace: true });
+        return;
+      }
+      if (e.response.status === 404) {
+        showToast("지금은 담을 수 없는 장소예요.");
+        return;
+      }
+      showToast("잠시 후 다시 시도해 주세요.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // 진행 중인 퀘스트가 있으면 확인창 먼저 (누를 때 오늘 퀘스트 상태 확인)
+  const handleSave = async () => {
+    if (saving) return;
+    try {
+      const quest = await getTodayQuest();
+      if (quest.status === "IN_PROGRESS") {
+        setIsConfirmOpen(true);
+        return;
+      }
+    } catch {
+      // 상태를 못 가져와도 담기는 시도 (서버가 판단)
+    }
+    save();
   };
 
   return (
     <div className="relative flex flex-1 flex-col bg-bg-page pb-[110px]">
-      <PlaceHero color={color} onBack={() => navigate(-1)} />
+      <PlaceHero place={place} color={color} onBack={() => navigate(-1)} />
 
       <section className="px-4 pt-5">
         <p className="font-pixel text-sm text-[#E8C06A]">{label}</p>
@@ -63,14 +120,20 @@ export default function PlaceDetail() {
         <PlaceInfoTable place={place} />
       </div>
 
-      <p className="px-5 pt-4 text-sm leading-6 text-[#F4EAD5] break-keep">
-        {place.description}
-      </p>
+      {place.description && (
+        <p className="px-5 pt-4 text-sm leading-6 text-[#F4EAD5] break-keep">
+          {place.description}
+        </p>
+      )}
 
       <LumiMessage message="여기 조각이 숨어있대. 담으면 오늘 퀘스트야!" />
 
       <div className="flex justify-center mt-35">
-        <Button title="퀘스트로 담기" onClick={handleSave} />
+        <Button
+          title={saving ? "담는 중…" : "퀘스트로 담기"}
+          onClick={handleSave}
+          disabled={saving}
+        />
       </div>
 
       {isConfirmOpen && (

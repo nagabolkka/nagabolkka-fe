@@ -6,13 +6,10 @@ import SplitSteps from "../../components/Quest/SplitSteps";
 import QuestBottomBar from "../../components/Quest/QuestBottomBar";
 import PageLoading from "../../components/common/PageLoading/PageLoading";
 import useQuest from "../../hooks/useQuest";
-import {
-  loadSplitSteps,
-  saveSplitSteps,
-} from "../../utils/splitStepStorage";
+import { loadSplitSteps, saveSplitSteps } from "../../utils/splitStepStorage";
 
 export default function QuestSplit() {
-  const { quest, mission, region, error } = useQuest();
+  const { quest, mission, region, isRainy, error } = useQuest();
 
   if (!quest) return <PageLoading error={error} />;
   if (quest.status === "COMPLETED" || quest.status === "SKIPPED") {
@@ -20,11 +17,11 @@ export default function QuestSplit() {
   }
   if (!quest.isSplit) return <Navigate to="/quest" replace />;
 
-  return <SplitBody quest={quest} mission={mission} region={region} />;
+  return <SplitBody quest={quest} mission={mission} region={region} isRainy={isRainy} />;
 }
 
 // 퀘스트를 받은 뒤에 그려서 저장된 체크를 처음 값으로 바로 읽는다
-function SplitBody({ quest, mission, region }) {
+function SplitBody({ quest, mission, region, isRainy }) {
   const navigate = useNavigate();
   const [doneSteps, setDoneSteps] = useState(() =>
     loadSplitSteps(quest.questId),
@@ -43,12 +40,16 @@ function SplitBody({ quest, mission, region }) {
       <QuestHeader
         region={region}
         mission={mission}
-        isRainy={false}
+        isRainy={isRainy}
         status="IN_PROGRESS"
         onBack={() => navigate("/home")}
       />
       <QuestInfoCards mission={mission} />
-      <SplitSteps steps={mission.steps} doneSteps={doneSteps} onToggle={handleToggle} />
+      <SplitSteps
+        steps={mission.steps}
+        doneSteps={doneSteps}
+        onToggle={handleToggle}
+      />
       <QuestBottomBar
         canRecord={doneSteps.length > 0}
         onRecord={() => navigate("/quest/record")}

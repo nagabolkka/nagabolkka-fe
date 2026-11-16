@@ -1,10 +1,13 @@
 import { getOverlayOpacity } from "../../constants/restoration";
 import Badge from "../common/Badge/Badge";
 
+const SKY_LABEL = { CLEAR: "맑음", RAIN: "비", SNOW: "눈" };
+
 export default function RegionHeader({
   region,
   restoration,
   isRainy,
+  sky,
   pieceCount,
 }) {
   const filledCount = restoration / 20; // 20% 마다 1칸
@@ -29,7 +32,7 @@ export default function RegionHeader({
         <Badge>{`계단 ${region.stageNo} · ${region.realLabel}`}</Badge>
         <div className="flex gap-1.5">
           <Badge>◆ {pieceCount}</Badge>
-          <Badge>{isRainy ? "비" : "맑음"}</Badge>
+          <Badge>{SKY_LABEL[sky] ?? (isRainy ? "비" : "맑음")}</Badge>
         </div>
       </div>
 
@@ -63,4 +66,3 @@ export default function RegionHeader({
     </section>
   );
 }
-

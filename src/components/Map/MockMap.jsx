@@ -1,5 +1,7 @@
 import PlaceMarker from "./PlaceMarker";
-import { MY_LOCATION } from "../../mocks/places";
+
+// 내 위치가 없으면 성북구 중심
+const DEFAULT_CENTER = { lat: 37.5894, lng: 127.0167 };
 
 // 내 위치를 가운데에 두고 보여줄 범위 (위도 · 경도 차이)
 const LAT_RANGE = 0.025;
@@ -7,13 +9,15 @@ const LNG_RANGE = 0.045;
 
 const clamp = (value) => Math.min(95, Math.max(5, value));
 
-const toPosition = ({ lat, lng }) => ({
-  x: clamp(((lng - (MY_LOCATION.lng - LNG_RANGE)) / (LNG_RANGE * 2)) * 100),
-  y: clamp((((MY_LOCATION.lat + LAT_RANGE) - lat) / (LAT_RANGE * 2)) * 100),
-});
+export default function MockMap({ places, center }) {
+  const origin = center ?? DEFAULT_CENTER;
 
-export default function MockMap({ places }) {
-  const me = toPosition(MY_LOCATION);
+  const toPosition = ({ lat, lng }) => ({
+    x: clamp(((lng - (origin.lng - LNG_RANGE)) / (LNG_RANGE * 2)) * 100),
+    y: clamp(((origin.lat + LAT_RANGE - lat) / (LAT_RANGE * 2)) * 100),
+  });
+
+  const me = toPosition(origin);
 
   return (
     <div className="relative h-[210px] w-full overflow-hidden bg-[#E9E4D4]">

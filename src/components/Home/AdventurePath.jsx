@@ -10,7 +10,7 @@ const isFilled = (region) =>
   region.status === "PASSED" ||
   (region.isCurrent && region.restoration === 100);
 
-export default function AdventurePath({ regions }) {
+export default function AdventurePath({ regions, onSelectPassed }) {
   return (
     <section className="px-2 mt-4">
       <h2 className="px-1.5 text-[#B9B0D0] text-base font-normal font-pixel">
@@ -23,6 +23,11 @@ export default function AdventurePath({ regions }) {
           const isCompleted = isFilled(region);
           const isCurrent = region.isCurrent;
 
+          // 지나온 계단 (현재 지역 제외) → 누르면 그 계단 미션 안내
+          const isPassed =
+            !isCurrent &&
+            (region.status === "PASSED" || region.status === "COMPLETED");
+
           const isFirst = i === 0;
           const isLast = i === regions.length - 1;
 
@@ -31,12 +36,20 @@ export default function AdventurePath({ regions }) {
           const rightColor = isCompleted ? region.color : LINE_COLOR;
 
           return (
-            <li key={region.stageNo} className="flex-1 flex flex-col items-center">
+            <li
+              key={region.stageNo}
+              className={`flex-1 flex flex-col items-center ${isPassed ? "cursor-pointer" : ""}`}
+              onClick={isPassed ? () => onSelectPassed?.(region) : undefined}
+              role={isPassed ? "button" : undefined}
+              aria-label={isPassed ? `${region.name} 미션 도전하기` : undefined}
+            >
               <div className="w-full h-[52px] flex items-center">
                 <Line color={leftColor} hidden={isFirst} side="left" />
 
                 {/* 크기 : 현재 지역만 크게 / 색 : 잠김 · 진행 중 · 완료(지나온 곳 포함) */}
-                <div className={`shrink-0 flex items-center justify-center ${isCurrent ? "w-12" : "w-10"}`}>
+                <div
+                  className={`shrink-0 flex items-center justify-center ${isCurrent ? "w-12" : "w-10"}`}
+                >
                   <div
                     className={`rotate-45 border-[3px] transition-all duration-500 ${
                       isCurrent ? "w-[34px] h-[34px]" : "w-7 h-7"
@@ -61,6 +74,13 @@ export default function AdventurePath({ regions }) {
               >
                 {region.name}
               </p>
+
+              {/* 지나온 계단 → 누를 수 있다는 표시 */}
+              {isPassed && (
+                <p className="mt-0.5 text-[10px] text-[#B9B0D0] font-sans">
+                  도전 가능
+                </p>
+              )}
             </li>
           );
         })}

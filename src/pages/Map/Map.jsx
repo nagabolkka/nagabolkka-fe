@@ -1,15 +1,20 @@
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MapHeader from "../../components/Map/MapHeader";
-import MockMap from "../../components/Map/MockMap";
+import KakaoMap from "../../components/Map/KakaoMap";
 import CategoryTabs from "../../components/Map/CategoryTabs";
 import FilterChips from "../../components/Map/FilterChips";
 import PlaceList from "../../components/Map/PlaceList";
-import { getPlaces } from "../../mocks/places";
+import PageLoading from "../../components/common/PageLoading/PageLoading";
+import { getPlaces } from "../../api/places";
+import { getLocation } from "../../utils/location";
 import { NEAR_DISTANCE_M } from "../../constants/placeCategory";
 
 export default function Map() {
-  const allPlaces = useMemo(() => getPlaces(), []);
+  const navigate = useNavigate();
+  const [allPlaces, setAllPlaces] = useState(null);
+  const [center, setCenter] = useState(null); // 내 위치 (없으면 지도가 성북구 중심)
+  const [error, setError] = useState(false);
   const [category, setCategory] = useState("ALL");
   const [filters, setFilters] = useState({
     free: false,
@@ -17,11 +22,38 @@ export default function Map() {
     near: false,
   });
 
-  const navigate = useNavigate();
+  useEffect(() => {
+    let ignore = false;
+    getLocation()
+      .then((location) => {
+        if (!ignore) setCenter(location);
+        return getPlaces(location);
+      })
+      .then((places) => {
+        if (!ignore) setAllPlaces(places);
+      })
+      .catch((e) => {
+        if (ignore) return;
+        if (e.response?.data?.code === "ONBOARDING_REQUIRED") {
+          navigate("/start-check", { replace: true });
+          return;
+        }
+        // 응답 없음 · 500번대 → 점검 화면
+        if (!e.response || e.response.status >= 500) {
+          navigate("/maintenance", { replace: true });
+          return;
+        }
+        setError(true);
+      });
+    return () => {
+      ignore = true;
+    };
+  }, [navigate]);
 
+  // 탭 · 필터 : 받은 목록에서 바로 거름 (요청 없음)
   const places = useMemo(
     () =>
-      allPlaces.filter(
+      (allPlaces ?? []).filter(
         (place) =>
           (category === "ALL" || place.category === category) &&
           (!filters.free || place.isFree) &&
@@ -31,13 +63,24 @@ export default function Map() {
     [allPlaces, category, filters],
   );
 
+  // 목록 · 지도 마커 공통 : 상세로 (장소 데이터를 같이 넘김)
+  const openPlace = useCallback(
+    (placeId) =>
+      navigate(`/map/${placeId}`, {
+        state: { place: allPlaces?.find((p) => p.placeId === placeId) },
+      }),
+    [navigate, allPlaces],
+  );
+
+  if (!allPlaces) return <PageLoading error={error} />;
+
   const toggleFilter = (key) =>
     setFilters((prev) => ({ ...prev, [key]: !prev[key] }));
 
   return (
     <div className="flex flex-col pb-6">
       <MapHeader />
-      <MockMap places={places} />
+      <KakaoMap places={places} center={center} onSelect={openPlace} />
 
       <div className="flex flex-col gap-2 px-4 pt-4">
         <CategoryTabs value={category} onChange={setCategory} />
@@ -45,10 +88,7 @@ export default function Map() {
       </div>
 
       <div className="px-4 pt-4">
-        <PlaceList
-          places={places}
-          onSelect={(placeId) => navigate(`/map/${placeId}`)}
-        />
+        <PlaceList places={places} onSelect={openPlace} />
       </div>
     </div>
   );

@@ -9,10 +9,11 @@ import PageLoading from "../../components/common/PageLoading/PageLoading";
 import useQuest from "../../hooks/useQuest";
 import { actTodayQuest } from "../../api/quests";
 import { saveSplitSteps } from "../../utils/splitStepStorage";
+import { getLocation } from "../../utils/location";
 
 export default function QuestDetail() {
   const navigate = useNavigate();
-  const { quest, setQuest, mission, region, error } = useQuest();
+  const { quest, setQuest, mission, region, isRainy, error } = useQuest();
   const [busy, setBusy] = useState(false);
   const [toast, setToast] = useState("");
 
@@ -33,7 +34,9 @@ export default function QuestDetail() {
     if (busy) return null; // 연속 클릭 무시
     setBusy(true);
     try {
-      const updated = await actTodayQuest(type);
+      // 바꾸기는 새 미션 장소를 지금 위치 기준으로
+      const location = type === "CHANGE" ? await getLocation() : null;
+      const updated = await actTodayQuest(type, location);
       setQuest(updated);
       return updated;
     } catch (e) {
@@ -77,9 +80,14 @@ export default function QuestDetail() {
           {toast}
         </div>
       )}
-      <QuestHeader region={region} mission={mission} isRainy={false} onBack={() => navigate("/home")} />
+      <QuestHeader
+        region={region}
+        mission={mission}
+        isRainy={isRainy}
+        onBack={() => navigate("/home")}
+      />
       <QuestInfoCards mission={mission} />
-      <QuestMap mission={mission} />
+      <QuestMap mission={mission} color={region.color} />
       <p className="mx-4 mt-4 text-[#F4EAD5] text-sm font-normal font-pixel leading-6 break-keep">
         {mission.description}
       </p>
