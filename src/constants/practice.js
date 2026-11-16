@@ -1,7 +1,4 @@
-export const PRACTICE_DAILY_LIMIT = 3; // 하루 연습 횟수
-export const PRACTICE_MAX_TURNS = 3;
 export const PRACTICE_MESSAGE_MAX = 200; // 직접 입력 최대 글자 수
-export const PRACTICE_PIECE_MISSION_ID = 20; // 4계단 PRACTICE 칸 · 연습 조각
 
 export const getPracticeLumiMessage = (remaining) =>
   remaining > 0

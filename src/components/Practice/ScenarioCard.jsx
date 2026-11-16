@@ -1,5 +1,3 @@
-import { PRACTICE_MAX_TURNS } from "../../constants/practice";
-
 export default function ScenarioCard({
   scenario,
   pieceName,
@@ -7,7 +5,7 @@ export default function ScenarioCard({
   disabled,
   onClick,
 }) {
-  const { title, description, partnerRole } = scenario;
+  const { title, description, partnerRole, maxTurns } = scenario;
 
   return (
     <button
@@ -21,7 +19,7 @@ export default function ScenarioCard({
           {title}
         </h2>
         <span className="font-pixel font-normal text-[10px] text-[#6B5E4A]">
-          {PRACTICE_MAX_TURNS}턴
+          {maxTurns}턴
         </span>
       </div>
       <p className="mt-1 text-sm font-medium font-sans leading-6 text-black">
