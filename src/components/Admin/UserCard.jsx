@@ -20,7 +20,7 @@ export default function UserCard({ user }) {
         <div className="flex items-center gap-2">
           <span className="text-sm font-semibold text-[#F4EAD5]">{label}</span>
           <span className="h-5 rounded border-[1.5px] border-[#4A4370] px-2.5 py-0.5 text-[10px] text-[#E6DFF5] font-normal font-pixel">
-            계단 {stageNo}
+            {stageNo ? `계단 ${stageNo}` : "시작 전"}
           </span>
         </div>
         <span className="font-pixel text-xs font-normal text-[#F2C14E]">
