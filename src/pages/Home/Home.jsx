@@ -14,8 +14,8 @@ import { getHomeLumiMessage } from "../../constants/lumiMessages";
 import {
   hideNoticeToday,
   isNoticeHiddenToday,
-  getActiveNotice,
 } from "../../utils/noticeStorage";
+import { getActiveNotice } from "../../api/notices";
 import { respondNextRegion } from "../../api/regions";
 import { saveWeather } from "../../utils/weatherStorage";
 import { getLocation } from "../../utils/location";
@@ -29,10 +29,7 @@ export default function Home() {
   const [stayed, setStayed] = useState(false); // "지금이 좋아요" 누름
   const [answering, setAnswering] = useState(false); // 다음 지역 응답 중 (연타 방지)
 
-  const [notice, setNotice] = useState(() => {
-    const active = getActiveNotice();
-    return active && !isNoticeHiddenToday(active.noticeId) ? active : null;
-  });
+  const [notice, setNotice] = useState(null);
 
   const [revisitRegion, setRevisitRegion] = useState(null); // 누른 지나온 계단
   const [toast, setToast] = useState("");
@@ -64,6 +61,20 @@ export default function Home() {
       ignore = true;
     };
   }, [navigate]);
+
+  // 게시 중 공지 (오늘 하루 보지 않기 한 공지는 빼고) — 실패해도 홈은 그대로
+  useEffect(() => {
+    let ignore = false;
+    getActiveNotice()
+      .then((active) => {
+        if (!ignore && active && !isNoticeHiddenToday(active.noticeId))
+          setNotice(active);
+      })
+      .catch(() => {});
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   if (!home) return <PageLoading error={error} />;
 
