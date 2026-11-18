@@ -7,14 +7,16 @@ import FilterChips from "../../components/Map/FilterChips";
 import PlaceList from "../../components/Map/PlaceList";
 import PageLoading from "../../components/common/PageLoading/PageLoading";
 import { getPlaces } from "../../api/places";
-import { getLocation } from "../../utils/location";
 import { NEAR_DISTANCE_M } from "../../constants/placeCategory";
+import LocationBanner from "../../components/common/LocationBanner/LocationBanner";
+import { getLocation, getLocationStatus } from "../../utils/location";
 
 export default function Map() {
   const navigate = useNavigate();
   const [allPlaces, setAllPlaces] = useState(null);
   const [center, setCenter] = useState(null); // 내 위치 (없으면 지도가 성북구 중심)
   const [error, setError] = useState(false);
+  const [locationStatus, setLocationStatus] = useState(null);
   const [category, setCategory] = useState("ALL");
   const [filters, setFilters] = useState({
     free: false,
@@ -26,7 +28,10 @@ export default function Map() {
     let ignore = false;
     getLocation()
       .then((location) => {
-        if (!ignore) setCenter(location);
+        if (!ignore) {
+          setCenter(location);
+          setLocationStatus(getLocationStatus());
+        }
         return getPlaces(location);
       })
       .then((places) => {
@@ -72,6 +77,19 @@ export default function Map() {
     [navigate, allPlaces],
   );
 
+  // 위치 다시 묻기 → 받으면 지도 가운데 · 장소 목록을 그 위치로
+  const retryLocation = async () => {
+    const location = await getLocation();
+    setLocationStatus(getLocationStatus());
+    if (!location) return;
+    setCenter(location);
+    try {
+      setAllPlaces(await getPlaces(location));
+    } catch {
+      // 실패하면 지금 목록 그대로
+    }
+  };
+
   if (!allPlaces) return <PageLoading error={error} />;
 
   const toggleFilter = (key) =>
@@ -80,6 +98,7 @@ export default function Map() {
   return (
     <div className="flex flex-col pb-6">
       <MapHeader />
+      <LocationBanner status={locationStatus} onRetry={retryLocation} />
       <KakaoMap places={places} center={center} onSelect={openPlace} />
 
       <div className="flex flex-col gap-2 px-4 pt-4">

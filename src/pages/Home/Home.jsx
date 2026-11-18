@@ -18,7 +18,8 @@ import {
 import { getActiveNotice } from "../../api/notices";
 import { respondNextRegion } from "../../api/regions";
 import { saveWeather } from "../../utils/weatherStorage";
-import { getLocation } from "../../utils/location";
+import LocationBanner from "../../components/common/LocationBanner/LocationBanner";
+import { getLocation, getLocationStatus } from "../../utils/location";
 import ConfirmModal from "../../components/common/ConfirmModal/ConfimModal";
 import { actTodayQuest } from "../../api/quests";
 
@@ -34,10 +35,15 @@ export default function Home() {
   const [revisitRegion, setRevisitRegion] = useState(null); // 누른 지나온 계단
   const [toast, setToast] = useState("");
 
+  const [locationStatus, setLocationStatus] = useState(null); // 위치 안내 카드
+
   useEffect(() => {
     let ignore = false;
     getLocation()
-      .then((location) => getHome(location))
+      .then((location) => {
+        if (!ignore) setLocationStatus(getLocationStatus());
+        return getHome(location);
+      })
       .then((data) => {
         if (ignore) return;
         saveWeather(data.weather);
@@ -156,6 +162,20 @@ export default function Home() {
     setTimeout(() => setToast(""), 2000);
   };
 
+  // 위치 다시 묻기 → 받으면 그 위치로 홈 다시 (설정에서 위치를 켜고 돌아온 사람)
+  const handleRetryLocation = async () => {
+    const location = await getLocation();
+    setLocationStatus(getLocationStatus());
+    if (!location) return;
+    try {
+      const data = await getHome(location);
+      saveWeather(data.weather);
+      setHome(data);
+    } catch {
+      showToast("잠시 후 다시 시도해 주세요.");
+    }
+  };
+
   // 지나온 계단 누름 : 오늘 퀘스트가 끝났으면 안내만, 아니면 모달
   const handleSelectPassed = (passedRegion) => {
     if (todayQuest.status === "COMPLETED" || todayQuest.status === "SKIPPED") {
@@ -199,6 +219,7 @@ export default function Home() {
         pieceCount={pieceCount}
       />
       <LumiMessage message={lumiMessage} />
+      <LocationBanner status={locationStatus} onRetry={handleRetryLocation} />
       {showNextRegion && (
         <NextRegionCard
           region={region}
