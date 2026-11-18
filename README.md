@@ -1,81 +1,131 @@
-# ✨ 나가볼까?
+# 🗺️ 나가볼까? - Frontend
 
-> 잃어버린 세상의 조각들 — 방 밖으로 한 걸음씩, 루미와 함께하는 모험
+> 나가볼까? 의 프론트엔드 레포지토리입니다. 
+React + Vite 로 만든 SPA 이며, API 를 호출해 화면을 그리고 Vercel 로 배포합니다.
 
-**나가볼까?** 는 고립·은둔 청년이 작은 일상 퀘스트를 하나씩 해내며 바깥세상과 다시 연결되도록 돕는 RPG형 모바일 웹 서비스입니다.
-빛의 정령 **루미**와 함께 퀘스트를 수행하고, 조각을 모아 잃어버린 지역의 색을 되찾습니다.
+**🔗 배포 사이트 → https://nagabolkka.vercel.app**
 
-## ✨ 주요 기능 
+<br>
 
-| 기능 | 설명 |
-| --- | --- |
-| 🔐 온보딩 | 카카오 로그인, 시작 체크 8문항, 출발 지역 배정 |
-| 🗺️ 오늘의 퀘스트 | 난이도 · 날씨 · 담아둔 장소 기반 퀘스트, 쪼개기 · 바꾸기 · 건너뛰기 |
-| 💎 조각 도감 | 퀘스트 완료로 조각 획득, 5개 지역 복원 |
-| 📍 동네 기회 지도 | 내 주변 도서관 · 청년센터 · 프로그램 탐색 및 미션으로 담기 |
-| 💬 연습실 | 루미와 AI 롤플레이로 전화 · 방문 · 면접 대화 연습 |
-| 📖 모험 일지 | 기분 기록, 주간 흐름, 루미의 편지(주간 리포트) |
-| 🆘 도움 받기 | 위기 표현 감지 시 상담 연결 안내 |
+## 🧩 Implementation
 
-## 🛠️ 기술 스택
+| 구분 | 구현 방식 |
+|---|---|
+| **인증** | 카카오 인가 코드를 `/oauth/kakao` 에서 받아 백엔드로 넘기고, 받은 Access · Refresh 토큰을 `Authorization` 헤더로 보냅니다. Axios 인터셉터가 401 을 받으면 Refresh 로 토큰을 재발급한 뒤 요청을 다시 보냅니다. |
+| **API 레이어** | `src/api/` 에 도메인별 호출 함수를 두고, 화면은 이 함수만 사용합니다. 에러는 서버의 `code` 값(`QUEST_ALREADY_DONE`, `SPLIT_STEP_REQUIRED` 등)으로 분기합니다. |
+| **상태 별 화면 분기** | 홈은 서버가 내려주는 `homeState` 에 따라 화면 · 버튼 문구 · 루미 대사를 바꿉니다. 고정 문구와 상수 데이터(시작 체크 문항, 목표 이름, 도움 받기 연락처)는 `src/constants/` 에 둡니다. |
+| **화면 간 결과 전달** | 퀘스트 완료 응답을 `location.state` 로 조각 획득 화면에 넘기고, 새로고침으로 state 가 없으면 홈으로 보냅니다. |
+| **위치** | Geolocation API 로 받은 좌표를 동네 지도 · 홈 · 오늘 퀘스트 요청에만 쓰고 저장하지 않습니다. 권한 거부 · 위치 못 찾음일 때는 `LocationBanner` 로 켜는 방법을 안내하고, 가입한 구 기준으로 계속 사용할 수 있습니다. |
+| **날씨** | 홈 요청에 현재 위치를 함께 보내면 백엔드가 기상청 단기예보로 그 위치의 날씨를 내려줍니다. 받은 날씨로 홈 배경을 바꾸고, 비 오는 날은 RAINY 상태 화면을 보여 줍니다. 위치가 없으면 가입한 구 기준 날씨를 씁니다. |
+| **지도** | Kakao Maps JavaScript SDK 로 주변 장소를 표시하고, 상세 정보는 목록 응답 데이터로 그립니다. |
+| **안전장치** | 회고 · 연습 대화에서 `crisisDetected: true` 를 받으면 조각 · 복원 연출 없이 도움 받기 화면으로 바로 이동합니다. |
+| **중복 요청 방지** | AI 응답을 기다리는 요청(퀘스트 완료, 연습 대화)은 요청 중 버튼을 막아 한 번만 보냅니다. |
 
-| 구분 | 기술 스택 | 사용 목적 |
-| --- | --- | --- |
-| Language | JavaScript | 프론트엔드 개발 |
-| Framework | React | 컴포넌트 기반 UI 개발 |
-| Build Tool | Vite | 개발 서버 및 빌드 |
-| Styling | Tailwind CSS v4 | UI 스타일링, 디자인 토큰 관리 |
-| Routing | React Router | 페이지 라우팅 |
-| Server State | TanStack Query | 서버 데이터 캐싱 및 동기화 |
-| HTTP Client | Axios | 백엔드 REST API 통신 |
-| Font | Galmuri11, Pretendard | 픽셀 타이틀 / 본문 |
+<br>
 
-## 📁 프로젝트 구조
+## 🛠️ Tech Stack
 
-```text
+| Category | Stack |
+|---|---|
+| **Framework** | ![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black) ![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white) |
+| **Routing** | ![React Router](https://img.shields.io/badge/React_Router-CA4245?style=for-the-badge&logo=reactrouter&logoColor=white) |
+| **HTTP** | ![Axios](https://img.shields.io/badge/Axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white) |
+| **Map** | ![Kakao Maps](https://img.shields.io/badge/Kakao_Maps-FFCD00?style=for-the-badge&logo=kakao&logoColor=black) |
+| **Auth** | ![Kakao Login](https://img.shields.io/badge/Kakao_Login-FFCD00?style=for-the-badge&logo=kakao&logoColor=black) ![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white) |
+| **Deploy** | ![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white) |
+
+<br>
+
+## 📁 Project Structure
+
+```
 src/
-├── api/          # 백엔드 API 통신
-├── assets/       # 이미지, 아이콘
-├── components/   # 재사용 UI 컴포넌트
-├── hooks/        # 커스텀 훅
-├── layout/       # 공통 레이아웃 (모바일 393px 프레임)
-├── mocks/        # 목업 데이터 (미션 · 조각 · 지역)
-├── pages/        # 페이지 컴포넌트
-├── router/       # 라우팅 설정
-├── stores/       # 전역 상태 관리
-├── utils/        # 공통 유틸리티
-├── App.jsx
-├── main.jsx
-└── index.css     # Tailwind 및 디자인 토큰
+├── api/          # 도메인별 API 호출 함수
+├── pages/        # 화면 단위 컴포넌트
+├── components/   # 화면별 · 공통 UI 컴포넌트
+├── constants/    # 고정 데이터 (시작 체크 문항 · 목표 이름 · 도움 받기 연락처 등)
+├── mocks/        # 지역 · 미션 이미지 / 색 헬퍼
+├── utils/        # 위치 · 스토리지 등 유틸
+└── main.jsx
+vercel.json       # SPA 새로고침 404 방지 rewrite
 ```
 
-## 🎯 Git Convention
+<br>
 
-| Type | Description |
-| --- | --- |
-| 🎉 Start | 프로젝트 시작 |
-| ✨ Feat | 새로운 기능 추가 |
+## 🚀 Getting Started
+
+### 📦 Install
+
+```bash
+git clone https://github.com/nagabolkka/nagabolkka-fe.git
+cd nagabolkka-fe
+npm install
+```
+
+### 🔑 Environment Variables
+
+루트에 `.env.local` 을 만듭니다. (커밋하지 않음)
+
+```env
+VITE_API_BASE_URL=http://localhost:8080
+VITE_KAKAO_REST_API_KEY=
+VITE_KAKAO_REDIRECT_URI=http://localhost:5173/oauth/kakao
+```
+
+| Key | Description |
+|---|---|
+| `VITE_API_BASE_URL` | 백엔드 주소 (운영 `https://api.nagabolkka.shop`) |
+| `VITE_KAKAO_REST_API_KEY` | 카카오 디벨로퍼스 REST API 키 |
+| `VITE_KAKAO_REDIRECT_URI` | 카카오 로그인 리다이렉트 주소 — 카카오 디벨로퍼스 · 백엔드 허용 목록에 등록된 값이어야 함 (없으면 `400 INVALID_REDIRECT_URI`) |
+
+### ▶️ Run
+
+```bash
+npm run dev       # http://localhost:5173
+npm run build     # dist/ 로 빌드
+npm run preview   # 빌드 결과 미리보기
+```
+
+<br>
+
+## 🌐 Deployment
+
+- Vercel 에 GitHub 레포 연결
+  - `main` 머지 → 운영 배포
+  - `develop` push → Preview 배포
+- 빌드 설정은 Vite 기본값 (`npm run build`, 출력 `dist`)
+- 환경 변수는 Vercel **Settings → Environment Variables** 에서 관리하며, 바꾸면 **Redeploy** 해야 적용됩니다.
+
+<br>
+
+## 🤝 Convention
+
+### 🌿 Branch
+
+`타입/#이슈번호/명칭` — `develop` 에서 생성 (예: `api/#51/mypage`)
+
+| Branch | Usage |
+|---|---|
+| `main` | 운영 배포 |
+| `develop` | 개발 통합 |
+| `feat` · `api` · `fix` · `refactor` · `chore` | 작업 브랜치 |
+
+### 💬 Commit
+
+`이모지 Type: 내용` (이슈 번호 없음)
+
+| Type | Usage |
+|---|---|
+| ✨ Feat | 새 기능 |
 | 🐛 Fix | 버그 수정 |
-| 🚑 Hotfix | 급하게 고쳐야 하는 치명적인 버그 수정 |
-| 🎨 Design | UI 디자인 변경 |
-| 📦 Chore | 빌드 · 배포 설정, 패키지 등 기능과 상관없는 작업 |
-| ♻️ Refactor | 코드 리팩토링 |
-| 🚀 Deploy | 배포 관련 작업 |
-| 🍱 Assets | 이미지, 아이콘, 폰트 등 리소스 추가 · 수정 |
-| 🔧 Settings | 설정 파일 수정 |
-| ➕ Dependency/Plugin | 라이브러리 추가 |
-| 📝 Docs | 문서 수정 |
-| 🚚 Rename | 파일 및 폴더 이름 수정 |
-| 🔥 Remove | 파일 삭제 |
-| 🔀 Merge | 브랜치 병합 |
+| ♻️ Refactor | 리팩토링 |
+| ✅ Test | 테스트 |
+| 🔧 Settings | 설정 파일 · 의존성 |
+| 🧹 Chore | 기능 변화 없는 정리 |
+| 🚀 Deploy | 배포 · CI/CD |
+| 📝 Docs | 문서 |
 
-## 🌲 Branch Convention
+### 🔀 Pull Request
 
-| Branch | Description |
-| --- | --- |
-| `main` | 배포 가능한 브랜치 |
-| `develop` | 개발 브랜치 |
-| `feat/#이슈번호/명칭` | 새로운 기능 개발 |
-| `fix/#이슈번호/명칭` | 버그 수정 |
-| `ui/#이슈번호/명칭` | UI 작업 |
-| `api/#이슈번호/명칭` | API 연동 작업 |
+`[타입/#이슈번호] 내용` — 예: `[API/#51] 마이페이지 내 정보 조회 · 목표 변경 연동`
+배포 PR (develop → main) 은 `[DEPLOY] 내용`
