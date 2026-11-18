@@ -2,7 +2,7 @@ import { formatTravel } from "../../utils/format";
 
 export default function PlaceInfoTable({ place }) {
   const rows = [
-    { label: "일시", value: place.openHours ?? "방문 전 확인해 주세요" },
+    { label: "이용 시간", value: place.openHours ?? "방문 전 확인해 주세요" },
     { label: "주소", value: place.address },
     { label: "거리", value: formatTravel(place.distanceM, place.walkMinutes) },
     { label: "비용", value: place.isFree ? "무료" : "유료" },
