@@ -9,7 +9,7 @@ export default function QuestInfoCards({ mission }) {
         mission.distanceM != null ? formatDistance(mission.distanceM) : "-",
     },
     {
-      label: "예상시간",
+      label: "소요 시간",
       value:
         mission.estMinutes != null ? formatMinutes(mission.estMinutes) : "-",
     },
