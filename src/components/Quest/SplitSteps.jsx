@@ -3,7 +3,9 @@ import LumiMessage from "../common/LumiMessage/LumiMessage";
 export default function SplitSteps({ steps, doneSteps, onToggle }) {
   return (
     <section className="mt-5">
-      <p className="text-[#E8C06A] text-xs font-normal font-pixel pl-[14px]">루미가 쪼갠 퀘스트</p>
+      <p className="text-[#E8C06A] text-xs font-normal font-pixel pl-[14px]">
+        루미가 쪼갠 퀘스트
+      </p>
 
       <div className="mt-2">
         <LumiMessage message="하나만 해도 오늘의 한 걸음이야." />
@@ -17,7 +19,7 @@ export default function SplitSteps({ steps, doneSteps, onToggle }) {
               <button
                 type="button"
                 onClick={() => onToggle(i)}
-                className={`w-[360px] h-[61px] px-4 py-3 flex items-center gap-[13px] text-left rounded-xl border-[3px] border-[#E6D6B0] cursor-pointer transition-colors ${
+                className={`w-[calc(100%_-_19px)] min-h-[61px] px-4 py-3 flex items-center gap-[13px] text-left rounded-xl border-[3px] border-[#E6D6B0] cursor-pointer transition-colors ${
                   isDone ? "bg-[#E8D9B0]" : "bg-[#F4EAD5]"
                 }`}
               >
@@ -29,13 +31,21 @@ export default function SplitSteps({ steps, doneSteps, onToggle }) {
                 >
                   {isDone && (
                     <svg width="12" height="10" viewBox="0 0 12 10" fill="none">
-                      <path d="M1 5L4.5 8.5L11 1.5" stroke="#F4EAD5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      <path
+                        d="M1 5L4.5 8.5L11 1.5"
+                        stroke="#F4EAD5"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
                     </svg>
                   )}
                 </span>
 
                 <span>
-                  <span className="block text-[#A09480] text-[11px] font-normal font-sans">조각 {i + 1}</span>
+                  <span className="block text-[#A09480] text-[11px] font-normal font-sans">
+                    조각 {i + 1}
+                  </span>
                   <span
                     className={`block text-[#15121F] text-sm font-normal font-pixel ${
                       isDone ? "line-through decoration-[#6B5E4A]" : ""

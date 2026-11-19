@@ -3,7 +3,7 @@ export default function PlusCard({ onClick }) {
     <button
       type="button"
       onClick={onClick}
-      className="flex w-[357px] h-[67px] items-center gap-3 rounded-lg border-2 border-[#15121F] bg-[#3A3060] px-4 py-3.5 text-left"
+      className="flex w-full min-h-[67px] items-center gap-3 rounded-lg border-2 border-[#15121F] bg-[#3A3060] px-4 py-3.5 text-left"
     >
       <div
         className="ml-1 h-[22px] w-[22px] shrink-0 rotate-45 border-2 border-[#15121F]"

@@ -28,21 +28,21 @@ export default function NoticeItem({ notice, onToggle, onPreview, onDelete }) {
         <button
           type="button"
           onClick={onToggle}
-          className="w-[118px] h-[34px] rounded-md bg-[#2B2340] border-2 border-[#2B2340] py-[7px] px-[30px] text-xs font-normal font-pixel text-[#F4EAD5]"
+          className="w-full h-[34px] rounded-md bg-[#2B2340] border-2 border-[#2B2340] py-[7px] text-xs font-normal font-pixel text-[#F4EAD5]"
         >
           {isActive ? "게시 중지" : "다시 게시"}
         </button>
         <button
           type="button"
           onClick={onPreview}
-          className="w-[132px] h-[34px] rounded-md border-2 border-[#2B2340] py-[7px] px-[25px] font-normal font-pixel text-xs text-[#2B2340]"
+          className="w-full h-[34px] rounded-md border-2 border-[#2B2340] py-[7px] font-normal font-pixel text-xs text-[#2B2340]"
         >
           팝업 미리보기
         </button>
         <button
           type="button"
           onClick={onDelete}
-          className="w-[58px] h-[34px] rounded-md border-2 border-[#B5523B] py-[7px] px-[15px] text-xs font-normal font-pixel text-[#B5523B]"
+          className="w-full h-[34px] rounded-md border-2 border-[#B5523B] py-[7px] text-xs font-normal font-pixel text-[#B5523B]"
         >
           삭제
         </button>

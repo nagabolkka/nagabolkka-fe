@@ -6,7 +6,7 @@ export default function Maintenance() {
   const navigate = useNavigate();
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center">
+    <div className="flex min-h-dvh flex-col items-center justify-center">
       <img
         src={lumi}
         className="h-25 w-25 drop-shadow-[0_0_16px_rgba(255,214,120,0.45)] animate-float opacity-80"

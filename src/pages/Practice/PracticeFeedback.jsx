@@ -92,7 +92,7 @@ export default function PracticeFeedback() {
         <button
           type="button"
           onClick={() => navigate("/practice", { replace: true })}
-          className="h-[50px] w-[351px] cursor-pointer rounded-[10px] border-2 border-[#15121F] bg-[#2C2745] font-pixel text-base text-[#F4EAD5]"
+          className="h-[50px] w-full cursor-pointer rounded-[10px] border-2 border-[#15121F] bg-[#2C2745] font-pixel text-base text-[#F4EAD5]"
         >
           다른 연습 해보기
         </button>

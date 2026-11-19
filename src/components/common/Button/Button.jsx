@@ -11,7 +11,7 @@ export default function Button({ variant = 'primary', title, onClick, disabled =
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className={`w-[351px] h-[50px] rounded-[10px] font-pixel font-bold text-base outline-2 ${
+      className={`w-[calc(100%_-_42px)] h-[50px] rounded-[10px] font-pixel font-bold text-base outline-2 ${
         disabled ? DISABLED : `${VARIANTS[variant]} cursor-pointer`
       }`}
     >

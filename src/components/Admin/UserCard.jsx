@@ -15,7 +15,7 @@ export default function UserCard({ user }) {
   } = user;
 
   return (
-    <li className="w-[365px] h-[110px] border-2 border-[#15121F] rounded-lg bg-[#2C2745] pl-4 py-3.5 pr-[14px]">
+    <li className="w-full min-h-[110px] border-2 border-[#15121F] rounded-lg bg-[#2C2745] pl-4 py-3.5 pr-[14px]">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="text-sm font-semibold text-[#F4EAD5]">{label}</span>
