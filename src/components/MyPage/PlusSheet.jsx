@@ -97,7 +97,7 @@ export default function PlusSheet({
                         }}
                         min={0}
                         max={CUSTOM_PRICE_MAX}
-                        className="w-16 border-b border-[#15121F] bg-transparent text-center outline-none"
+                        className="w-16 border-b border-[#15121F] bg-transparent text-center text-base outline-none"
                       />
                       원 ]
                     </span>

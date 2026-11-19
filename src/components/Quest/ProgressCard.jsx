@@ -8,7 +8,7 @@ export default function ProgressCard({ mission, color, onSplit }) {
       </p>
 
       {/* 진행 중 카드 */}
-      <div className="w-[364px] h-[66px] mt-2.5 mx-[14px] px-[14px] py-2.5 flex items-center gap-[14px] rounded-[10px] border-2 border-[#E6D6B0] bg-[#F4EAD5]">
+      <div className="min-h-[66px] mt-2.5 mx-[14px] px-[14px] py-2.5 flex items-center gap-[14px] rounded-[10px] border-2 border-[#E6D6B0] bg-[#F4EAD5]">
         <div className="shrink-0 w-8 h-8 flex items-center justify-center">
           <div
             className="w-5 h-5 rotate-45 border-[3px] border-[#2B2340]"

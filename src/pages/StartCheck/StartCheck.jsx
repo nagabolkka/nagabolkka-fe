@@ -47,7 +47,7 @@ export default function StartCheck() {
   };
 
   return (
-    <div className="flex flex-col">
+    <div className="flex-1 flex flex-col">
       <ProgressBar step={step + 1} total={TOTAL} onBack={handleBack} />
 
       <div
@@ -72,7 +72,7 @@ export default function StartCheck() {
       </div>
 
       {/* 안내 문구 */}
-      <div className="mt-[366px] flex justify-center text-xs font-medium font-sans leading-4 text-[#B9B0D0]">
+      <div className="mt-auto pt-10 pb-10 flex justify-center text-xs font-medium font-sans leading-4 text-[#B9B0D0]">
         정답은 없어요. 지금 모습 그대로 골라줘.
       </div>
     </div>

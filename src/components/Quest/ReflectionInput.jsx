@@ -20,7 +20,7 @@ export default function ReflectionInput({
           onChange={(e) => onChange(e.target.value.slice(0, MAX_LENGTH))}
           placeholder="예) 오랜만에 나갔는데 바람이 시원했다"
           rows={4}
-          className="w-[345px] h-[102px] pl-[10px] pt-[13px] rounded-[10px] border-2 border-[#E6D6B0] bg-[#F4EAD5] text-[#15121F] text-sm font-sans placeholder:text-[#757575] resize-none outline-none"
+          className="w-[calc(100%_-_26px)] h-[102px] pl-[10px] pt-[13px] rounded-[10px] border-2 border-[#E6D6B0] bg-[#F4EAD5] text-[#15121F] text-base font-sans placeholder:text-[#757575] resize-none outline-none"
         />
       </div>
 

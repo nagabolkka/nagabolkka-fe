@@ -239,7 +239,7 @@ export default function Home() {
         regions={pathRegions}
         onSelectPassed={handleSelectPassed}
       />
-      <div className="flex gap-[17px] pl-3 mt-2.5">
+      <div className="grid grid-cols-3 gap-[17px] pl-3 pr-[17px] mt-2.5">
         <ShortcutCard
           title="연습실"
           description="루미와 말 연습"

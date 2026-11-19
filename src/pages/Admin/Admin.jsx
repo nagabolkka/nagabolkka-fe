@@ -91,11 +91,17 @@ export default function Admin() {
   };
 
   const handleToggle = ({ noticeId, status }) =>
-    runNoticeAction(() => updateNotice(noticeId, { status: status === "ACTIVE" ? "STOPPED" : "ACTIVE" }));
+    runNoticeAction(() =>
+      updateNotice(noticeId, {
+        status: status === "ACTIVE" ? "STOPPED" : "ACTIVE",
+      }),
+    );
 
-  const handleDelete = (noticeId) => runNoticeAction(() => deleteNotice(noticeId), "공지를 삭제했어요.");
+  const handleDelete = (noticeId) =>
+    runNoticeAction(() => deleteNotice(noticeId), "공지를 삭제했어요.");
 
-  const handleSubmit = (form) => runNoticeAction(() => createNotice(form), "공지를 등록했어요.");
+  const handleSubmit = (form) =>
+    runNoticeAction(() => createNotice(form), "공지를 등록했어요.");
 
   // 토큰까지 지우는 진짜 로그아웃
   const handleLogout = async () => {
@@ -106,7 +112,7 @@ export default function Admin() {
   if (!usersData || !notices) return <PageLoading error={error} />;
 
   return (
-    <div className="relative min-h-screen px-[17px] pb-4">
+    <div className="relative min-h-dvh px-[17px] pb-4">
       <AdminHeader onLogout={handleLogout} />
       <AdminTabs activeTab={tab} onChange={setTab} />
 

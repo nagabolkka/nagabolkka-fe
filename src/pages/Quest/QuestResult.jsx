@@ -16,7 +16,7 @@ export default function QuestResult() {
   const region = getRegion(restoration.stageNo); 
 
   return (
-    <div className="flex min-h-screen flex-col gap-6 px-5 pb-8">
+    <div className="flex min-h-dvh flex-col gap-6 px-5 pb-8">
       <PieceFound
         pieces={pieces.map(({ pieceId, name, isNew }) => ({ id: pieceId, name, isNew }))}
         color={region.color}

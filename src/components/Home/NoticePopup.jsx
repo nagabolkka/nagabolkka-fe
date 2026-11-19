@@ -1,7 +1,7 @@
 export default function NoticePopup({ notice, onClose, onHideToday }) {
   return (
     <div className="absolute inset-0 z-50 flex justify-center bg-black/50 px-5 pt-80">
-      <div className="relative h-fit w-full rounded-xl border-2 border-[#15121F] bg-[#F4EAD5] px-5 pb-5 pt-7">
+      <div className="relative h-fit w-full max-w-[353px] rounded-xl border-2 border-[#15121F] bg-[#F4EAD5] px-5 pb-5 pt-7">
         <span className="absolute -top-3 left-5 rounded-md border-2 border-[#15121F] bg-[#E8C06A] px-2.5 py-0.5 text-xs font-bold text-[#15121F]">
           공지
         </span>
@@ -15,14 +15,14 @@ export default function NoticePopup({ notice, onClose, onHideToday }) {
           <button
             type="button"
             onClick={onHideToday}
-            className="cursor-pointer w-[148px] h-[43px] rounded-lg border-2 border-[#B9A882] py-2.5 px-[7px] text-sm font-pixel font-normal text-black"
+            className="cursor-pointer w-full h-[43px] whitespace-nowrap rounded-lg border-2 border-[#B9A882] py-2.5 px-1 text-sm font-pixel font-normal text-black"
           >
             오늘 하루 보지 않기
           </button>
           <button
             type="button"
             onClick={onClose}
-            className="w-[148px] h-[43px] bg-[#F2C14E] rounded-lg border-2 border-[#2B2340] py-2.5 px-[7px] font-pixel text-sm font-bold text-black"
+            className="w-full h-[43px] whitespace-nowrap bg-[#F2C14E] rounded-lg border-2 border-[#2B2340] py-2.5 px-1 font-pixel text-sm font-bold text-black"
           >
             닫기
           </button>

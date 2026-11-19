@@ -44,7 +44,7 @@ export default function Help() {
   }, [from]);
 
   return (
-    <div className="flex min-h-screen flex-col px-4 pb-8 pt-[27px] bg-[#1F2233]">
+    <div className="flex min-h-dvh flex-col px-4 pb-8 pt-[27px] bg-[#1F2233]">
       <header className="flex items-center gap-3">
         <button type="button" onClick={() => navigate(-1)}>
           <img src={backButton} className="h-[22px] w-[22px]" />

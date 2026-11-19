@@ -11,7 +11,7 @@ export default function UserSummary({ summary }) {
         {items.map(({ label, value }) => (
           <div
             key={label}
-            className="w-[113px] h-[57px] border-2 border-[#15121F] rounded-lg bg-[#2B2340] px-3 py-[6px]"
+            className="w-full h-[57px] border-2 border-[#15121F] rounded-lg bg-[#2B2340] px-3 py-[6px]"
           >
             <p className="text-xs font-sans font-normal text-[#B9B0D0]">
               {label}

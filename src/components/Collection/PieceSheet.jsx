@@ -7,7 +7,7 @@ export default function PieceSheet({ piece, onClose }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 mx-auto flex max-w-mobile items-end bg-black/60"
+      className="fixed inset-0 z-50 flex items-end bg-black/60"
       onClick={onClose}
     >
       <div

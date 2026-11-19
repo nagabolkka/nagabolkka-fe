@@ -7,7 +7,7 @@ export default function ProfileCard({ me }) {
     : "";
 
   return (
-    <section className="flex w-[357px] h-[84px] p-[15px] items-center gap-[15px] rounded-[10px] border-2 border-[#15121F] bg-[#2C2745]">
+    <section className="flex w-full min-h-[84px] p-[15px] items-center gap-[15px] rounded-[10px] border-2 border-[#15121F] bg-[#2C2745]">
       <div className="flex h-[50px] w-[50px] items-center justify-center rounded-lg border-1 border-black bg-[#F2C14E] font-pixel text-xl text-black">
         {nickname.charAt(0)}
       </div>
