@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { WALK_LIMIT_MIN } from "../../utils/format";
 import { createPlacePin, loadKakaoMap } from "../../utils/kakaoMap";
 
-// 퀘스트 지도 칸 : 실제 장소를 찾은 바깥 미션이면 카카오맵, 아니면 안내만
-export default function QuestMap({ mission, color = "#F2C14E" }) {
+// 퀘스트 지도 칸 : 실제 장소를 찾은 바깥 미션이면 카카오맵, 아니면 지역 그림 + 장소 핀
+export default function QuestMap({ mission, region, isRainy, color = "#F2C14E" }) {
   const { isIndoor, placeName, walkMinutes, placeLat, placeLng } = mission;
   const hasPlace = !isIndoor && placeLat != null && placeLng != null;
 
@@ -11,10 +11,12 @@ export default function QuestMap({ mission, color = "#F2C14E" }) {
   const [failed, setFailed] = useState(false);
 
   const guide = isIndoor
-    ? "집 안에서 할 수 있어요."
-    : walkMinutes != null && walkMinutes <= WALK_LIMIT_MIN
-      ? `${placeName}까지 걸어서 약 ${walkMinutes}분`
-      : `${placeName}까지 버스·지하철로 다녀와요.`;
+    ? "이동 없이 할 수 있어요."
+    : !hasPlace
+      ? "가까운 곳이면 어디든 괜찮아요."
+      : walkMinutes != null && walkMinutes <= WALK_LIMIT_MIN
+        ? `${placeName}까지 걸어서 약 ${walkMinutes}분`
+        : `${placeName}까지 버스 · 지하철로 다녀와요.`;
 
   useEffect(() => {
     if (!hasPlace) return;
@@ -38,7 +40,7 @@ export default function QuestMap({ mission, color = "#F2C14E" }) {
         });
       })
       .catch(() => {
-        if (!ignore) setFailed(true); // 지도 실패 → 안내만
+        if (!ignore) setFailed(true); // 지도 실패 → 지역 그림 + 장소 핀
       });
     return () => {
       ignore = true;
@@ -60,10 +62,31 @@ export default function QuestMap({ mission, color = "#F2C14E" }) {
           <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-12 bg-gradient-to-t from-[#15121F]/85 to-transparent" />
         </>
       ) : (
-        // 실내 · 장소 모름 · 지도 실패 : 예전 모양
-        <div className="absolute left-[30%] top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-[#5B8FD6]/30 flex items-center justify-center">
-          <div className="w-4 h-4 rounded-full bg-[#4A92D0] border-[3px] border-white" />
-        </div>
+        // 실내 · 장소 모름 · 지도 실패 : 지역 그림 + 장소 핀
+        <>
+          <img
+            src={isRainy ? region.rainyImageUrl : region.imageUrl}
+            className="absolute inset-0 w-full h-full object-cover object-center opacity-40"
+          />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#15121F]/90 via-[#15121F]/40 to-transparent" />
+
+          {/* 장소 핀 */}
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center pb-5">
+            <div className="mb-1 max-w-[160px] truncate rounded-full bg-[#15121F]/85 px-2 py-0.5 text-[11px] text-[#F4EAD5] shadow">
+              {placeName}
+            </div>
+            <div
+              className="flex h-7 w-7 items-center justify-center border-2 border-white shadow-[0_2px_6px_rgba(0,0,0,0.35)]"
+              style={{
+                backgroundColor: color,
+                borderRadius: "50% 50% 50% 0",
+                transform: "rotate(-45deg)",
+              }}
+            >
+              <div className="h-2.5 w-2.5 rounded-full bg-white" />
+            </div>
+          </div>
+        </>
       )}
 
       {mapUrl && (
@@ -78,11 +101,7 @@ export default function QuestMap({ mission, color = "#F2C14E" }) {
       )}
 
       {/* 안내 문구 */}
-      <p
-        className={`absolute right-3 bottom-2.5 z-20 text-sm font-medium font-sans ${
-          showMap ? "text-[#F4EAD5]" : "text-[#B9B0D0]"
-        }`}
-      >
+      <p className="absolute right-3 bottom-2.5 z-20 text-sm font-medium font-sans text-[#F4EAD5]">
         {guide}
       </p>
     </section>

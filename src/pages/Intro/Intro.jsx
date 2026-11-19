@@ -50,7 +50,7 @@ export default function Intro() {
       </div>
       <DialogBox speaker={current.speaker} text={current.text} />
       <Button title={current.buttonText} onClick={handleNext} />
-      <p className="mt-[14px] font-pixel text-xs font-normal text-[#B9B0D0]">
+      <p className="mt-[14px] font-pixel text-sm font-normal text-[#DDD6EE]">
         이미 모험가라면?{" "}
         <span
           onClick={() => goKakaoLogin()}

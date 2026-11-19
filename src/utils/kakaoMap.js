@@ -1,4 +1,4 @@
-// 카카오맵 JS SDK 를 한 번만 불러옴 
+// 카카오맵 JS SDK 를 한 번만 불러옴
 let loading = null;
 
 export const loadKakaoMap = () => {
@@ -10,7 +10,7 @@ export const loadKakaoMap = () => {
 
   loading = new Promise((resolve, reject) => {
     const script = document.createElement("script");
-    script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${appKey}&autoload=false`;
+    script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${appKey}&autoload=false&libraries=services`;
     script.async = true;
     script.onload = () => window.kakao.maps.load(() => resolve(window.kakao));
     script.onerror = () => {
