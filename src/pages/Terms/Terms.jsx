@@ -41,7 +41,7 @@ export default function Terms() {
           약속 몇 가지만 확인할게요
         </p>
         {/* 약관 동의 */}
-        <div className="w-[338px] h-[177px] border-2 border-[#E6D6B0] rounded-lg bg-[#F4EAD5] py-[19px] pl-[17px] pr-[14px] mt-[18px]">
+        <div className="w-[calc(100%_-_27px)] min-h-[177px] border-2 border-[#E6D6B0] rounded-lg bg-[#F4EAD5] py-[19px] pl-[17px] pr-[14px] mt-[18px]">
           <CheckBox
             checked={isAllChecked}
             onChange={handleAllChange}
@@ -87,7 +87,7 @@ export default function Terms() {
           수 있어요.
         </p>
       </div>
-      <div className="mt-85 flex justify-center pb-[65px]">
+      <div className="mt-auto pt-10 flex justify-center pb-[65px]">
         <Button
           variant="kakao"
           disabled={!isAllChecked}

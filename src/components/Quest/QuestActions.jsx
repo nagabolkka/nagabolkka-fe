@@ -20,7 +20,7 @@ export default function QuestActions({
       <button
         type="button"
         onClick={onSplit}
-        className="w-[351px] h-[69px] px-[87px] pt-4 pb-2.5 flex flex-col items-center rounded-[10px] border-2 border-[#15121F] bg-[#3A3550] cursor-pointer active:brightness-110"
+        className="w-[calc(100%_-_42px)] h-[69px] px-4 pt-4 pb-2.5 flex flex-col items-center rounded-[10px] border-2 border-[#15121F] bg-[#3A3550] cursor-pointer active:brightness-110"
       >
         <p className="text-[#F4EAD5] text-base font-bold font-pixel">
           퀘스트 쪼개기
@@ -31,19 +31,19 @@ export default function QuestActions({
       </button>
 
       {/* 바꾸기 · 건너뛰기 */}
-      <div className="flex gap-[13px]">
+      <div className="flex gap-[13px] w-[calc(100%_-_42px)]">
         <button
           type="button"
           onClick={onChange}
           disabled={!canChange}
-          className="w-[169px] h-[37px] rounded-[10px] border-2 border-dashed border-[#4A4370] text-[#B0AAAA] text-xs font-normal font-pixel cursor-pointer disabled:opacity-40 disabled:cursor-default"
+          className="flex-1 h-[37px] rounded-[10px] border-2 border-dashed border-[#4A4370] text-[#B0AAAA] text-xs font-normal font-pixel cursor-pointer disabled:opacity-40 disabled:cursor-default"
         >
           {canChange ? "다른 퀘스트로 바꾸기" : "오늘은 다 바꿨어요"}
         </button>
         <button
           type="button"
           onClick={onSkip}
-          className="w-[169px] h-[37px] rounded-[10px] border-2 border-dashed border-[#4A4370] text-[#B0AAAA] text-xs font-normal font-pixel cursor-pointer"
+          className="flex-1 h-[37px] rounded-[10px] border-2 border-dashed border-[#4A4370] text-[#B0AAAA] text-xs font-normal font-pixel cursor-pointer"
         >
           오늘은 건너뛰기
         </button>

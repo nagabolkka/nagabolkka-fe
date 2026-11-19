@@ -12,7 +12,7 @@ export default function MenuList() {
   const navigate = useNavigate();
 
   return (
-    <ul className="w-[357px] divide-y divide-[#3A3358] rounded-[10px] border-[1.5px] border-[#15121F] bg-[#2C2745]">
+    <ul className="w-full divide-y divide-[#3A3358] rounded-[10px] border-[1.5px] border-[#15121F] bg-[#2C2745]">
       {MENUS.map(({ label, path }) => (
         <li key={path}>
           <button

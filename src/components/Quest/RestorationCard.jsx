@@ -6,7 +6,7 @@ export default function RestorationCard({
   nextMessage,
 }) {
   return (
-    <section className="w-[351px] h-[109px] rounded-[10px] bg-[#2C2745] p-[15px] border-2 border-[#15121F]">
+    <section className="w-full min-h-[109px] rounded-[10px] bg-[#2C2745] p-[15px] border-2 border-[#15121F]">
       <div className="flex items-center justify-between">
         <span className="text-sm text-[#F4EAD5]">{regionName} 복원도</span>
         <span className="font-pixel text-sm" style={{ color }}>

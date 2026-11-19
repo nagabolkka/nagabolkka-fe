@@ -66,7 +66,7 @@ export default function StartCheckResult() {
           마이페이지에서 언제든 바꿀 수 있어요.
         </p>
       </div>
-      <div className="flex justify-center mt-[282px]">
+      <div className="flex justify-center mt-auto pt-10 pb-10">
         <Button
           title="모험 시작하기"
           disabled={!goal || submitting}

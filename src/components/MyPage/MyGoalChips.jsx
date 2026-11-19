@@ -2,7 +2,7 @@ import { GOALS } from "../../constants/goals";
 
 export default function MyGoalChips({ goalId, onChange }) {
   return (
-    <section className="w-[357px] h-[83px] rounded-[10px] border-2 border-[#15121F] bg-[#2C2745] pl-[14px] py-4">
+    <section className="w-full min-h-[83px] rounded-[10px] border-2 border-[#15121F] bg-[#2C2745] pl-[14px] py-4">
       <h2 className="text-sm font-normal font-pixel text-[#F4EAD5]">내 목표</h2>
       <ul className="mt-2.5 flex flex-wrap gap-1.5">
         {GOALS.map(({ goalId: id, name }) => {
