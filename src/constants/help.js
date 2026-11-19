@@ -13,14 +13,8 @@ export const HOTLINES = [
   },
 ];
 
-// 성북구 (MVP 서비스 지역)
-export const NEARBY_CENTER = {
-  name: "성북구정신건강복지센터",
-  address: "서울 성북구 화랑로 63, 성북구보건소 6층",
-  tel: "02-2241-6314",
-  openHours: "평일 09:00-18:00", // 센터 확인 필요
-  distanceM: 2100, // API 연동 전 mock
-};
+// 가까운 센터를 못 찾았을 때 → 카카오맵에서 직접 찾기
+export const CENTER_SEARCH_URL = `https://map.kakao.com/?q=${encodeURIComponent("정신건강복지센터")}`;
 
 // 진입 경로별 안내 (?from=), 없으면 default
 export const HELP_NOTICE = {
