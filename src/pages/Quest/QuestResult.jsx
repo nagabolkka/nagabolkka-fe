@@ -4,6 +4,7 @@ import { NEXT_DIFFICULTY_MESSAGE } from "../../constants/moods";
 import PieceFound from "../../components/Quest/PieceFound";
 import RestorationCard from "../../components/Quest/RestorationCard";
 import Button from "../../components/common/Button/Button";
+import PushAskCard from "../../components/Quest/PushAskCard";
 
 // 조각 획득 : 기록 화면이 넘겨준 완료 응답 + 기분
 export default function QuestResult() {
@@ -13,12 +14,16 @@ export default function QuestResult() {
   if (!result?.pieces) return <Navigate to="/home" replace />;
 
   const { pieces, lumiMessage, restoration, mood } = result;
-  const region = getRegion(restoration.stageNo); 
+  const region = getRegion(restoration.stageNo);
 
   return (
     <div className="flex min-h-dvh flex-col gap-6 px-5 pb-8">
       <PieceFound
-        pieces={pieces.map(({ pieceId, name, isNew }) => ({ id: pieceId, name, isNew }))}
+        pieces={pieces.map(({ pieceId, name, isNew }) => ({
+          id: pieceId,
+          name,
+          isNew,
+        }))}
         color={region.color}
       />
       <div className="relative mt-4">
@@ -36,6 +41,9 @@ export default function QuestResult() {
         color={region.color}
         nextMessage={NEXT_DIFFICULTY_MESSAGE[mood]}
       />
+      <div className="mt-4 w-[calc(100vw_-_42px)]">
+        <PushAskCard />
+      </div>
       <div className="mt-[126px]">
         <Button
           title="모험 지도에서 확인하기"
