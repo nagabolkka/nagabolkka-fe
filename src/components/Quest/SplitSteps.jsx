@@ -19,7 +19,7 @@ export default function SplitSteps({ steps, doneSteps, onToggle }) {
               <button
                 type="button"
                 onClick={() => onToggle(i)}
-                className={`w-[calc(100%_-_19px)] min-h-[61px] px-4 py-3 flex items-center gap-[13px] text-left rounded-xl border-[3px] border-[#E6D6B0] cursor-pointer transition-colors ${
+                className={`w-[calc(100vw_-_33px)] min-h-[61px] px-4 py-3 flex items-center gap-[13px] text-left rounded-xl border-[3px] border-[#E6D6B0] cursor-pointer transition-colors ${
                   isDone ? "bg-[#E8D9B0]" : "bg-[#F4EAD5]"
                 }`}
               >

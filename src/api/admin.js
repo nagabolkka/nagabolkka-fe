@@ -27,3 +27,9 @@ export async function updateNotice(noticeId, changes) {
 export async function deleteNotice(noticeId) {
   await api.delete(`/api/admin/notices/${noticeId}`);
 }
+
+// 공지를 알림으로 보내기 (서버 점검 등) : { sent, failed } · 이미 보냈으면 409
+export async function pushNotice(noticeId) {
+  const { data } = await api.post(`/api/admin/notices/${noticeId}/push`);
+  return data;
+}

@@ -12,6 +12,8 @@ import { logout } from "../../api/auth";
 import { clearTokens } from "../../api/api";
 import { deleteMe, getMyInfo, updateMyGoal } from "../../api/users";
 import { savePlusInterest } from "../../api/plus";
+import { clearPushOnDevice, disablePush } from "../../utils/push";
+import NotificationToggle from "../../components/MyPage/NotificationToggle";
 
 export default function MyPage() {
   const navigate = useNavigate();
@@ -85,21 +87,23 @@ export default function MyPage() {
   };
 
   const handleLogout = async () => {
+    await disablePush().catch(() => {}); // 로그아웃한 기기로 알림이 가지 않게
     await logout();
     navigate("/", { replace: true });
   };
 
-  // 내 기록 모두 삭제 = 탈퇴 : 서버 삭제 성공 → 토큰 · 로컬 기록 삭제 → 처음 화면
+  // 내 기록 모두 삭제 = 탈퇴 : 서버 삭제 성공 → 토큰 · 알림 · 로컬 기록 삭제 → 처음 화면
   const handleDeleteAll = async () => {
     if (isDeleting) return; // 연속 클릭 무시
     setIsDeleting(true);
     try {
       await deleteMe();
+      await clearPushOnDevice().catch(() => {}); // 서버 토큰은 탈퇴로 이미 삭제 → 기기만 정리
       clearTokens();
       clearAllRecords();
       navigate("/", { replace: true });
     } catch (e) {
-      // 401 (이미 탈퇴 · 토큰 만료) 은 api.js 가 로그인 화면으로 보냄
+      // 401 은 로그인 화면으로 보냄
       setIsDeleting(false);
       setModal(null);
       if (e.response?.status === 403) {
@@ -129,10 +133,11 @@ export default function MyPage() {
     <div className="flex flex-col gap-4 px-4 pt-[33px]">
       <ProfileCard me={me} />
       <MyGoalChips goalId={me.goal?.goalId} onChange={handleGoalClick} />
+      <NotificationToggle onToast={showToast} />
       <PlusCard onClick={() => setIsPlusOpen(true)} />
       <MenuList />
 
-      <div className="mt-30 pb-5">
+      <div className="pb-5">
         <AccountActions
           onLogout={() => setModal("logout")}
           onDeleteAll={() => setModal("delete")}

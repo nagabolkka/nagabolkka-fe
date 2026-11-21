@@ -15,7 +15,9 @@ import {
   getAdminNotices,
   getAdminUsers,
   updateNotice,
+  pushNotice,
 } from "../../api/admin";
+import ConfirmModal from "../../components/common/ConfirmModal/ConfimModal";
 
 export default function Admin() {
   const navigate = useNavigate();
@@ -25,6 +27,7 @@ export default function Admin() {
   const [error, setError] = useState(false);
   const [busy, setBusy] = useState(false); // 공지 저장 중 (연속 클릭 막기)
   const [preview, setPreview] = useState(null);
+  const [pushTarget, setPushTarget] = useState(null); // 알림 보낼 공지 (확인 모달)
   const [toast, setToast] = useState("");
   const toastTimer = useRef(null);
 
@@ -103,6 +106,31 @@ export default function Admin() {
   const handleSubmit = (form) =>
     runNoticeAction(() => createNotice(form), "공지를 등록했어요.");
 
+  // 공지 → 알림 보내기 (서버 점검 등)
+  const handlePush = async () => {
+    if (busy || !pushTarget) return;
+    const { noticeId } = pushTarget;
+    setPushTarget(null);
+    setBusy(true);
+    try {
+      const { sent } = await pushNotice(noticeId);
+      showToast(
+        sent > 0
+          ? `${sent}명에게 알림을 보냈어요.`
+          : "알림을 켠 사용자가 없어요.",
+      );
+    } catch (e) {
+      if (handleCommonError(e)) return;
+      const status = e.response?.status;
+      if (status === 409) showToast("이미 알림을 보낸 공지예요.");
+      else if (status === 404) showToast("이미 삭제된 공지예요.");
+      else showToast("알림을 보내지 못했어요. 다시 시도해 주세요.");
+    } finally {
+      setNotices(await getAdminNotices().catch(() => notices)); // 보낸 시각 반영
+      setBusy(false);
+    }
+  };
+
   // 토큰까지 지우는 진짜 로그아웃
   const handleLogout = async () => {
     await logout();
@@ -146,6 +174,7 @@ export default function Admin() {
                   onToggle={() => handleToggle(notice)}
                   onPreview={() => setPreview(notice)}
                   onDelete={() => handleDelete(notice.noticeId)}
+                  onPush={() => setPushTarget(notice)}
                 />
               ))}
             </ul>
@@ -159,6 +188,16 @@ export default function Admin() {
           notice={preview}
           onClose={() => setPreview(null)}
           onHideToday={() => setPreview(null)}
+        />
+      )}
+
+      {pushTarget && (
+        <ConfirmModal
+          title="알림으로 보낼까요?"
+          description={`알림을 켠 모든 사용자에게\n「${pushTarget.title}」 알림이 가요.\n공지 하나에 한 번만 보낼 수 있어요.`}
+          confirmText="보내기"
+          onCancel={() => setPushTarget(null)}
+          onConfirm={handlePush}
         />
       )}
 
