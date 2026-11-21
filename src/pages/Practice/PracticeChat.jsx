@@ -131,10 +131,21 @@ export default function PracticeChat() {
             />
           </div>
         ) : (
-          <>
-            <ChoiceChips choices={choices} onSelect={handleSend} disabled={isTyping} />
-            <ChatInput onSend={handleSend} disabled={isTyping} />
-          </>
+          // 추천 답변 칩 · 마이크는 ChatInput 안 위 줄 (마이크 = 보내기 바로 위)
+          <ChatInput
+            sessionId={session.sessionId}
+            onSend={handleSend}
+            onToast={showToast}
+            onError={handleError}
+            disabled={isTyping}
+            renderTop={(voiceBusy) => (
+              <ChoiceChips
+                choices={choices}
+                onSelect={handleSend}
+                disabled={isTyping || voiceBusy}
+              />
+            )}
+          />
         )}
       </div>
 

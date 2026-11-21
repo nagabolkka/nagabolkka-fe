@@ -2,7 +2,7 @@ export default function ChoiceChips({ choices, onSelect, disabled = false }) {
   if (choices.length === 0) return null;
 
   return (
-    <ul className="flex flex-wrap gap-2">
+    <ul className="flex flex-wrap gap-x-2 gap-y-3">
       {choices.map((choice) => (
         <li key={choice}>
           <button

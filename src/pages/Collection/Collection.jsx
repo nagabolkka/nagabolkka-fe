@@ -1,17 +1,21 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CollectionHeader from "../../components/Collection/CollectionHeader";
+import CurrentChapterCard from "../../components/Collection/CurrentChapterCard";
+import CollectionFilter from "../../components/Collection/CollectionFilter";
 import RegionPieces from "../../components/Collection/RegionPieces";
 import BonusPieces from "../../components/Collection/BonusPieces";
 import PieceSheet from "../../components/Collection/PieceSheet";
 import PageLoading from "../../components/common/PageLoading/PageLoading";
 import { getCollection } from "../../api/collection";
+import { chapterState, missingSlots } from "../../utils/collection";
 
 export default function Collection() {
   const navigate = useNavigate();
   const [collection, setCollection] = useState(null);
   const [error, setError] = useState(false);
   const [selected, setSelected] = useState(null);
+  const [onlyMissing, setOnlyMissing] = useState(false); // 「모자란 조각만」 보기
 
   useEffect(() => {
     let ignore = false;
@@ -42,21 +46,37 @@ export default function Collection() {
 
   // 응답이 온 뒤에만 꺼냄 (위에서 꺼내면 처음 렌더 때 collection 이 null 이라 에러)
   const { foundCount, total, regions, bonusPieces } = collection;
+  const current = regions.find((region) => chapterState(region.status) === "current");
+  // 모자란 조각만 : 다 모은 챕터는 숨김
+  const shownRegions = onlyMissing
+    ? regions.filter((region) => missingSlots(region).length > 0)
+    : regions;
 
   return (
     <div className="flex flex-col gap-4 px-4 pb-6 pt-8">
       <CollectionHeader foundCount={foundCount} total={total} />
 
-      {regions.map((region) => (
+      {current && <CurrentChapterCard region={current} />}
+
+      <CollectionFilter onlyMissing={onlyMissing} onChange={setOnlyMissing} />
+
+      {shownRegions.map((region) => (
         <RegionPieces
           key={region.stageNo}
           region={region}
+          onlyMissing={onlyMissing}
           onSelect={setSelected}
         />
       ))}
 
-      {/* 도감 25칸 밖 보너스 조각 (받은 것만 · 없으면 안 그림) */}
-      <BonusPieces pieces={bonusPieces} />
+      {onlyMissing && shownRegions.length === 0 && (
+        <p className="rounded-lg border border-dashed border-[#F4EAD5]/20 py-8 text-center text-sm text-[#F4EAD5]/60">
+          모든 조각을 모았어요!
+        </p>
+      )}
+
+      {/* 도감 25칸 밖 보너스 조각 (받은 것만 · 없으면 안 그림 · 모자란 조각만 보기에서는 숨김) */}
+      {!onlyMissing && <BonusPieces pieces={bonusPieces} />}
 
       {selected && (
         <PieceSheet piece={selected} onClose={() => setSelected(null)} />
