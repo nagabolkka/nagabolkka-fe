@@ -1,6 +1,6 @@
 export default function LumiBubble({ region }) {
   return (
-    <div className="mt-[30px] relative w-[calc(100%_-_42px)] min-h-[76px] rounded-[10px] outline-2 outline-[#F4EAD5] px-4 py-[17px]">
+    <div className="mt-[30px] relative w-[calc(100vw_-_42px)] min-h-[76px] rounded-[10px] outline-2 outline-[#F4EAD5] px-4 py-[17px]">
       <p className="text-[#F4EAD5] text-sm font-medium font-sans leading-5 break-keep">
         {region.lumiLine}
       </p>

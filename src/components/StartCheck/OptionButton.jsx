@@ -8,7 +8,7 @@ export default function OptionButton({
     <button
       type="button"
       onClick={onClick}
-      className={`flex items-center gap-2 w-[calc(100%_-_24px)] min-h-[50px] rounded-[10px] border-2 px-[14px] text-left
+      className={`flex items-center gap-2 w-[calc(100vw_-_49px)] min-h-[50px] rounded-[10px] border-2 px-[14px] text-left
         ${
           selected
             ? "bg-[#FFF4DC] border-[#F2C14E]"
