@@ -1,9 +1,20 @@
 import PieceDiamond from "./PieceDiamond";
-import { getPieceTypeLabel } from "../../constants/pieceType";
+import { getPieceHowTo, getPieceTypeLabel } from "../../constants/pieceType";
 
 export default function PieceSheet({ piece, onClose }) {
-  const { found, name, type, count, restoreText, hint, regionName, color } =
-    piece;
+  const {
+    found,
+    name,
+    type,
+    count,
+    restoreText,
+    hint,
+    regionName,
+    stageNo,
+    color,
+    chapterState,
+  } = piece;
+  const locked = chapterState === "locked";
 
   return (
     <div
@@ -24,6 +35,7 @@ export default function PieceSheet({ piece, onClose }) {
         </div>
 
         <p className="mt-7 text-sm font-normal font-pixel text-black">
+          {stageNo ? `CHAPTER ${stageNo} · ` : ""}
           {regionName} · {getPieceTypeLabel(type)}
         </p>
         <h2 className="mt-[13px] font-pixel font-normal text-2xl text-black">
@@ -32,6 +44,11 @@ export default function PieceSheet({ piece, onClose }) {
         <p className="mt-[18px] text-sm font-normal font-pixel text-[#363636]">
           {found ? restoreText : `힌트 : ${hint}`}
         </p>
+        {!found && (
+          <p className="mt-3 text-xs font-medium text-[#6B5E4A] break-keep">
+            {locked ? "이 챕터에 도착하면 모을 수 있어요" : getPieceHowTo(type)}
+          </p>
+        )}
 
         <p className="mt-8 text-xs font-medium text-[#6B5E4A]">
           {found ? `${count}개 모음` : "찾으면 도감에 기록돼요."}
