@@ -47,6 +47,28 @@ export default function NoticeItem({ notice, onToggle, onPreview, onDelete }) {
           삭제
         </button>
       </div>
+      {notice.pushedAt ? (
+        <p className="mt-2 text-center font-pixel text-[11px] text-[#2B2340]/60">
+          🔔 알림 보냄 · {formatPushedAt(notice.pushedAt)}
+        </p>
+      ) : (
+        isActive && (
+          <button
+            type="button"
+            onClick={onPush}
+            className="mt-2 w-full h-[34px] rounded-md border-2 border-[#2B2340] bg-[#E8C06A] py-[7px] text-xs font-normal font-pixel text-[#15121F]"
+          >
+            🔔 알림 보내기
+          </button>
+        )
+      )}
     </li>
   );
+}
+
+// "2026-11-20T14:00:00" → "11.20 14:00"
+function formatPushedAt(value) {
+  const d = new Date(value);
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${pad(d.getMonth() + 1)}.${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
