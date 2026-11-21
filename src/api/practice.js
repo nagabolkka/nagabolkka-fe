@@ -23,3 +23,11 @@ export async function finishPractice(sessionId, history) {
   const { data } = await api.post(`/api/practice/sessions/${sessionId}/finish`, { history });
   return data;
 }
+
+// 음성 → 글자 (녹음 파일은 서버에 저장 안 함) → { text } · 못 알아들으면 text null
+export async function transcribePractice(sessionId, blob) {
+  const form = new FormData();
+  form.append("audio", blob, blob.type.includes("mp4") ? "voice.mp4" : "voice.webm");
+  const { data } = await api.post(`/api/practice/sessions/${sessionId}/transcribe`, form);
+  return data;
+}
