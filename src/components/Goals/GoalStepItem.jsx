@@ -7,18 +7,21 @@ export default function GoalStepItem({ step, disabled = false, onToggle }) {
       onClick={onToggle}
       disabled={disabled}
       aria-pressed={checked}
-      className="flex w-full cursor-pointer items-center gap-3 rounded-md border-[1.5px] border-[#2B2340] px-3 py-2 text-left disabled:cursor-wait disabled:opacity-60"
+      className="flex w-full items-center gap-3 px-4 py-3.5 text-left cursor-pointer disabled:cursor-wait disabled:opacity-60"
     >
       <span
-        className={`flex h-4 w-4 shrink-0 items-center justify-center border-2 border-[#2B2340] ${
-          checked ? "bg-[#2B2340]" : "bg-white"
+        aria-hidden
+        className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 border-navy ${
+          checked ? "bg-brass" : "bg-white"
         }`}
       >
-        {checked && <span className="text-[10px] leading-none text-[#F4EAD5]">✓</span>}
+        {checked && <span className="text-xs font-bold leading-none text-navy">✓</span>}
       </span>
-      <div>
-        <p className="font-pixel text-[10px] text-[#9C9081]">STEP {stepNo}</p>
-        <p className="mt-0.5 text-sm text-[#15121F]">{content}</p>
+      <div className="min-w-0">
+        <p className="label-en text-[9px] text-mute">STEP {stepNo}</p>
+        <p className={`text-[15px] font-bold break-keep ${checked ? "text-mute line-through" : "text-navy"}`}>
+          {content}
+        </p>
       </div>
     </button>
   );
