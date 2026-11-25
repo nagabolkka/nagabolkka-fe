@@ -4,7 +4,8 @@ import PracticeHeader from "../../components/Practice/PracticeHeader";
 import ScenarioCard from "../../components/Practice/ScenarioCard";
 import LumiMessage from "../../components/common/LumiMessage/LumiMessage";
 import PageLoading from "../../components/common/PageLoading/PageLoading";
-import { getRegion } from "../../mocks/regions";
+import { getIsland } from "../../constants/islands";
+import Toast from "../../components/common/Toast/Toast";
 import { getPracticeLumiMessage } from "../../constants/practice";
 import { getPracticeScenarios, startPractice } from "../../api/practice";
 
@@ -84,9 +85,9 @@ export default function Practice() {
   const { remainingToday, scenarios } = data;
 
   return (
-    <div className="relative flex flex-1 flex-col bg-bg-page pb-8 pt-[27px]">
+    <div className="relative flex flex-1 flex-col bg-sky-paper pb-8 pt-4">
       <div className="px-4">
-        <PracticeHeader title="연습실" onBack={() => navigate(-1)} />
+        <PracticeHeader title="입국 심사 연습실" onBack={() => navigate(-1)} />
       </div>
 
       <LumiMessage message={getPracticeLumiMessage(remainingToday)} />
@@ -97,7 +98,7 @@ export default function Practice() {
             <ScenarioCard
               scenario={scenario}
               pieceName={scenario.rewardPieceName}
-              pieceColor={scenario.rewardStageNo ? getRegion(scenario.rewardStageNo)?.color : undefined}
+              pieceColor={scenario.rewardStageNo ? getIsland(scenario.rewardStageNo).color : undefined}
               disabled={remainingToday === 0 || starting}
               onClick={() => handleStart(scenario)}
             />
@@ -105,11 +106,7 @@ export default function Practice() {
         ))}
       </ul>
 
-      {toast && (
-        <div className="fixed bottom-10 left-1/2 z-50 w-[300px] -translate-x-1/2 rounded-full bg-[#15121F]/90 px-6 py-2 text-center text-xs text-[#F4EAD5]">
-          {toast}
-        </div>
-      )}
+      <Toast message={toast} bottom="bottom-10" />
     </div>
   );
 }
