@@ -1,24 +1,23 @@
-export default function OptionButton({
-  label,
-  text,
-  selected = false,
-  onClick,
-}) {
+// 출국 심사 선택지
+export default function OptionButton({ label, text, selected = false, onClick }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`flex items-center gap-2 w-[calc(100vw_-_49px)] min-h-[50px] rounded-[10px] border-2 px-[14px] text-left
-        ${
-          selected
-            ? "bg-[#FFF4DC] border-[#F2C14E]"
-            : "bg-[#F4EAD5] border-[#E6D6B0] hover:bg-[#FFF4DC]"
-        }`}
+      aria-pressed={selected}
+      className={`flex items-center gap-3 w-full min-h-[54px] rounded-xl px-4 text-left cursor-pointer transition ${
+        selected ? "bg-navy text-white" : "bg-ticket border border-line text-navy active:bg-white"
+      }`}
     >
-      <span className="flex justify-center items-center shrink-0 size-6 bg-[#F2C14E] rounded-[5px] border-[1.5px] border-[#2B2340]">
-        <span className="text-xs font-pixel text-black">{label}</span>
+      <span
+        className={`flex justify-center items-center shrink-0 size-6 rounded-full text-[11px] font-bold ${
+          selected ? "bg-brass text-navy" : "bg-paper text-mute"
+        }`}
+      >
+        {label}
       </span>
-      <span className="text-sm font-pixel text-[#2B2340]">{text}</span>
+      <span className="flex-1 text-[15px] font-semibold break-keep">{text}</span>
+      {selected && <span aria-hidden className="text-brass">✓</span>}
     </button>
   );
 }

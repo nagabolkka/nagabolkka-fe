@@ -1,28 +1,24 @@
+// 인트로 : 여권을 펼치면 기장 루미의 안내
 export const INTRO_STEPS = [
-    {
-        id: 1,
-        speaker: "루미",
-        text: "어서 와. 나는 빛의 정령 루미야.",
-        buttonText: "다음",
-    },
-    {
-        id: 2,
-        speaker: "루미",
-        text: "어느 날 내 세상에서 빛과 색이 사라져서, 작은 조각이 되어 흩어졌어.",
-        buttonText: "다음",
-    },
-    {
-        id: 3,
-        speaker: "루미",
-        text: "사라진 색들이 네가 사는 동네로 떨어졌대. 나는 거기까지 갈 수 없어서... 혹시 나 대신 하나씩 찾아줄 수 있을까?",
-        buttonText: "같이 찾아볼게",
-    },
-];
-
-export const PIECE_COLORS = [
-    '#E8C06A',
-    '#9DD49A',
-    '#7FCDE6',
-    '#F2A7C3',
-    '#BFB2F2',
+  {
+    id: 1,
+    speaker: "기장 루미",
+    pose: "wave",
+    text: "어서 와요. 나는 마음 군도 항공의 기장 루미예요.",
+    buttonText: "다음",
+  },
+  {
+    id: 2,
+    speaker: "기장 루미",
+    pose: "salute",
+    text: "하늘 위에 다섯 개의 섬이 있어요. 지금은 안개에 덮여서 불이 꺼져 있죠.",
+    buttonText: "다음",
+  },
+  {
+    id: 3,
+    speaker: "기장 루미",
+    pose: "thumb",
+    text: "매일 작은 탑승권을 하나씩 줄게요. 다녀올 때마다 도장을 찍고, 섬에 불이 하나씩 켜져요. 같이 떠나볼까요?",
+    buttonText: "여권 만들러 가기",
+  },
 ];

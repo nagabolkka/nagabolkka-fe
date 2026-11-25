@@ -9,24 +9,24 @@ export default function PlaceCard({ place, onClick }) {
     <button
       type="button"
       onClick={onClick}
-      className="flex w-full cursor-pointer items-center gap-[15px] rounded-[10px] border-2 border-[#E6D6B0] bg-[#F4EAD5] px-3.5 py-2.5 text-left"
+      className="flex w-full items-center gap-3 rounded-2xl border border-line bg-ticket px-4 py-3 text-left cursor-pointer active:bg-white"
     >
-      <div
-        className="ml-1 h-5 w-5 shrink-0 rotate-45 border-2 border-black"
-        style={{ backgroundColor: color }}
-      />
+      <span aria-hidden className="h-4 w-4 shrink-0 rounded-full border-[2.5px] border-navy" style={{ backgroundColor: color }} />
       <div className="min-w-0 flex-1">
-        <p className="text-xs text-[#2B2340] font-sans">
+        <p className="text-xs text-mute">
           {label} · {formatDistance(distanceM)}
         </p>
-        <p className="mt-0.5 font-sans leading-5 text-base font-bold text-[#2B2340]">
-          {name}
-        </p>
-        <p className="mt-0.5 text-xs font-medium font-sans text-[#6B5E4A]">
-          {isFree ? "무료" : "유료"} · {soloOk ? "혼자 가능" : "함께 신청"}
-        </p>
+        <p className="mt-0.5 font-serif text-[17px] font-bold leading-6 text-navy truncate">{name}</p>
+        <div className="mt-1 flex gap-1.5">
+          <span className="rounded-full bg-[#E6F2DA] px-2 py-0.5 text-[11px] font-bold text-navy">
+            {isFree ? "무료" : "유료"}
+          </span>
+          <span className="rounded-full bg-[#E3EEFF] px-2 py-0.5 text-[11px] font-bold text-navy">
+            {soloOk ? "혼자 OK" : "함께 신청"}
+          </span>
+        </div>
       </div>
-      <span className="text-[10px] text-[#484848]">▶</span>
+      <span aria-hidden className="text-lg text-mute">›</span>
     </button>
   );
 }

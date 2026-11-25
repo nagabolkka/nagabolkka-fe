@@ -1,10 +1,8 @@
 export default function MapHeader() {
   return (
-    <header className="pl-[19px] pb-[13px] pt-5">
-      <p className="font-pixel font-normal text-xs text-[#F2C14E]">실제 동네</p>
-      <h1 className="mt-1 font-pixel font-normal text-xl text-[#F4EAD5]">
-        동네 기회 지도
-      </h1>
+    <header className="px-5 pt-6 pb-3">
+      <p className="label-en text-[11px] text-mute">NEIGHBORHOOD</p>
+      <h1 className="mt-0.5 font-serif text-[22px] font-bold text-navy">동네 여행지</h1>
     </header>
   );
 }

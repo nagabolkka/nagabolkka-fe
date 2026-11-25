@@ -1,19 +1,21 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ProfileCard from "../../components/MyPage/ProfileCard";
-import MyGoalChips from "../../components/MyPage/MyGoalChips";
 import PlusCard from "../../components/MyPage/PlusCard";
 import PlusSheet from "../../components/MyPage/PlusSheet";
 import MenuList from "../../components/MyPage/MenuList";
 import AccountActions from "../../components/MyPage/AccountActions";
 import ConfirmModal from "../../components/common/ConfirmModal/ConfimModal";
+import Toast from "../../components/common/Toast/Toast";
 import { clearAllRecords } from "../../utils/userStorage";
 import { logout } from "../../api/auth";
 import { clearTokens } from "../../api/api";
-import { deleteMe, getMyInfo, updateMyGoal } from "../../api/users";
+import { deleteMe, getMyInfo } from "../../api/users";
 import { savePlusInterest } from "../../api/plus";
 import { clearPushOnDevice, disablePush } from "../../utils/push";
 import NotificationToggle from "../../components/MyPage/NotificationToggle";
+
+const GOAL_TIP_KEY = "nagabolkka:goalTipHidden";
 
 export default function MyPage() {
   const navigate = useNavigate();
@@ -23,7 +25,14 @@ export default function MyPage() {
 
   // 서버에서 받은 내 정보 -> 처음엔 null 이고 받아오면 채워짐
   const [me, setMe] = useState(null);
-  const [isChanging, setIsChanging] = useState(false);
+  // 꿈(목표)이 비어 있을 때 첫 진입 안내 (닫으면 다시 안 뜸)
+  const [goalTipHidden, setGoalTipHidden] = useState(() => {
+    try {
+      return localStorage.getItem(GOAL_TIP_KEY) === "1";
+    } catch {
+      return false;
+    }
+  });
 
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -42,22 +51,7 @@ export default function MyPage() {
       );
   }, []);
 
-  // 내 목표 칩 → 목표 변경
-  const handleGoalClick = async (goalId) => {
-    if (isChanging || me?.goal?.goalId === goalId) return; // 같은 칩 · 연속 클릭 무시
-    setIsChanging(true);
-    try {
-      const updated = await updateMyGoal(goalId);
-      setMe(updated);
-      showToast("목표를 바꿨어요. 체크한 단계는 그대로 남아 있어요.");
-    } catch {
-      showToast("목표를 바꾸지 못했어요. 잠시 후 다시 시도해 주세요.");
-    } finally {
-      setIsChanging(false);
-    }
-  };
-
-  // 플러스 설문 → 서버 저장 · 첫 응답이면 첫 발견 조각
+  // 플러스 설문 → 서버 저장 · 첫 응답이면 첫 발견 도장
   const handlePlusSubmit = async (answer) => {
     if (isPlusSaving) return; // 연속 클릭 무시
     setIsPlusSaving(true);
@@ -71,7 +65,7 @@ export default function MyPage() {
       setIsPlusOpen(false);
       showToast(
         rewardPiece
-          ? `${rewardPiece.name}을 받았어요! 도감에서 볼 수 있어요.`
+          ? `${rewardPiece.name} 도장을 받았어요! 도장 탭에서 볼 수 있어요.`
           : "응답을 바꿨어요.",
       );
     } catch (e) {
@@ -116,28 +110,58 @@ export default function MyPage() {
     }
   };
 
+  const hideGoalTip = () => {
+    try {
+      localStorage.setItem(GOAL_TIP_KEY, "1");
+    } catch {
+      // 저장 못 해도 이번 화면에선 닫힘
+    }
+    setGoalTipHidden(true);
+  };
+
   // 불러오는 중
   if (!me) {
     return (
-      <div className="flex flex-col gap-4 px-4 pt-[33px]">
-        {toast && (
-          <div className="fixed w-[300px] px-6 bottom-24 left-1/2 z-50 -translate-x-1/2 rounded-full bg-[#15121F]/90 py-2 text-xs text-[#F4EAD5]">
-            {toast}
-          </div>
-        )}
+      <div className="flex flex-col bg-sky-paper min-h-full">
+        <div className="h-14 bg-navy" />
+        <Toast message={toast} />
       </div>
     );
   }
 
-  return (
-    <div className="flex flex-col gap-4 px-4 pt-[33px]">
-      <ProfileCard me={me} />
-      <MyGoalChips goalId={me.goal?.goalId} onChange={handleGoalClick} />
-      <NotificationToggle onToast={showToast} />
-      <PlusCard onClick={() => setIsPlusOpen(true)} />
-      <MenuList />
+  const showGoalTip = !me.goal && !goalTipHidden;
 
-      <div className="pb-5">
+  return (
+    <div className="flex flex-col bg-sky-paper min-h-full">
+      <header className="flex h-14 items-center bg-navy px-5">
+        <h1 className="font-serif text-[17px] font-bold text-brass">여권 소지인</h1>
+      </header>
+
+      <div className="flex flex-col gap-3 px-4 pt-4 pb-6">
+        <ProfileCard me={me} />
+
+        {showGoalTip && (
+          <div>
+            <div className="flex items-start gap-3 rounded-2xl bg-navy px-4 py-3 shadow-[0_6px_14px_rgba(14,22,56,0.3)]">
+              <span aria-hidden className="text-xl text-lamp">★</span>
+              <button type="button" onClick={() => navigate("/goals")} className="flex-1 text-left cursor-pointer">
+                <p className="text-[15px] font-bold text-white">여기서 꿈을 설정할 수 있어요</p>
+                <p className="mt-0.5 text-xs leading-5 text-mute-on-navy break-keep">
+                  해보고 싶은 것 하나를 정해두면, 단계마다 체크하며 준비할 수 있어요.
+                </p>
+              </button>
+              <button type="button" onClick={hideGoalTip} className="shrink-0 text-xs text-mute-on-navy cursor-pointer">
+                닫기 ✕
+              </button>
+            </div>
+            <span aria-hidden className="ml-8 block h-0 w-0 border-x-[9px] border-t-[10px] border-x-transparent border-t-navy" />
+          </div>
+        )}
+        <MenuList goal={me.goal} />
+
+        <NotificationToggle onToast={showToast} />
+        <PlusCard onClick={() => setIsPlusOpen(true)} />
+
         <AccountActions
           onLogout={() => setModal("logout")}
           onDeleteAll={() => setModal("delete")}
@@ -148,7 +172,7 @@ export default function MyPage() {
         <ConfirmModal
           title="로그아웃 할까요?"
           description={
-            "모든 조각과 기록은 그대로 저장돼요. 다음에\n'카카오로 이어하기'로 바로 돌아올 수 있어요."
+            "모든 도장과 기록은 그대로 저장돼요. 다음에\n'카카오로 이어하기'로 바로 돌아올 수 있어요."
           }
           confirmText="로그아웃"
           onCancel={() => setModal(null)}
@@ -160,7 +184,7 @@ export default function MyPage() {
         <ConfirmModal
           title="기록을 모두 지울까요?"
           description={
-            "모든 조각, 복원도, 기분 · 회고 기록이 모두 삭제되고\n처음 화면으로 돌아가요. 되돌릴 수 없어요."
+            "모든 도장, 섬 불빛, 기분 · 메모 기록이 모두 삭제되고\n처음 화면으로 돌아가요. 되돌릴 수 없어요."
           }
           confirmText={isDeleting ? "삭제하는 중..." : "모두 삭제"}
           variant="danger"
@@ -178,11 +202,7 @@ export default function MyPage() {
         />
       )}
 
-      {toast && (
-        <div className="fixed w-[300px] px-6 bottom-24 left-1/2 z-50 -translate-x-1/2 rounded-full bg-[#15121F]/90 py-2 text-xs text-[#F4EAD5]">
-          {toast}
-        </div>
-      )}
+      <Toast message={toast} />
     </div>
   );
 }

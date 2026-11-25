@@ -49,8 +49,8 @@ export default function KakaoCallback() {
   }, [navigate, searchParams]);
 
   return (
-    <div className="flex-1 flex items-center justify-center">
-      <p className="font-pixel text-[#F4EAD5]">루미가 문을 여는 중...</p>
+    <div className="flex-1 flex items-center justify-center bg-sky-paper">
+      <p className="text-sm font-semibold text-mute animate-pulse">입국 심사 중…</p>
     </div>
   );
 }

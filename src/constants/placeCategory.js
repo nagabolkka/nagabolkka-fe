@@ -1,8 +1,8 @@
 export const PLACE_CATEGORY = {
-  PARK: { label: "공원", color: "#9DD49A" },
-  LIBRARY: { label: "도서관", color: "#7FCDE6" },
-  COMMUNITY: { label: "주민 공간", color: "#F2A7C3" },
-  YOUTH_CENTER: { label: "청년 공간", color: "#BFB2F2" },
+  PARK: { label: "공원", color: "#5DB884" },
+  LIBRARY: { label: "도서관", color: "#3FAED6" },
+  COMMUNITY: { label: "주민 공간", color: "#F0805D" },
+  YOUTH_CENTER: { label: "청년 공간", color: "#E77FB0" },
 };
 
 export const CATEGORY_TABS = [
@@ -22,4 +22,4 @@ export const PLACE_FILTERS = [
 export const NEAR_DISTANCE_M = 1000;
 
 export const getCategory = (category) =>
-  PLACE_CATEGORY[category] ?? { label: "", color: "#B9B0D0" };
+  PLACE_CATEGORY[category] ?? { label: "", color: "#8FA0D0" };

@@ -1,17 +1,15 @@
-import lumi from "../../../assets/icons/lumi_start_check.png";
+import Lumi from "../Lumi/Lumi";
 
-export default function LumiMessage({ message }) {
+export default function LumiMessage({ message, pose = "salute", dark = false, className = "" }) {
   return (
-    <div className="flex items-center gap-[9px] pl-[14px] pr-[25px] mt-2.5">
-      <img
-        src={lumi}
-        className="w-[33px] h-[33px] shrink-0 rounded-full drop-shadow-[0_0_16px_rgba(255,214,120,0.45)]"
-      />
-      {/* 루미의 메세지 */}
-      <div className="flex-1 min-w-0 min-h-[34px] bg-[#221E3A] rounded-[5px] border-2 border-[#4A4370] flex items-center pl-[11px] pr-[11px] py-2">
-        <p className="text-[#F4EAD5] text-xs font-semibold font-sans">
-          {message}
-        </p>
+    <div className={`flex items-center gap-2 px-4 mt-2.5 ${className}`}>
+      <Lumi pose={pose} bust={pose === "salute" || pose === "passenger"} size={40} decorative className="shrink-0" />
+      <div
+        className={`relative flex-1 min-w-0 rounded-2xl px-3.5 py-2.5 ${
+          dark ? "bg-navy-2 text-paper" : "bg-ticket text-navy border border-line"
+        }`}
+      >
+        <p className="text-[13px] font-semibold leading-5 break-keep">{message}</p>
       </div>
     </div>
   );

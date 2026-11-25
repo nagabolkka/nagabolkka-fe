@@ -1,5 +1,6 @@
 import Button from "../common/Button/Button";
 
+// 탑승권 아래 버튼 (네이비 화면)
 export default function QuestActions({
   changeRemaining,
   onAccept,
@@ -10,42 +11,33 @@ export default function QuestActions({
   const canChange = changeRemaining > 0;
 
   return (
-    <section className="mx-6 mt-[21px] flex flex-col gap-3">
-      {/* 수락 */}
-      <div className="flex justify-center">
-        <Button title="퀘스트 수락" onClick={onAccept} />
-      </div>
+    <section className="mx-4 mt-5 flex flex-col items-center gap-2.5">
+      <Button variant="gold" title="✈  탑승하기 (출국)" onClick={onAccept} />
 
-      {/* 쪼개기 */}
       <button
         type="button"
         onClick={onSplit}
-        className="w-[calc(100vw_-_42px)] h-[69px] px-4 pt-4 pb-2.5 flex flex-col items-center rounded-[10px] border-2 border-[#15121F] bg-[#3A3550] cursor-pointer active:brightness-110"
+        className="w-full h-[58px] flex flex-col items-center justify-center rounded-xl border-[1.5px] border-[#8FA0D0] cursor-pointer active:bg-navy-2"
       >
-        <p className="text-[#F4EAD5] text-base font-bold font-pixel">
-          퀘스트 쪼개기
-        </p>
-        <p className="mt-0.5 text-[#B9B0D0] text-xs font-medium font-sans">
-          아직 어려워요 · 더 작게 나눠주세요
-        </p>
+        <span className="text-[15px] font-bold text-white">작게 나눠 가기</span>
+        <span className="text-[11px] text-mute-on-navy">아직 어려워요 · 더 작게 나눠주세요</span>
       </button>
 
-      {/* 바꾸기 · 건너뛰기 */}
-      <div className="flex gap-[13px] w-[calc(100vw_-_42px)]">
+      <div className="w-full grid grid-cols-2 gap-2.5">
         <button
           type="button"
           onClick={onChange}
           disabled={!canChange}
-          className="flex-1 h-[37px] rounded-[10px] border-2 border-dashed border-[#4A4370] text-[#B0AAAA] text-xs font-normal font-pixel cursor-pointer disabled:opacity-40 disabled:cursor-default"
+          className="h-10 text-[13px] font-medium text-mute-on-navy cursor-pointer disabled:opacity-40 disabled:cursor-default"
         >
-          {canChange ? "다른 퀘스트로 바꾸기" : "오늘은 다 바꿨어요"}
+          {canChange ? `다른 편으로 (${changeRemaining}번 남음)` : "오늘은 다 바꿨어요"}
         </button>
         <button
           type="button"
           onClick={onSkip}
-          className="flex-1 h-[37px] rounded-[10px] border-2 border-dashed border-[#4A4370] text-[#B0AAAA] text-xs font-normal font-pixel cursor-pointer"
+          className="h-10 text-[13px] font-medium text-mute-on-navy cursor-pointer"
         >
-          오늘은 건너뛰기
+          오늘은 쉬어 가기
         </button>
       </div>
     </section>

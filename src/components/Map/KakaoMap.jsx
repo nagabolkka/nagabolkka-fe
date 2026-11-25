@@ -43,7 +43,7 @@ export default function KakaoMap({ places, center, onSelect }) {
     mapRef.current.setCenter(new kakao.maps.LatLng(origin.lat, origin.lng));
   }, [ready, origin.lat, origin.lng]);
 
-  // 3. 마커 : 장소(카테고리 색 마름모 · 누르면 상세) + 내 위치 — 탭 · 필터가 바뀌면 다시 그림
+  // 3. 마커 : 장소(카테고리 색 동그라미 · 누르면 상세) + 내 위치 — 탭 · 필터가 바뀌면 다시 그림
   useEffect(() => {
     if (!ready) return;
     const { kakao } = window;
@@ -53,7 +53,7 @@ export default function KakaoMap({ places, center, onSelect }) {
     const overlays = places.map((place) => {
       const marker = document.createElement("button");
       marker.type = "button";
-      marker.className = "h-3.5 w-3.5 rotate-45 border-2 border-[#15121F] cursor-pointer";
+      marker.className = "h-5 w-5 rounded-full border-[2.5px] border-[#1C2A5E] shadow cursor-pointer";
       marker.style.backgroundColor = getCategory(place.category).color;
       marker.setAttribute("aria-label", place.name);
       marker.onclick = () => onSelect?.(place.placeId);
@@ -67,7 +67,7 @@ export default function KakaoMap({ places, center, onSelect }) {
     });
 
     const me = document.createElement("div");
-    me.className = "h-3 w-3 rounded-full border-2 border-white bg-[#4A90E2] shadow";
+    me.className = "h-4 w-4 rounded-full border-[3px] border-white bg-[#3FAED6] shadow-[0_0_0_6px_rgba(63,174,214,0.25)]";
     overlays.push(
       new kakao.maps.CustomOverlay({
         map: mapRef.current,
@@ -82,5 +82,5 @@ export default function KakaoMap({ places, center, onSelect }) {
 
   if (failed) return <MockMap places={places} center={center} />;
 
-  return <div ref={containerRef} className="h-[210px] w-full" />;
+  return <div ref={containerRef} className="h-[260px] w-full" />;
 }

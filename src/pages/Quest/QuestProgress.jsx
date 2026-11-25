@@ -11,7 +11,7 @@ import { saveSplitSteps } from "../../utils/splitStepStorage";
 
 export default function QuestProgress() {
   const navigate = useNavigate();
-  const { quest, mission, region, isRainy, error } = useQuest();
+  const { quest, mission, region, error } = useQuest();
   const [busy, setBusy] = useState(false);
 
   if (!quest) return <PageLoading error={error} />;
@@ -36,20 +36,15 @@ export default function QuestProgress() {
   };
 
   return (
-    <div className="flex-1 flex flex-col bg-bg-page">
+    <div className="flex-1 flex flex-col bg-sky-paper">
       <QuestHeader
         region={region}
         mission={mission}
-        isRainy={isRainy}
-        status="IN_PROGRESS"
+        progress={0.4}
         onBack={() => navigate("/home")}
       />
       <QuestInfoCards mission={mission} />
-      <ProgressCard
-        mission={mission}
-        color={region.color}
-        onSplit={handleSplit}
-      />
+      <ProgressCard onSplit={handleSplit} />
       <QuestBottomBar
         canRecord
         onRecord={() => navigate("/quest/record")}

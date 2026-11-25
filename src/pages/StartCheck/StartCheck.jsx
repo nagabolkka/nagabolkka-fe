@@ -47,7 +47,7 @@ export default function StartCheck() {
   };
 
   return (
-    <div className="flex-1 flex flex-col">
+    <div className="flex-1 flex flex-col bg-sky-paper">
       <ProgressBar step={step + 1} total={TOTAL} onBack={handleBack} />
 
       <div
@@ -58,7 +58,7 @@ export default function StartCheck() {
       >
         <QuestionHeader step={step + 1} question={current.question} />
 
-        <div className="flex flex-col gap-[17px] pl-[25px]">
+        <div className="flex flex-col gap-2.5 px-4">
           {current.options.map((option, index) => (
             <OptionButton
               key={index}
@@ -72,8 +72,8 @@ export default function StartCheck() {
       </div>
 
       {/* 안내 문구 */}
-      <div className="mt-auto pt-10 pb-10 flex justify-center text-xs font-medium font-sans leading-4 text-[#B9B0D0]">
-        정답은 없어요. 지금 모습 그대로 골라줘.
+      <div className="mt-auto pt-10 pb-10 flex justify-center text-xs font-medium leading-4 text-mute">
+        정답은 없어요. 지금 모습 그대로 골라요.
       </div>
     </div>
   );

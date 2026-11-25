@@ -94,7 +94,7 @@ export default function ChatInput({
       </div>
 
       {fromVoice && (
-        <p className="flex items-center gap-1.5 text-[12px] text-[#F2C14E]">
+        <p className="flex items-center gap-1.5 text-[12px] font-semibold text-navy">
           <span aria-hidden="true">🎤</span>
           <span>말한 내용이에요 · 고쳐서 보낼 수 있어요</span>
         </p>
@@ -109,14 +109,14 @@ export default function ChatInput({
           placeholder={
             disabled ? "답을 기다리는 중이에요..." : PLACEHOLDER[status]
           }
-          className={`min-w-0 flex-1 rounded-md border-2 bg-[#1E1A2E] px-3 py-2 text-base text-[#F4EAD5] outline-none placeholder:text-[#8E88A8] focus:border-[#E8C06A] disabled:opacity-60 ${
-            status === "recording" ? "border-[#D9604C]" : "border-[#3A3358]"
+          className={`min-w-0 flex-1 rounded-full border-[1.5px] bg-white px-4 py-2 text-base text-navy outline-none placeholder:text-mute/70 focus:border-navy disabled:opacity-60 ${
+            status === "recording" ? "border-stamp-red" : "border-line"
           }`}
         />
         <button
           type="submit"
           disabled={!canSend}
-          className="h-11 w-[62px] shrink-0 cursor-pointer rounded-md border-2 border-[#E8C06A] bg-[#E8C06A] font-pixel text-xs text-[#15121F] disabled:cursor-not-allowed disabled:opacity-40"
+          className="h-11 w-[62px] shrink-0 cursor-pointer rounded-full bg-navy text-sm font-bold text-brass disabled:cursor-not-allowed disabled:opacity-40"
         >
           보내기
         </button>
