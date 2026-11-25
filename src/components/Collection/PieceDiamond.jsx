@@ -1,11 +1,14 @@
-export default function PieceDiamond({ color, found, size = 18, emptyColor = "#1B1830" }) {
+// 도장 칸 표시 (받음 = 섬 색 잉크 동그라미 · 아직 = 점선)
+export default function PieceDiamond({ color, found, size = 22 }) {
   return (
-    <div
-      className="shrink-0 rotate-45 border-2 border-[#15121F]"
+    <span
+      aria-hidden
+      className="shrink-0 rounded-full"
       style={{
         width: size,
         height: size,
-        backgroundColor: found ? color : emptyColor,
+        border: `${Math.max(2, size / 9)}px ${found ? "solid" : "dashed"} ${found ? color : "#C9C2AE"}`,
+        backgroundColor: found ? `${color}33` : "transparent",
       }}
     />
   );

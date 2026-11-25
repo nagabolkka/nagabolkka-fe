@@ -1,46 +1,43 @@
+import IslandStamp from "../common/Island/IslandStamp";
+import { getIsland } from "../../constants/islands";
 import { getPieceTypeLabel } from "../../constants/pieceType";
 import { missingSlots } from "../../utils/collection";
 
+// 지금 섬 : 아직 못 받은 도장 안내
 export default function CurrentChapterCard({ region }) {
-  const { stageNo, name, color } = region;
+  const island = getIsland(region.stageNo);
   const missing = missingSlots(region);
 
   return (
-    <section className="w-full rounded-[10px] border-2 border-[#E8C06A] bg-[#2C2745] px-[14px] py-3">
-      <p className="font-pixel text-[11px] text-[#E8C06A]">
-        지금 챕터 · CHAPTER {stageNo} {name}
-      </p>
-
-      {missing.length === 0 ? (
-        <>
-          <p className="mt-2 font-pixel text-sm text-[#F4EAD5]">
-            이 챕터 조각을 다 모았어요!
-          </p>
-          <p className="mt-1 text-[11px] text-[#B9B0D0] break-keep">
-            다음 지역이 열리면 새 조각을 모을 수 있어요.
-          </p>
-        </>
-      ) : (
-        <>
-          <p className="mt-2 font-pixel text-sm text-[#F4EAD5]">
-            모자란 조각 {missing.length}개 · 하나씩 채워 볼까?
-          </p>
-          <ul className="mt-2 flex flex-wrap gap-1.5">
-            {missing.map((slot) => (
-              <li
-                key={slot.slotNo}
-                className="rounded-full border border-dashed bg-[#221E3A] px-2 py-[3px] text-[11px] font-semibold font-sans text-[#F4EAD5]"
-                style={{ borderColor: color }}
-              >
-                {getPieceTypeLabel(slot.type)}
-              </li>
-            ))}
-          </ul>
-          <p className="mt-2 text-[11px] text-[#B9B0D0] break-keep">
-            칸을 누르면 힌트와 어떤 퀘스트에서 얻는지 볼 수 있어요
-          </p>
-        </>
-      )}
+    <section className="flex gap-3 rounded-2xl bg-navy px-4 py-3.5">
+      <IslandStamp stageNo={region.stageNo} size={56} className="shrink-0 -rotate-6" />
+      <div className="min-w-0">
+        <p className="label-en text-[10px] text-brass">NOW · {island.name}</p>
+        {missing.length === 0 ? (
+          <>
+            <p className="mt-1 text-sm font-bold text-white">이 섬 도장을 다 모았어요!</p>
+            <p className="mt-0.5 text-[11px] text-mute-on-navy break-keep">
+              다음 섬 탑승권이 나오면 새 도장을 모을 수 있어요.
+            </p>
+          </>
+        ) : (
+          <>
+            <p className="mt-1 text-sm font-bold text-white">
+              못 받은 도장 {missing.length}개 · 하나씩 채워 볼까요?
+            </p>
+            <ul className="mt-1.5 flex flex-wrap gap-1">
+              {missing.map((slot) => (
+                <li
+                  key={slot.slotNo}
+                  className="rounded-full border border-dashed border-brass/70 px-2 py-0.5 text-[11px] font-semibold text-paper"
+                >
+                  {getPieceTypeLabel(slot.type)}
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+      </div>
     </section>
   );
 }
