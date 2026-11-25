@@ -1,32 +1,27 @@
-import backButton from "../../assets/images/back_button.png";
-
+// 출국 심사 진행 바
 export default function ProgressBar({ step, total, onBack }) {
-  // step: 현재 단계 (1부터 시작)
-  const getColor = (i) => {
-    const n = i + 1;
-    if (n < step) return "bg-[#F2C14E]";   // 지나온 단계
-    if (n === step) return "bg-[#8A7A3A]"; // 현재 단계
-    return "bg-[#2C2745]";                 // 아직 안 간 단계
-  };
-
   return (
-    <div className="flex items-center gap-2 pt-[23px] pl-[9px] pr-4 mb-[18px]">
-      <button type="button" onClick={onBack} className="shrink-0 cursor-pointer">
-        <img src={backButton} />
+    <div className="flex items-center gap-2 pt-5 px-3 mb-4">
+      <button
+        type="button"
+        onClick={onBack}
+        aria-label="뒤로"
+        className="shrink-0 w-10 h-10 flex items-center justify-center text-[28px] leading-none text-navy cursor-pointer"
+      >
+        ‹
       </button>
 
-      <div className="flex flex-1 gap-1.5">
-        {Array.from({ length: total }).map((_, i) => (
+      <div className="flex-1">
+        <p className="label-en text-[10px] text-mute">
+          DEPARTURE CHECK {step} / {total}
+        </p>
+        <div className="mt-1 h-1.5 w-full rounded-full bg-line overflow-hidden">
           <div
-            key={i}
-            className={`h-2.5 flex-1 rounded-xs border border-black transition-colors duration-200 ${getColor(i)}`}
+            className="h-full rounded-full bg-navy transition-all duration-300"
+            style={{ width: `${(step / total) * 100}%` }}
           />
-        ))}
+        </div>
       </div>
-
-      <span className="shrink-0 font-pixel text-xs font-normal text-[#F2C14E]">
-        {step}/{total}
-      </span>
     </div>
   );
 }
