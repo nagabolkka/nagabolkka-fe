@@ -96,10 +96,12 @@ export default function Map() {
     setFilters((prev) => ({ ...prev, [key]: !prev[key] }));
 
   return (
-    <div className="flex flex-col pb-6">
+    <div className="flex flex-col bg-sky-paper pb-6 min-h-full">
       <MapHeader />
       <LocationBanner status={locationStatus} onRetry={retryLocation} />
-      <KakaoMap places={places} center={center} onSelect={openPlace} />
+      <div className="mx-4 mt-2 overflow-hidden rounded-2xl border border-line">
+        <KakaoMap places={places} center={center} onSelect={openPlace} />
+      </div>
 
       <div className="flex flex-col gap-2 px-4 pt-4">
         <CategoryTabs value={category} onChange={setCategory} />
@@ -107,6 +109,9 @@ export default function Map() {
       </div>
 
       <div className="px-4 pt-4">
+        <p className="mb-2 text-xs font-semibold text-mute">
+          내 주변 {places.length}곳 · 누르면 「비자로 담기」
+        </p>
         <PlaceList places={places} onSelect={openPlace} />
       </div>
     </div>

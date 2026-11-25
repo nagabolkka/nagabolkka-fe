@@ -2,7 +2,7 @@ import { PLACE_FILTERS } from "../../constants/placeCategory";
 
 export default function FilterChips({ filters, onToggle }) {
   return (
-    <ul className="flex flex-wrap gap-[5px] items-center">
+    <ul className="flex flex-wrap gap-1.5 items-center">
       {PLACE_FILTERS.map(({ key, label }) => {
         const isOn = filters[key];
         return (
@@ -10,17 +10,12 @@ export default function FilterChips({ filters, onToggle }) {
             <button
               type="button"
               onClick={() => onToggle(key)}
-              className={`flex cursor-pointer items-center gap-1 rounded-full border-2 px-2.5 py-1 text-[11px] ${
-                isOn
-                  ? "border-[#F2C14E] bg-[#2B2340] text-[#F2C14E]"
-                  : "border-[#4A4370] bg-transparent text-[#E6DFF5]"
+              aria-pressed={isOn}
+              className={`flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold cursor-pointer ${
+                isOn ? "bg-[#E3EEFF] text-navy border border-navy" : "bg-transparent text-mute border border-line"
               }`}
             >
-              <span
-                className={`h-2.5 w-2.5 border ${
-                  isOn ? "border-[#F2C14E] bg-[#F2C14E]" : "border-[#4A4370]"
-                }`}
-              />
+              <span aria-hidden>{isOn ? "✓" : "+"}</span>
               {label}
             </button>
           </li>
