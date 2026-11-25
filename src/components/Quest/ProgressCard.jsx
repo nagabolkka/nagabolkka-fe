@@ -1,40 +1,29 @@
-import LumiMessage from "../common/LumiMessage/LumiMessage";
+import Lumi from "../common/Lumi/Lumi";
 
-export default function ProgressCard({ mission, color, onSplit }) {
+// 비행 중 (쪼개지 않은 퀘스트)
+export default function ProgressCard({ onSplit }) {
   return (
-    <section className="mt-[19px]">
-      <p className="text-[#F2C14E] text-sm font-normal font-pixel pl-[14px]">
-        진행 중 · 한 번에 하나의 퀘스트
-      </p>
-
-      {/* 진행 중 카드 */}
-      <div className="min-h-[66px] mt-2.5 mx-[14px] px-[14px] py-2.5 flex items-center gap-[14px] rounded-[10px] border-2 border-[#E6D6B0] bg-[#F4EAD5]">
-        <div className="shrink-0 w-8 h-8 flex items-center justify-center">
-          <div
-            className="w-5 h-5 rotate-45 border-[3px] border-[#2B2340]"
-            style={{ backgroundColor: color }}
-          />
-        </div>
-        <div className="min-w-0">
-          <p className="text-[#2B2340] text-base font-normal font-pixel leading-5 break-keep">
-            {mission.title}
-          </p>
-          <p className="mt-0.5 text-[#6B5E4A] text-xs font-medium font-sans">
-            다녀오면 아래 버튼을 눌러 기록해줘.
+    <section className="mt-4 flex flex-col items-center">
+      <div className="relative">
+        <Lumi pose="fly" size={170} className="animate-drift" />
+        <div className="absolute -left-24 top-2 w-[120px] rounded-2xl bg-white px-3 py-2 shadow-[0_3px_8px_rgba(122,134,173,0.3)]">
+          <p className="text-xs font-bold leading-[18px] text-navy">
+            순항 중이에요!
+            <br />
+            천천히 다녀와요
           </p>
         </div>
       </div>
 
-      <div className="mt-2.5">
-        <LumiMessage message="천천히 다녀와. 여기서 기다릴게." />
-      </div>
+      <p className="mt-2 text-sm font-semibold text-navy">한 번에 하나의 탑승권</p>
+      <p className="mt-0.5 text-xs text-mute">다녀오면 아래 버튼으로 입국 심사를 받아요.</p>
 
       <button
         type="button"
         onClick={onSplit}
-        className="mt-[18px] text-[#B9B0D0] text-xs font-medium font-sans underline cursor-pointer pl-[21px]"
+        className="mt-4 text-xs font-medium text-mute underline cursor-pointer"
       >
-        역시 어려워요? 퀘스트 쪼개기
+        역시 어려워요? 작게 나눠 가기
       </button>
     </section>
   );
