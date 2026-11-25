@@ -1,7 +1,7 @@
 // 나가볼까 FCM 서비스 워커 : 알림만 (오프라인 캐시 없음)
 // 파일 이름 · 위치 고정 (FCM 기본값) · 서비스 워커는 import.meta.env 를 못 읽어서 설정값을 직접 적음 (웹 설정값은 공개돼도 되는 값)
-importScripts("https://www.gstatic.com/firebasejs/11.10.0/firebase-app-compat.js");
-importScripts("https://www.gstatic.com/firebasejs/11.10.0/firebase-messaging-compat.js");
+importScripts("https://www.gstatic.com/firebasejs/13.4.0/firebase-app-compat.js");
+importScripts("https://www.gstatic.com/firebasejs/13.4.0/firebase-messaging-compat.js");
 
 firebase.initializeApp({
   apiKey: "AIzaSyAuy7T0HbbDzvaD3Yah7u7rSoN9r-epU8U",
