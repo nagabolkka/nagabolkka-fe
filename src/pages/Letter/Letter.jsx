@@ -5,6 +5,7 @@ import LetterPaper from "../../components/Letter/LetterPaper";
 import LetterEmpty from "../../components/Letter/LetterEmpty";
 import PageLoading from "../../components/common/PageLoading/PageLoading";
 import { getLatestLetter } from "../../api/letters";
+import { getLocation } from "../../utils/location";
 
 export default function Letter() {
   const navigate = useNavigate();
@@ -14,7 +15,9 @@ export default function Letter() {
 
   useEffect(() => {
     let ignore = false;
-    getLatestLetter()
+    // 지금 위치 (거부 · 실패 · 5초 넘으면 null → 편지 만들 때 고른 장소) → 편지
+    getLocation()
+      .then((location) => getLatestLetter(location))
       .then((data) => {
         if (!ignore) setLetter(data);
       })
