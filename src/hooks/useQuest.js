@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getTodayQuest } from "../api/quests";
-import { getRegion } from "../mocks/regions";
+import { getIsland } from "../constants/islands";
 import { loadWeather } from "../utils/weatherStorage";
 import { getLocation } from "../utils/location";
 
@@ -57,7 +57,7 @@ export default function useQuest() {
     setQuest,
     error,
     mission: quest ? toMission(quest) : null,
-    region: quest ? getRegion(quest.region.stageNo) : null,
+    region: quest ? getIsland(quest.region.stageNo) : null, // 섬 (이름 · 색)
     isRainy: loadWeather().isRainy, // 홈에서 받은 날씨
   };
 }

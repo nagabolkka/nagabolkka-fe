@@ -10,10 +10,7 @@ export default function PlaceTags({ place }) {
   return (
     <ul className="flex flex-wrap gap-1.5">
       {tags.map((tag) => (
-        <li
-          key={tag}
-          className="rounded-full border-[1.5px] border-[#4A4370] px-2.5 py-1 text-xs text-[#F4EAD5]"
-        >
+        <li key={tag} className="rounded-full bg-[#E3EEFF] px-2.5 py-1 text-xs font-bold text-navy">
           {tag}
         </li>
       ))}

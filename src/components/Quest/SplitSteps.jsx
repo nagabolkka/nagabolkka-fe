@@ -1,58 +1,47 @@
 import LumiMessage from "../common/LumiMessage/LumiMessage";
 
+// 기내 안내 : 작게 나눈 단계 체크
 export default function SplitSteps({ steps, doneSteps, onToggle }) {
+  const nextIndex = steps.findIndex((_, i) => !doneSteps.includes(i));
+
   return (
-    <section className="mt-5">
-      <p className="text-[#E8C06A] text-xs font-normal font-pixel pl-[14px]">
-        루미가 쪼갠 퀘스트
-      </p>
+    <section className="mt-4">
+      <LumiMessage message="하나만 해도 오늘의 한 걸음이에요." pose="passenger" />
 
-      <div className="mt-2">
-        <LumiMessage message="하나만 해도 오늘의 한 걸음이야." />
-      </div>
+      <h2 className="mt-4 px-5 font-serif text-base font-bold text-navy">
+        기내 안내 · 작게 나눈 {steps.length}단계
+      </h2>
 
-      <ol className="mt-3 flex flex-col gap-2.5 pl-[14px]">
+      <ol className="mx-4 mt-2 overflow-hidden rounded-2xl border border-line bg-ticket">
         {steps.map((step, i) => {
           const isDone = doneSteps.includes(i);
+          const tag = isDone ? "완료" : i === nextIndex ? "지금" : "다음";
           return (
-            <li key={step}>
+            <li key={step} className={i ? "border-t border-line" : ""}>
               <button
                 type="button"
                 onClick={() => onToggle(i)}
-                className={`w-[calc(100vw_-_33px)] min-h-[61px] px-4 py-3 flex items-center gap-[13px] text-left rounded-xl border-[3px] border-[#E6D6B0] cursor-pointer transition-colors ${
-                  isDone ? "bg-[#E8D9B0]" : "bg-[#F4EAD5]"
-                }`}
+                aria-pressed={isDone}
+                className="w-full min-h-[64px] px-4 py-3 flex items-center gap-3 text-left cursor-pointer"
               >
-                {/* 체크박스 */}
                 <span
-                  className={`shrink-0 w-6 h-6 rounded-[5px] border-2 border-[#15121F] flex items-center justify-center ${
-                    isDone ? "bg-[#E8C06A]" : "bg-white"
+                  className={`shrink-0 w-8 h-8 rounded-full border-2 border-navy flex items-center justify-center text-[13px] font-bold ${
+                    isDone ? "bg-navy text-brass" : "bg-white text-navy"
                   }`}
                 >
-                  {isDone && (
-                    <svg width="12" height="10" viewBox="0 0 12 10" fill="none">
-                      <path
-                        d="M1 5L4.5 8.5L11 1.5"
-                        stroke="#F4EAD5"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  )}
+                  {isDone ? "✓" : i + 1}
                 </span>
-
-                <span>
-                  <span className="block text-[#A09480] text-[11px] font-normal font-sans">
-                    조각 {i + 1}
-                  </span>
-                  <span
-                    className={`block text-[#15121F] text-sm font-normal font-pixel ${
-                      isDone ? "line-through decoration-[#6B5E4A]" : ""
-                    }`}
-                  >
-                    {step}
-                  </span>
+                <span
+                  className={`flex-1 text-[15px] font-bold break-keep ${
+                    isDone ? "text-mute line-through" : "text-navy"
+                  }`}
+                >
+                  {step}
+                </span>
+                <span
+                  className={`label-en text-[10px] ${tag === "지금" ? "text-stamp-red" : "text-mute"}`}
+                >
+                  {tag}
                 </span>
               </button>
             </li>
@@ -60,8 +49,8 @@ export default function SplitSteps({ steps, doneSteps, onToggle }) {
         })}
       </ol>
 
-      <p className="mt-[13px] text-center text-[#B0AAAA] text-sm font-medium font-sans">
-        조각을 하나라도 해내면 기록할 수 있어요.
+      <p className="mt-3 text-center text-[13px] text-mute">
+        하나만 해도 도장을 받을 수 있어요.
       </p>
     </section>
   );

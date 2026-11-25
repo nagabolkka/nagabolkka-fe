@@ -9,7 +9,7 @@ export default function ChoiceChips({ choices, onSelect, disabled = false }) {
             type="button"
             onClick={() => onSelect(choice)}
             disabled={disabled}
-            className="cursor-pointer rounded-full border-2 border-[#F2C14E] px-3 py-1.5 text-[11px] text-[#F2C14E] disabled:cursor-not-allowed disabled:opacity-40"
+            className="cursor-pointer rounded-full border border-dashed border-navy bg-white px-3 py-1.5 text-xs font-semibold text-navy disabled:cursor-not-allowed disabled:opacity-40"
           >
             {choice}
           </button>

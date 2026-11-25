@@ -1,18 +1,14 @@
-import { getRegion } from "../../mocks/regions";
+import IslandStamp from "../common/Island/IslandStamp";
 
+// 4단계를 다 마치면 꿈의 섬 특별 도장
 export default function HopePieceCard({ isReceived }) {
-  const color = getRegion(5).color; // 새로운 세상 색
-
   return (
-    <div className="flex items-center gap-3 rounded-lg border-2 border-[#15121F] bg-[#2B2340] px-4 py-3">
-      <div
-        className="ml-1 h-3.5 w-3.5 shrink-0 rotate-45 border-2 border-[#15121F]"
-        style={{ backgroundColor: isReceived ? color : "#1E1A2E" }}
-      />
-      <p className="text-xs leading-5 text-[#F4EAD5] break-keep">
+    <div className="flex items-center gap-3 rounded-2xl bg-[#FBF5E4] px-4 py-3">
+      <IslandStamp stageNo={5} size={44} dim={!isReceived} className="shrink-0" />
+      <p className="text-[13px] leading-5 text-[#6B5320] break-keep">
         {isReceived
-          ? "희망 조각을 찾았어요! 새로운 세상에 아침이 밝았어요."
-          : "4단계를 모두 마치면 새로운 세상의 희망 조각을 찾을 수 있어요."}
+          ? "희망 도장을 받았어요! 꿈의 섬에 아침이 밝았어요."
+          : "4단계를 모두 마치면 꿈의 섬 「희망 도장」을 받아요."}
       </p>
     </div>
   );

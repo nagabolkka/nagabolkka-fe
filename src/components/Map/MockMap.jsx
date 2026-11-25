@@ -20,21 +20,21 @@ export default function MockMap({ places, center }) {
   const me = toPosition(origin);
 
   return (
-    <div className="relative h-[210px] w-full overflow-hidden bg-[#E9E4D4]">
+    <div className="relative h-[260px] w-full overflow-hidden bg-[#EAF1F6]">
       {/* 블록 · 공원 */}
-      <div className="absolute left-[44%] top-[18%] h-[22%] w-[22%] bg-[#DDD3BE]" />
-      <div className="absolute left-[74%] top-[18%] h-[22%] w-[24%] bg-[#DDD3BE]" />
-      <div className="absolute left-[5%] top-[62%] h-[16%] w-[24%] rounded-sm bg-[#CFE3C2]" />
-      <div className="absolute left-[74%] top-[62%] h-[16%] w-[24%] rounded-sm bg-[#CFE3C2]" />
+      <div className="absolute left-[44%] top-[18%] h-[22%] w-[22%] bg-[#E3DCF2]" />
+      <div className="absolute left-[74%] top-[18%] h-[22%] w-[24%] bg-[#E3DCF2]" />
+      <div className="absolute left-[5%] top-[62%] h-[16%] w-[24%] rounded-lg bg-[#D6EBC8]" />
+      <div className="absolute left-[74%] top-[62%] h-[16%] w-[24%] rounded-lg bg-[#D6EBC8]" />
 
       {/* 도로 */}
-      <div className="absolute left-0 top-[12%] h-[5%] w-full bg-[#F7F3EA]" />
-      <div className="absolute left-0 top-[48%] h-[7%] w-full bg-[#F7F3EA]" />
-      <div className="absolute left-[33%] top-0 h-full w-[4%] bg-[#F7F3EA]" />
-      <div className="absolute left-[64%] top-0 h-full w-[3%] bg-[#F7F3EA]" />
+      <div className="absolute left-0 top-[12%] h-[5%] w-full bg-white" />
+      <div className="absolute left-0 top-[48%] h-[7%] w-full bg-white" />
+      <div className="absolute left-[33%] top-0 h-full w-[4%] bg-white" />
+      <div className="absolute left-[64%] top-0 h-full w-[3%] bg-white" />
 
       {/* 하천 */}
-      <div className="absolute bottom-0 left-0 h-[8%] w-full bg-[#BFD7E6]" />
+      <div className="absolute bottom-0 left-0 h-[8%] w-full bg-[#CDE7F5]" />
 
       {/* 장소 마커 */}
       {places.map((place) => {
@@ -44,7 +44,7 @@ export default function MockMap({ places, center }) {
 
       {/* 내 위치 */}
       <div
-        className="absolute h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-[#4A90E2] shadow"
+        className="absolute h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-[3px] border-white bg-[#3FAED6] shadow-[0_0_0_6px_rgba(63,174,214,0.25)]"
         style={{ left: `${me.x}%`, top: `${me.y}%` }}
       />
     </div>

@@ -1,57 +1,46 @@
-import PieceDiamond from "./PieceDiamond";
+import InkStamp from "../common/Stamp/InkStamp";
 import { getPieceHowTo, getPieceTypeLabel } from "../../constants/pieceType";
 
+// 도장 한 칸 자세히
 export default function PieceSheet({ piece, onClose }) {
-  const {
-    found,
-    name,
-    type,
-    count,
-    restoreText,
-    hint,
-    regionName,
-    stageNo,
-    color,
-    chapterState,
-  } = piece;
+  const { found, name, type, count, restoreText, hint, regionName, color, chapterState } = piece;
   const locked = chapterState === "locked";
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-end bg-black/60"
-      onClick={onClose}
-    >
+    <div className="fixed inset-0 z-50 flex items-end bg-navy-deep/55" onClick={onClose}>
       <div
-        className="w-full rounded-t-2xl bg-[#F4EAD5] px-5 pb-8 pt-10 text-center"
+        role="dialog"
+        aria-modal="true"
+        aria-label={found ? name : "아직 못 받은 도장"}
+        className="w-full rounded-t-[22px] bg-ticket px-5 pb-8 pt-3 text-center"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex justify-center">
-          <PieceDiamond
-            color={color}
-            found={found}
-            size={44}
-            emptyColor="#3A3358"
+        <div className="mx-auto h-1 w-10 rounded-full bg-line" />
+        <div className="mt-5 flex justify-center">
+          <InkStamp
+            title={found ? name.replace(" 조각", "") : "?"}
+            sub={regionName}
+            color={found ? color : "#C9C2AE"}
+            dashed={!found}
+            size={120}
           />
         </div>
 
-        <p className="mt-7 text-sm font-normal font-pixel text-black">
-          {stageNo ? `CHAPTER ${stageNo} · ` : ""}
+        <p className="mt-3 text-[13px] text-mute">
           {regionName} · {getPieceTypeLabel(type)}
         </p>
-        <h2 className="mt-[13px] font-pixel font-normal text-2xl text-black">
-          {found ? name : "아직 찾지 못한 조각"}
+        <h2 className="mt-1 font-serif text-2xl font-bold text-navy">
+          {found ? name : "아직 못 받은 도장"}
         </h2>
-        <p className="mt-[18px] text-sm font-normal font-pixel text-[#363636]">
-          {found ? restoreText : `힌트 : ${hint}`}
-        </p>
+        <p className="mt-3 text-sm text-navy/80 break-keep">{found ? restoreText : `힌트 : ${hint}`}</p>
         {!found && (
-          <p className="mt-3 text-xs font-medium text-[#6B5E4A] break-keep">
-            {locked ? "이 챕터에 도착하면 모을 수 있어요" : getPieceHowTo(type)}
+          <p className="mt-2 text-xs text-mute break-keep">
+            {locked ? "이 섬 탑승권이 나오면 모을 수 있어요" : getPieceHowTo(type)}
           </p>
         )}
 
-        <p className="mt-8 text-xs font-medium text-[#6B5E4A]">
-          {found ? `${count}개 모음` : "찾으면 도감에 기록돼요."}
+        <p className="mt-6 text-xs font-semibold text-mute">
+          {found ? `${count}번 찍음` : "받으면 도장 면에 찍혀요."}
         </p>
       </div>
     </div>

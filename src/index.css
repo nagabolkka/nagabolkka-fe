@@ -1,31 +1,46 @@
 @import "galmuri/dist/galmuri.css";
 @import "pretendard/dist/web/static/pretendard.css";
+@import "@fontsource/noto-serif-kr/700.css";
 @import "tailwindcss";
 
 @theme {
-  /* 배경 */
-  --color-bg-page: #1b1830; /* 일반 페이지 기본 배경 */
-  --color-bg-glow: #3b3366; /* 인트로 radial 중심색 */
-  --color-bg-deep: #15121f;
-  --color-bg-base: #2b2340;
-  --color-bg-raised: #3a3358;
-  --color-bg-dialog: #221e3a;
-  /* 포인트 */
-  --color-gold: #f2c14e;
-  --color-gold-dark: #d39a2a;
-  --color-gold-light: #ffe08a;
-  /* 카드·텍스트 */
-  --color-cream: #f4ead5;
-  --color-sub: #b9b0d0;
-  /* 글꼴 */
+  /* 관리자 화면 글꼴 (관리자는 디자인 개편 제외) */
   --font-pixel: "Galmuri11", monospace;
+
+  /* ===== 여권 디자인 ===== */
+  --color-navy: #1c2a5e; /* 여권 표지 · 기본 글자 · 버튼 */
+  --color-navy-2: #25356f; /* 어두운 화면 안 카드 */
+  --color-navy-deep: #0f1838; /* 테두리 · 그림자 */
+  --color-brass: #d2b36b; /* 금장 */
+  --color-paper: #f4f1e6; /* 종이 */
+  --color-ticket: #fffdf6; /* 티켓 · 카드 크림 */
+  --color-mute: #6b7699; /* 흐린 글자 */
+  --color-line: #c9d0e6; /* 선 · 테두리 */
+  --color-mute-on-navy: #c9d0e6; /* 어두운 화면 흐린 글자 */
+  --color-stamp-red: #c0392b;
+  --color-sky: #cfe8f6;
+  --color-lamp: #ffe07a; /* 섬 불빛 */
+  /* 기분 잉크 (도장 · 기록 달력 점에만) */
+  --color-ink-1: #7e8bc4;
+  --color-ink-2: #5fa8c9;
+  --color-ink-3: #5db884;
+  --color-ink-4: #e3a43a;
+  --color-ink-5: #e0566b;
+
+  /* 글꼴 */
   --font-sans: "Pretendard", system-ui, sans-serif;
+  --font-serif: "Noto Serif KR", "Pretendard", serif;
+
   /* 레이아웃 */
   --container-mobile: 393px;
 
   /* 애니메이션 */
   --animate-blink: blink 1s steps(1, end) infinite;
   --animate-float: float 2s ease-in-out infinite;
+  --animate-drift: drift 4s ease-in-out infinite;
+  --animate-stamp-slam: stamp-slam 0.6s cubic-bezier(0.3, 0.9, 0.4, 1) both;
+  --animate-stamp-ink: stamp-ink 0.9s ease-out both;
+  --animate-paper-thud: paper-thud 0.6s ease-out both;
 
   @keyframes blink {
     0%,
@@ -46,11 +61,106 @@
       transform: translateY(-8px);
     }
   }
+
+  /* 인트로 : 여권 펼치기 */
+  @keyframes passport-open {
+    0% {
+      opacity: 0;
+      transform: perspective(800px) rotateY(-70deg);
+    }
+    100% {
+      opacity: 1;
+      transform: perspective(800px) rotateY(0);
+    }
+  }
+
+    /* 도장 쾅 : 위에서 크게 내려와 눌리고 → 살짝 튕김 */
+  @keyframes stamp-slam {
+    0% {
+      opacity: 0;
+      transform: translateY(-36px) scale(2.3) rotate(-8deg);
+    }
+    45% {
+      opacity: 1;
+      transform: translateY(0) scale(0.88) rotate(0);
+    }
+    65% {
+      transform: scale(1.05);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* 도장 쾅 : 찍히는 순간 잉크가 번짐 */
+  @keyframes stamp-ink {
+    0%,
+    30% {
+      opacity: 0;
+      transform: scale(0.5);
+    }
+    40% {
+      opacity: 0.35;
+      transform: scale(0.9);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(1.5);
+    }
+  }
+
+  /* 도장 쾅 : 종이가 같이 눌림 */
+  @keyframes paper-thud {
+    0%,
+    40% {
+      transform: translateY(0) scale(1);
+    }
+    50% {
+      transform: translateY(3px) scale(0.985);
+    }
+    70% {
+      transform: translateY(-1px) scale(1.003);
+    }
+    100% {
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  /* 떠 있는 섬 : 천천히 둥실 */
+  @keyframes drift {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-6px);
+    }
+  }
+}
+
+/* 밝은 화면 배경 : 하늘 → 종이 */
+@utility bg-sky-paper {
+  background: linear-gradient(
+    180deg,
+    #cfe8f6 0%,
+    #e6f2f9 30%,
+    #f4f1e6 70%,
+    #f4f1e6 100%
+  );
+}
+
+/* 영문 라벨 (TODAY'S FLIGHT · FROM · GATE …) */
+@utility label-en {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 body {
   margin: 0;
-  background: var(--color-bg-page);
-  color: var(--color-cream);
+  background: var(--color-paper);
+  color: var(--color-navy);
   font-family: var(--font-sans);
 }

@@ -4,14 +4,18 @@ import MoodSelector from "../../components/Quest/MoodSelector";
 import ReflectionInput from "../../components/Quest/ReflectionInput";
 import Button from "../../components/common/Button/Button";
 import PageLoading from "../../components/common/PageLoading/PageLoading";
-import backButton from "../../assets/images/backButton.svg";
+import BackHeader from "../../components/common/BackHeader/BackHeader";
+import Lumi from "../../components/common/Lumi/Lumi";
+import InkStamp from "../../components/common/Stamp/InkStamp";
+import Toast from "../../components/common/Toast/Toast";
+import { MOOD_INK, todayFlight } from "../../constants/islands";
 import useQuest from "../../hooks/useQuest";
 import { completeQuest } from "../../api/quests";
 import { loadSplitSteps } from "../../utils/splitStepStorage";
 
 export default function QuestRecord() {
   const navigate = useNavigate();
-  const { quest, mission, error } = useQuest();
+  const { quest, mission, region, error } = useQuest();
   const [mood, setMood] = useState(null);
   const [reflection, setReflection] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -67,31 +71,50 @@ export default function QuestRecord() {
   };
 
   return (
-    <div className="flex-1 flex flex-col">
-      {/* 상단 */}
-      <header className="mt-6 flex items-center gap-2 pl-2.5">
-        <img
-          src={backButton}
-          onClick={() => navigate(-1)}
-          className="cursor-pointer"
-        />
-        <p className="text-[#F4EAD5] text-sm font-normal font-pixel">
-          모험 기록
-        </p>
-      </header>
+    <div className="flex-1 flex flex-col bg-navy">
+      <BackHeader dark title="입국 심사" label={`ARRIVAL · ${region.name}`} onBack={() => navigate(-1)} />
 
-      <section className="flex flex-col mt-2.5 pl-[22px]">
-        <p className="text-[#F2C14E] text-xs font-normal leading-8 font-pixel">
-          {mission.title}
-        </p>
-        <h1 className="text-[#F4EAD5] text-xl font-normal leading-8 font-pixel">
-          다녀와서 기분이 어땠어?
-        </h1>
+      {/* 심사관 루미 */}
+      <section className="mx-4 flex items-start gap-2">
+        <div className="flex-1 rounded-2xl bg-white px-3.5 py-2.5">
+          <p className="text-[13px] font-bold leading-5 text-navy">
+            어서 와요! 여행은 어땠어요?
+            <br />
+            <span className="font-medium text-mute">고른 기분이 도장 잉크가 돼요</span>
+          </p>
+        </div>
+        <Lumi pose="stamp" size={92} className="-mt-3 shrink-0" />
       </section>
 
-      <div className="pl-[22px] pr-[26px]">
+      {/* 탑승권 스텁 : 도장 미리보기 */}
+      <section className="mx-4 mt-1 overflow-hidden rounded-2xl bg-ticket">
+        <div className="h-2" style={{ backgroundColor: region.color }} />
+        <div className="flex items-center justify-between gap-3 px-4 py-3">
+          <div className="min-w-0">
+            <p className="label-en text-[11px] text-navy">
+              {todayFlight()} · ROOM → {region.code}
+            </p>
+            <p className="mt-1 text-sm font-bold text-navy break-keep line-clamp-2">{mission.title}</p>
+            <svg width="150" height="22" aria-hidden className="mt-2">
+              {Array.from({ length: 30 }, (_, i) => (
+                <rect key={i} x={i * 5} y="0" width={[1, 2, 1, 3, 1, 2][i % 6]} height="22" fill="#1C2A5E" />
+              ))}
+            </svg>
+          </div>
+          <InkStamp
+            title={mission.reward.name}
+            sub={mood ? "미리보기" : "잉크를 골라요"}
+            color={mood ? MOOD_INK[mood] : "#C9C2AE"}
+            dashed
+            size={92}
+          />
+        </div>
+      </section>
+
+      <section className="px-4 mt-5">
+        <p className="font-serif text-[15px] font-bold text-white">잉크 고르기 · 오늘 기분</p>
         <MoodSelector selected={mood} onSelect={setMood} />
-      </div>
+      </section>
 
       <ReflectionInput
         value={reflection}
@@ -102,17 +125,14 @@ export default function QuestRecord() {
       {/* 하단 버튼 */}
       <div className="mt-auto pt-6 pb-8 flex justify-center">
         <Button
-          title={submitting ? "루미가 듣는 중…" : "기록하고 조각 받기"}
+          variant="gold"
+          title={submitting ? "도장 찍는 중…" : "쾅!  도장 받기"}
           disabled={!mood || submitting}
           onClick={handleSubmit}
         />
       </div>
 
-      {toast && (
-        <div className="fixed bottom-10 left-1/2 z-50 w-[300px] -translate-x-1/2 rounded-full bg-[#15121F]/90 px-6 py-2 text-center text-xs text-[#F4EAD5]">
-          {toast}
-        </div>
-      )}
+      <Toast message={toast} bottom="bottom-10" />
     </div>
   );
 }

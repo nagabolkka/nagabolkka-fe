@@ -35,7 +35,7 @@ export default function NotificationToggle({ onToast }) {
         setState(ok ? "on" : await getPushState());
         onToast?.(
           ok
-            ? "매일 아침 9시에 오늘의 퀘스트를 알려 줄게요"
+            ? "매일 아침 9시에 오늘의 탑승권을 알려 줄게요"
             : "알림이 허용되지 않았어요",
         );
       }
@@ -47,32 +47,31 @@ export default function NotificationToggle({ onToast }) {
   };
 
   return (
-    <section className="w-full rounded-[10px] border-2 border-[#15121F] bg-[#2C2745] px-4 py-3.5">
+    <section className="w-full rounded-2xl border border-line bg-ticket px-4 py-3.5">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <p className="font-pixel text-sm text-[#F4EAD5]">알림</p>
-          <p className="mt-0.5 text-xs text-[#B9B0D0]">
-            오늘의 퀘스트 (매일 9시) · 루미의 편지 · 서버 점검
+          <p className="text-[15px] font-bold text-navy">알림</p>
+          <p className="mt-0.5 text-xs text-mute">
+            오늘의 탑승권 (매일 9시) · 루미의 엽서 · 서버 점검
           </p>
         </div>
         <button
           type="button"
           role="switch"
           aria-checked={on}
+          aria-label="알림"
           onClick={toggle}
           disabled={!canToggle}
-          className={`h-7 w-12 shrink-0 rounded-full border-2 border-[#15121F] p-0.5 transition-colors ${
-            on ? "bg-[#F2C14E]" : "bg-[#3A3358]"
+          className={`h-7 w-12 shrink-0 rounded-full p-0.5 transition-colors cursor-pointer ${
+            on ? "bg-brass" : "bg-line"
           } disabled:opacity-40`}
         >
           <span
-            className={`block size-5 rounded-full bg-[#F4EAD5] transition-transform ${on ? "translate-x-5" : ""}`}
+            className={`block size-6 rounded-full bg-white shadow transition-transform ${on ? "translate-x-5" : ""}`}
           />
         </button>
       </div>
-      {GUIDE[state] && (
-        <p className="mt-2 text-xs text-[#B9B0D0] break-keep">{GUIDE[state]}</p>
-      )}
+      {GUIDE[state] && <p className="mt-2 text-xs text-mute break-keep">{GUIDE[state]}</p>}
     </section>
   );
 }

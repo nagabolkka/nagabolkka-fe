@@ -30,14 +30,14 @@ export const createPlacePin = (color, name) => {
   if (name) {
     const label = document.createElement("div");
     label.className =
-      "mb-1 max-w-[160px] truncate rounded-full bg-[#15121F]/85 px-2 py-0.5 text-[11px] text-[#F4EAD5] shadow";
+      "mb-1 max-w-[160px] truncate rounded-full bg-[#1C2A5E] px-2.5 py-0.5 text-[11px] font-bold text-[#D2B36B] shadow";
     label.textContent = name;
     marker.appendChild(label);
   }
 
   const pin = document.createElement("div");
   pin.className =
-    "flex h-7 w-7 items-center justify-center border-2 border-white shadow-[0_2px_6px_rgba(0,0,0,0.35)]";
+    "flex h-7 w-7 items-center justify-center border-2 border-[#1C2A5E] shadow-[0_2px_6px_rgba(0,0,0,0.25)]";
   pin.style.backgroundColor = color;
   pin.style.borderRadius = "50% 50% 50% 0";
   pin.style.transform = "rotate(-45deg)";

@@ -9,18 +9,16 @@ export default function PlaceInfoTable({ place }) {
   ];
 
   return (
-    <dl className="rounded-lg border-2 border-[#15121F] bg-[#2B2340] px-4 py-1">
+    <dl className="rounded-2xl border border-line bg-ticket px-4 py-1">
       {rows.map(({ label, value }, i) => (
         <div
           key={label}
-          className={`grid grid-cols-[4rem_1fr] items-center py-3 ${
-            i < rows.length - 1 ? "border-b border-[#3A3358]" : ""
+          className={`grid grid-cols-[4.2rem_1fr] items-center py-3 ${
+            i < rows.length - 1 ? "border-b border-line" : ""
           }`}
         >
-          <dt className="text-sm text-[#B9B0D0]">{label}</dt>
-          <dd className="text-sm font-semibold text-[#F4EAD5] break-keep">
-            {value}
-          </dd>
+          <dt className="text-[13px] text-mute">{label}</dt>
+          <dd className="text-sm font-semibold text-navy break-keep">{value}</dd>
         </div>
       ))}
     </dl>

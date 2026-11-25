@@ -5,5 +5,5 @@ export const VOICE_MIN_MS = 700; // 이보다 짧으면 「조금 더 길게 말
 
 export const getPracticeLumiMessage = (remaining) =>
   remaining > 0
-    ? `오늘 연습은 ${remaining}번 더 할 수 있어. 편하게 골라봐!`
-    : "오늘 연습은 여기까지! 내일 또 같이 해보자.";
+    ? `오늘 연습은 ${remaining}번 더 할 수 있어요. 편하게 골라 봐요!`
+    : "오늘 연습은 여기까지! 내일 또 같이 해요.";

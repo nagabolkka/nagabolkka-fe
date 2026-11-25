@@ -1,8 +1,8 @@
 // 마이크 버튼 (보내기 바로 위) · status : idle · recording · transcribing
 const STYLE = {
-  idle: "border-[#F2C14E] bg-[#1B1830] text-[#F2C14E]",
-  recording: "border-[#2B2340] bg-[#D9604C] text-[#F4EAD5]",
-  transcribing: "border-[#2B2340] bg-[#3A3358] text-[#F4EAD5]",
+  idle: "border-navy bg-white text-navy",
+  recording: "border-stamp-red bg-stamp-red text-white",
+  transcribing: "border-line bg-line text-navy",
 };
 
 const LABEL = {
@@ -60,16 +60,16 @@ export default function MicButton({
       disabled={disabled}
       aria-label={LABEL[status]}
       aria-busy={status === "transcribing"}
-      className={`flex h-11 w-[62px] shrink-0 cursor-pointer items-center justify-center gap-1 rounded-md border-2 ${STYLE[status]} disabled:cursor-not-allowed disabled:opacity-40`}
+      className={`flex h-11 w-[62px] shrink-0 cursor-pointer items-center justify-center gap-1 rounded-full border-[1.5px] ${STYLE[status]} disabled:cursor-not-allowed disabled:opacity-40`}
     >
       {status === "recording" && (
         <>
-          <span className="size-2.5 rounded-[2px] bg-[#F4EAD5]" />
-          <span className="font-pixel text-[11px]">{formatTime(seconds)}</span>
+          <span className="size-2.5 rounded-[2px] bg-white" />
+          <span className="text-[11px] font-bold">{formatTime(seconds)}</span>
         </>
       )}
       {status === "transcribing" && (
-        <span className="font-pixel text-sm tracking-widest">···</span>
+        <span className="text-sm font-bold tracking-widest">···</span>
       )}
       {status === "idle" && <MicIcon />}
     </button>

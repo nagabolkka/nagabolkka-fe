@@ -1,8 +1,8 @@
 export default function FeedbackSection({ title, items }) {
   return (
-    <section className="rounded-lg border-2 border-[#15121F] bg-[#2B2340] px-4 py-3">
-      <h2 className="font-pixel text-sm text-[#F2C14E]">{title}</h2>
-      <ul className="mt-2 list-disc pl-4 text-xs leading-5 text-[#F4EAD5]">
+    <section className="rounded-2xl border border-line bg-ticket px-4 py-3">
+      <h2 className="font-serif text-[15px] font-bold text-navy">{title}</h2>
+      <ul className="mt-2 list-disc pl-4 text-[13px] leading-6 text-navy/85 break-keep">
         {items.map((item) => (
           <li key={item}>{item}</li>
         ))}

@@ -1,6 +1,6 @@
 const CONFIRM_STYLE = {
-  primary: "bg-[#E8C06A] text-[#15121F]",
-  danger: "bg-[#D9604C] text-[#F4EAD5]",
+  primary: "bg-navy text-brass",
+  danger: "bg-stamp-red text-white",
 };
 
 export default function ConfirmModal({
@@ -12,25 +12,31 @@ export default function ConfirmModal({
   onConfirm,
 }) {
   return (
-    <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/50 px-6">
-      <div className="w-full max-w-[345px] rounded-lg border-2 border-[#15121F] bg-[#F4EAD5] px-5 py-5">
-        <h2 className="font-pixel text-lg text-[#15121F]">{title}</h2>
-        <p className="mt-2 whitespace-pre-line text-xs leading-5 font-pixel font-normal break-keep text-[#15121F]/70">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-navy-deep/55 px-6">
+      <div
+        role="dialog"
+        aria-modal="true"
+        className="w-full max-w-[345px] rounded-2xl bg-ticket px-5 pt-5 pb-4 shadow-xl"
+      >
+        <h2 className="font-serif text-lg font-bold text-navy break-keep">
+          {title}
+        </h2>
+        <p className="mt-2 whitespace-pre-line text-[13px] leading-5 break-keep text-mute">
           {description}
         </p>
 
-        <div className="mt-4 grid grid-cols-2 gap-3">
+        <div className="mt-5 grid grid-cols-2 gap-2.5">
           <button
             type="button"
             onClick={onCancel}
-            className="w-full rounded-[5px] border-1 border-[#15121F] bg-[#3A3358] py-2.5 text-sm font-normal font-pixel text-[#F4EAD5]"
+            className="w-full h-11 rounded-xl border-[1.5px] border-line bg-white text-sm font-bold text-navy cursor-pointer"
           >
             취소
           </button>
           <button
             type="button"
             onClick={onConfirm}
-            className={`w-full rounded-[5px] border-2 border-[#2B2340] py-2.5 text-sm font-pixel font-normal ${CONFIRM_STYLE[variant]}`}
+            className={`w-full h-11 rounded-xl text-sm font-bold cursor-pointer ${CONFIRM_STYLE[variant]}`}
           >
             {confirmText}
           </button>

@@ -1,31 +1,43 @@
 import GoalStepItem from "./GoalStepItem";
 
-export default function GoalCard({ goal, pendingStepId, onToggle }) {
+// 지금 목표 + 4단계 체크
+export default function GoalCard({ goal, pendingStepId, onToggle, onChange }) {
   const { name, steps, checked, total } = goal;
   const percent = total > 0 ? (checked / total) * 100 : 0;
 
   return (
-    <section className="rounded-[10px] border-[3px] border-[#E6D6B0] bg-[#F4EAD5] px-3.5 py-4">
-      <h2 className="font-pixel text-xl text-[#15121F]">{name}</h2>
+    <>
+      <section className="rounded-2xl bg-navy px-4 py-4">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="text-xs text-brass">나의 꿈 · 방문 목적</p>
+            <h2 className="mt-0.5 font-serif text-2xl font-bold text-white">{name}</h2>
+          </div>
+          {onChange && (
+            <button
+              type="button"
+              onClick={onChange}
+              className="shrink-0 rounded-full bg-white/15 px-3 py-1.5 text-xs font-bold text-white cursor-pointer"
+            >
+              바꾸기 ›
+            </button>
+          )}
+        </div>
+        <p className="mt-2 text-xs text-mute-on-navy">
+          {checked} / {total} 단계 · 꿈의 섬 불빛과 이어져요
+        </p>
+        <div className="mt-2 h-1.5 w-full rounded-full bg-white/20 overflow-hidden">
+          <div className="h-full rounded-full bg-brass transition-all" style={{ width: `${percent}%` }} />
+        </div>
+      </section>
 
-      <div className="mt-3 h-3 w-full border-2 border-[#2B2340]/40 bg-[#E6D6B0]">
-        <div className="h-full bg-[#9B8CE0] transition-all" style={{ width: `${percent}%` }} />
-      </div>
-      <p className="mt-2 font-pixel text-xs text-[#6B5E4A]">
-        준비 {checked}/{total}
-      </p>
-
-      <ul className="mt-2 flex flex-col gap-2">
-        {steps.map((step) => (
-          <li key={step.stepId}>
-            <GoalStepItem
-              step={step}
-              disabled={pendingStepId === step.stepId}
-              onToggle={() => onToggle(step)}
-            />
+      <ul className="overflow-hidden rounded-2xl border border-line bg-ticket">
+        {steps.map((step, i) => (
+          <li key={step.stepId} className={i ? "border-t border-line" : ""}>
+            <GoalStepItem step={step} disabled={pendingStepId === step.stepId} onToggle={() => onToggle(step)} />
           </li>
         ))}
       </ul>
-    </section>
+    </>
   );
 }

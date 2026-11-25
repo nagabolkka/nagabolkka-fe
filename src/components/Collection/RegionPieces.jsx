@@ -1,61 +1,54 @@
 import PieceSlot from "./PieceSlot";
+import IslandStamp from "../common/Island/IslandStamp";
+import { getIsland } from "../../constants/islands";
 import { chapterState, foundSlotCount } from "../../utils/collection";
 
+// 섬 하나의 도장 면
 export default function RegionPieces({ region, onlyMissing = false, onSelect }) {
-  const { stageNo, name, pieceFamily, color, restoration, status, slots } = region;
+  const { stageNo, restoration, status, slots } = region;
+  const island = getIsland(stageNo);
   const state = chapterState(status); // current · passed · locked
   const visibleSlots = onlyMissing ? slots.filter((slot) => !slot.found) : slots;
 
   return (
     <section
-      className={`rounded-[10px] border-2 bg-[#2C2745] p-3 shadow-[0px_4px_0px_0px_rgba(21,18,31,0.25)] ${
-        state === "locked" ? "opacity-55" : ""
-      }`}
-      style={{ borderColor: state === "current" ? color : "#15121F" }}
+      className={`rounded-2xl border bg-ticket p-3.5 ${state === "locked" ? "opacity-55" : ""}`}
+      style={{ borderColor: state === "current" ? island.color : "#C9D0E6" }}
     >
-      <div className="flex items-center gap-2">
-        <span className="font-pixel text-[10px] text-[#B9B0D0]">
-          CHAPTER {stageNo}
-        </span>
-        {state === "current" && (
-          <span
-            className="rounded px-1.5 font-pixel text-[10px] text-[#15121F]"
-            style={{ backgroundColor: color }}
-          >
-            지금 여기
-          </span>
-        )}
-      </div>
-
-      <div className="mt-1 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div
-            className="h-2.5 w-2.5 rotate-45"
-            style={{ backgroundColor: color }}
-          />
-          <h2 className="font-pixel font-normal text-sm text-[#F4EAD5]">
-            {name}
-          </h2>
-          <span className="text-xs font-medium font-sans text-[#B9B0D0]">
-            {pieceFamily}
-          </span>
+      <div className="flex items-center gap-2.5">
+        <IslandStamp stageNo={stageNo} size={36} dim={state === "locked"} />
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-1.5">
+            <h2 className="font-serif text-base font-bold text-navy">{island.name}</h2>
+            {state === "current" && (
+              <span className="rounded-full bg-navy px-2 py-0.5 text-[10px] font-bold text-brass">
+                지금 여기
+              </span>
+            )}
+          </div>
+          <p className="text-[11px] text-mute">
+            {state === "locked"
+              ? "탑승권이 나오면 열려요"
+              : `${foundSlotCount(region)} / ${slots.length} · 불빛 ${restoration}%`}
+          </p>
         </div>
-        <span className="font-pixel text-xs font-normal text-[#B9B0D0]">
-          {state === "locked"
-            ? "도착하면 열려요"
-            : `${foundSlotCount(region)}/${slots.length} · 복원 ${restoration}%`}
-        </span>
       </div>
 
-      <ul className="mt-3 grid grid-cols-5 gap-[13px]">
+      <ul className="mt-3 grid grid-cols-5 gap-1">
         {visibleSlots.map((slot) => (
           <li key={slot.slotNo}>
             <PieceSlot
               slot={slot}
-              color={color}
+              color={island.dark}
               highlight={state === "current"}
               onClick={() =>
-                onSelect({ ...slot, regionName: name, stageNo, color, chapterState: state })
+                onSelect({
+                  ...slot,
+                  regionName: island.name,
+                  stageNo,
+                  color: island.dark,
+                  chapterState: state,
+                })
               }
             />
           </li>

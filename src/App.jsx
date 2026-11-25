@@ -26,6 +26,7 @@ import Practice from "./pages/Practice/Practice";
 import PracticeChat from "./pages/Practice/PracticeChat";
 import PracticeFeedback from "./pages/Practice/PracticeFeedback";
 import Guide from "./pages/Guide/Guide";
+import Islands from "./pages/Islands/Islands";
 
 export default function App() {
   return (
@@ -55,6 +56,7 @@ export default function App() {
             element={<PracticeFeedback />}
           />
           <Route path="/guide" element={<Guide />} />
+          <Route path="/islands" element={<Islands />} />
           <Route element={<MainLayout />}>
             <Route path="/home" element={<Home />} />
             <Route path="/records" element={<Records />} />

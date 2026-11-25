@@ -6,6 +6,7 @@ import ChoiceChips from "../../components/Practice/ChoiceChips";
 import ChatInput from "../../components/Practice/ChatInput";
 import Button from "../../components/common/Button/Button";
 import ConfirmModal from "../../components/common/ConfirmModal/ConfimModal";
+import Toast from "../../components/common/Toast/Toast";
 import { finishPractice, sendPracticeTurn } from "../../api/practice";
 
 // 세션이 끝났거나 멈춤 · 턴 초과 · 남의 세션 → 연습실로
@@ -108,11 +109,11 @@ export default function PracticeChat() {
   };
 
   return (
-    <div className="relative flex h-dvh flex-col bg-bg-page">
-      <div className="border-b-2 border-[#2C2745] px-4 pb-3 pt-[27px]">
+    <div className="relative flex h-dvh flex-col bg-sky-paper">
+      <div className="border-b border-line px-4 pb-3 pt-4">
         <PracticeHeader
           title={scenario.title}
-          subtitle={`루미가 ${scenario.partnerRole} 역할을 해요.`}
+          subtitle={`기장 루미가 ${scenario.partnerRole} 역할을 해요.`}
           turn={turn}
           maxTurns={session.maxTurns}
           onBack={() => setIsExitOpen(true)}
@@ -121,7 +122,7 @@ export default function PracticeChat() {
 
       <ChatList messages={messages} isTyping={isTyping} />
 
-      <div className="border-t-[3px] border-[#2C2745] bg-[#15121F] px-4 pb-6 pt-3">
+      <div className="border-t border-line bg-ticket px-4 pb-6 pt-3">
         {isFinished ? (
           <div className="flex justify-center">
             <Button
@@ -159,11 +160,7 @@ export default function PracticeChat() {
         />
       )}
 
-      {toast && (
-        <div className="fixed bottom-28 left-1/2 z-50 w-[300px] -translate-x-1/2 rounded-full bg-[#15121F]/90 px-6 py-2 text-center text-xs text-[#F4EAD5]">
-          {toast}
-        </div>
-      )}
+      <Toast message={toast} />
     </div>
   );
 }

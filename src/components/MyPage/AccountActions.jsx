@@ -1,17 +1,17 @@
 export default function AccountActions({ onLogout, onDeleteAll }) {
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-2">
       <button
         type="button"
         onClick={onLogout}
-        className="w-full h-[50px] rounded-[10px] border-2 border-[#15121F] bg-[#2C2745] py-3 text-base font-normal font-pixel text-[#F4EAD5]"
+        className="w-full h-12 rounded-xl border border-line bg-ticket text-[15px] font-bold text-navy cursor-pointer"
       >
         로그아웃
       </button>
       <button
         type="button"
         onClick={onDeleteAll}
-        className="w-full h-[50px] rounded-[10px] border-2 border-dashed border-[#6A3A48] py-3 text-base font-normal font-pixel text-[#F3A7B5]"
+        className="w-full h-12 rounded-xl border border-dashed border-stamp-red/50 text-[15px] font-bold text-stamp-red cursor-pointer"
       >
         내 기록 모두 삭제
       </button>

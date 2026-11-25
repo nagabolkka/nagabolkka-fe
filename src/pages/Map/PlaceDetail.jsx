@@ -12,6 +12,7 @@ import LumiMessage from "../../components/common/LumiMessage/LumiMessage";
 import Button from "../../components/common/Button/Button";
 import ConfirmModal from "../../components/common/ConfirmModal/ConfimModal";
 import PageLoading from "../../components/common/PageLoading/PageLoading";
+import Toast from "../../components/common/Toast/Toast";
 import { getLocation } from "../../utils/location";
 import { getCategory } from "../../constants/placeCategory";
 import { getPlaces, savePlace } from "../../api/places";
@@ -71,7 +72,7 @@ export default function PlaceDetail() {
         navigate("/home");
         return;
       }
-      showToast("오늘 퀘스트는 끝났어요. 내일 퀘스트로 담아둘게요.");
+      showToast("오늘 탑승권은 끝났어요. 내일 탑승권으로 담아둘게요.");
     } catch (e) {
       if (!e.response || e.response.status >= 500) {
         navigate("/maintenance", { replace: true });
@@ -103,12 +104,12 @@ export default function PlaceDetail() {
   };
 
   return (
-    <div className="relative flex flex-1 flex-col bg-bg-page pb-[110px]">
+    <div className="relative flex flex-1 flex-col bg-paper pb-10">
       <PlaceHero place={place} color={color} onBack={() => navigate(-1)} />
 
       <section className="px-4 pt-5">
-        <p className="font-pixel text-sm text-[#E8C06A]">{label}</p>
-        <h1 className="mt-1 font-pixel text-2xl text-[#F4EAD5]">
+        <p className="text-[13px] font-bold" style={{ color }}>{label}</p>
+        <h1 className="mt-1 font-serif text-2xl font-bold text-navy">
           {place.name}
         </h1>
         <div className="mt-3">
@@ -121,16 +122,16 @@ export default function PlaceDetail() {
       </div>
 
       {place.description && (
-        <p className="px-5 pt-4 text-sm leading-6 text-[#F4EAD5] break-keep">
+        <p className="px-5 pt-4 text-sm leading-6 text-navy/80 break-keep">
           {place.description}
         </p>
       )}
 
-      <LumiMessage message="여기 조각이 숨어있대. 담으면 오늘 퀘스트야!" />
+      <LumiMessage message="여기로 가는 편을 만들 수 있어요. 담으면 오늘의 탑승권이 돼요!" pose="passenger" className="mt-5" />
 
-      <div className="flex justify-center mt-35">
+      <div className="flex justify-center mt-8">
         <Button
-          title={saving ? "담는 중…" : "퀘스트로 담기"}
+          title={saving ? "담는 중…" : "이 곳을 비자로 담기"}
           onClick={handleSave}
           disabled={saving}
         />
@@ -138,9 +139,9 @@ export default function PlaceDetail() {
 
       {isConfirmOpen && (
         <ConfirmModal
-          title="진행 중인 퀘스트를 바꿀까요?"
+          title="비행 중인 탑승권을 바꿀까요?"
           description={
-            "지금 하던 퀘스트 대신\n담은 장소가 오늘의 퀘스트가 돼요."
+            "지금 하던 탑승권 대신\n담은 장소가 오늘의 탑승권이 돼요."
           }
           confirmText="바꾸기"
           onCancel={() => setIsConfirmOpen(false)}
@@ -148,11 +149,7 @@ export default function PlaceDetail() {
         />
       )}
 
-      {toast && (
-        <div className="fixed bottom-24 left-1/2 z-50 w-[300px] -translate-x-1/2 rounded-full bg-[#15121F]/90 px-6 py-2 text-center text-xs text-[#F4EAD5]">
-          {toast}
-        </div>
-      )}
+      <Toast message={toast} bottom="bottom-10" />
     </div>
   );
 }

@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import backButton from "../../assets/images/backButton.svg";
 import { createPlacePin, loadKakaoMap } from "../../utils/kakaoMap";
 
-// 장소 상세 상단 : 그 장소 위치 지도 (실패하면 카테고리 색 마름모)
+// 장소 상세 상단 : 그 장소 위치 지도 (실패하면 카테고리 색 핀)
 export default function PlaceHero({ place, color, onBack }) {
   const containerRef = useRef(null);
   const [failed, setFailed] = useState(false);
@@ -40,29 +39,28 @@ export default function PlaceHero({ place, color, onBack }) {
   return (
     <div className="relative h-[190px] w-full overflow-hidden">
       {failed ? (
-        <div
-          className="absolute inset-0"
-          style={{
-            background: `linear-gradient(180deg, ${color}80 0%, ${color}26 100%)`,
-          }}
-        >
-          <div
-            className="absolute left-1/2 top-1/2 h-16 w-16 -translate-x-1/2 -translate-y-1/2 rotate-45 border-[3px] border-[#15121F]"
-            style={{ backgroundColor: color, boxShadow: `0 0 28px ${color}99` }}
-          />
+        <div className="absolute inset-0 bg-[#EAF1F6]">
+          <svg
+            width="44"
+            height="56"
+            viewBox="0 0 34 44"
+            aria-hidden
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+          >
+            <path d="M17 42 C7 30 3 23 3 16 a14 14 0 0 1 28 0 c0 7 -4 14 -14 26 z" fill={color} stroke="#1C2A5E" strokeWidth="2.5" />
+            <circle cx="17" cy="16" r="5.5" fill="#FFFFFF" />
+          </svg>
         </div>
       ) : (
         <>
           <div ref={containerRef} className="absolute inset-0" />
-          {/* 밝은 지도를 앱 톤으로 살짝 */}
-          <div className="pointer-events-none absolute inset-0 z-[5] bg-[#2B2340]/15" />
           {/* 아래쪽을 페이지 배경으로 자연스럽게 */}
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-10 bg-gradient-to-t from-bg-page to-transparent" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-10 bg-gradient-to-t from-paper to-transparent" />
           <a
             href={routeUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="absolute bottom-3 right-3 z-20 rounded-full border-2 border-[#15121F] bg-[#2B2340] px-3 py-1 text-xs text-[#F2C14E]"
+            className="absolute bottom-3 right-3 z-20 rounded-full bg-navy px-3 py-1 text-xs font-bold text-brass"
           >
             길찾기
           </a>
@@ -72,10 +70,10 @@ export default function PlaceHero({ place, color, onBack }) {
       <button
         type="button"
         onClick={onBack}
-        className="absolute left-4 top-6 z-20 cursor-pointer rounded-full bg-[#15121F]/60 p-1"
+        className="absolute left-4 top-5 z-20 w-10 h-10 flex items-center justify-center rounded-full bg-white/90 text-[26px] leading-none text-navy shadow cursor-pointer"
         aria-label="뒤로가기"
       >
-        <img src={backButton} className="h-[25px] w-[25px]" />
+        ‹
       </button>
     </div>
   );

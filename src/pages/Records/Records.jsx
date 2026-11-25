@@ -46,13 +46,23 @@ export default function Records() {
   const { thisWeek, month: monthDays, restoration } = records;
 
   return (
-    <div className="flex flex-col gap-4 px-4 pb-6 pt-8">
+    <div className="flex flex-col gap-3 bg-sky-paper px-4 pb-8 pt-6 min-h-full">
       <header>
-        <p className="font-pixel text-sm text-[#E8C06A]">모험 일지</p>
-        <h1 className="mt-1 font-pixel text-2xl text-[#F4EAD5]">
-          이번 주 {thisWeek.outingCount}번 다녀왔어요
-        </h1>
+        <p className="label-en text-[11px] text-mute">TRAVEL LOG</p>
+        <h1 className="mt-0.5 font-serif text-[24px] font-bold text-navy">여행 일지</h1>
       </header>
+
+      <section className="flex items-center justify-between rounded-2xl bg-navy px-4 py-3">
+        <div>
+          <p className="text-xs text-mute-on-navy">이번 주 출국</p>
+          <p className="font-serif text-2xl font-bold text-brass">{thisWeek.outingCount}번</p>
+        </div>
+        <p className="text-xs text-mute-on-navy break-keep text-right">
+          다녀온 날은
+          <br />
+          기분 잉크로 찍혀요
+        </p>
+      </section>
 
       <WeekOuting days={thisWeek.days} />
       <MonthCalendar
