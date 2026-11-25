@@ -1,31 +1,41 @@
 export default function NoticePopup({ notice, onClose, onHideToday }) {
   return (
-    <div className="absolute inset-0 z-50 flex justify-center bg-black/50 px-5 pt-80">
-      <div className="relative h-fit w-full max-w-[353px] rounded-xl border-2 border-[#15121F] bg-[#F4EAD5] px-5 pb-5 pt-7">
-        <span className="absolute -top-3 left-5 rounded-md border-2 border-[#15121F] bg-[#E8C06A] px-2.5 py-0.5 text-xs font-bold text-[#15121F]">
-          공지
-        </span>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-navy-deep/55 px-5">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={notice.title}
+        className="relative w-full max-w-[353px] overflow-hidden rounded-2xl bg-ticket shadow-xl"
+      >
+        <div className="h-10 px-4 flex items-center justify-between bg-navy">
+          <span className="label-en text-[11px] text-brass">NOTICE · 공지</span>
+          <span className="label-en text-[11px] text-mute-on-navy">NAGABOLKKA AIR</span>
+        </div>
 
-        <h2 className="font-pixel text-xl text-[#2B2340]">{notice.title}</h2>
-        <p className="mt-3 text-base font-normal font-sans text-[#2B2340] leading-5">
-          {notice.content}
-        </p>
+        <div className="px-5 pt-4 pb-5">
+          <h2 className="font-serif text-xl font-bold text-navy break-keep">
+            {notice.title}
+          </h2>
+          <p className="mt-3 whitespace-pre-line text-sm leading-6 text-navy/80 break-keep">
+            {notice.content}
+          </p>
 
-        <div className="mt-5 grid grid-cols-2 gap-[18px]">
-          <button
-            type="button"
-            onClick={onHideToday}
-            className="cursor-pointer w-full h-[43px] whitespace-nowrap rounded-lg border-2 border-[#B9A882] py-2.5 px-1 text-sm font-pixel font-normal text-black"
-          >
-            오늘 하루 보지 않기
-          </button>
-          <button
-            type="button"
-            onClick={onClose}
-            className="w-full h-[43px] whitespace-nowrap bg-[#F2C14E] rounded-lg border-2 border-[#2B2340] py-2.5 px-1 font-pixel text-sm font-bold text-black"
-          >
-            닫기
-          </button>
+          <div className="mt-5 grid grid-cols-2 gap-2.5">
+            <button
+              type="button"
+              onClick={onHideToday}
+              className="h-11 rounded-xl border-[1.5px] border-line bg-white text-[13px] font-bold text-mute whitespace-nowrap cursor-pointer"
+            >
+              오늘 하루 보지 않기
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="h-11 rounded-xl bg-navy text-[13px] font-bold text-brass cursor-pointer"
+            >
+              닫기
+            </button>
+          </div>
         </div>
       </div>
     </div>
