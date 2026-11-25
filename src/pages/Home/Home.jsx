@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import LumiMessage from "../../components/common/LumiMessage/LumiMessage";
-import NextRegionCard from "../../components/Home/NextRegionCard";
+import NextIslandPass from "../../components/Home/NextIslandPass";
 import TodayQuestCard from "../../components/Home/TodayQuestCard";
 import IslandHero from "../../components/Home/IslandHero";
 import NoticePopup from "../../components/Home/NoticePopup";
@@ -37,7 +37,7 @@ export default function Home() {
   const navigate = useNavigate();
   const [home, setHome] = useState(null);
   const [error, setError] = useState(false);
-  const [stayed, setStayed] = useState(false); // "지금이 좋아요" 누름
+  const [stayed, setStayed] = useState(false); // "조금 더 머물래요" 누름
   const [answering, setAnswering] = useState(false); // 다음 섬 응답 · 난이도 바꾸기 중 (연타 방지)
 
   const [notice, setNotice] = useState(null);
@@ -134,7 +134,7 @@ export default function Home() {
     setNotice(null);
   };
 
-  // 다음 섬 : 탑승 → 홈 다시 불러오기 (새 섬) / 머물기 → 카드 숨김 (7일 뒤 다시)
+  // 다음 섬 : 탑승 → 홈 다시 불러오기 (새 섬) / 머물기 → 탑승권 닫기 (7일 뒤 다시)
   const handleNextRegion = async (accept) => {
     if (answering) return;
     setAnswering(true);
@@ -142,6 +142,7 @@ export default function Home() {
       await respondNextRegion(accept);
       if (accept) {
         setHome(await getHome());
+        showToast(`${getIsland(nextRegionSuggestion.stageNo).name}에 도착했어요!`);
       } else {
         setStayed(true);
       }
@@ -235,14 +236,6 @@ export default function Home() {
 
       <LumiMessage message={lumiMessage} pose="passenger" />
       <LocationBanner status={locationStatus} onRetry={handleRetryLocation} />
-      {showNextRegion && (
-        <NextRegionCard
-          region={currentRegion}
-          nextRegion={nextRegionSuggestion}
-          onStay={() => handleNextRegion(false)}
-          onOpen={() => handleNextRegion(true)}
-        />
-      )}
 
       <div className="mt-4">
         <TodayQuestCard
@@ -257,7 +250,19 @@ export default function Home() {
         />
       </div>
 
-      {notice && (
+      {/* 섬 불빛 5개 다 켬 → 다음 섬 새 탑승권 (전체 화면) */}
+      {showNextRegion && (
+        <NextIslandPass
+          region={currentRegion}
+          nextRegion={nextRegionSuggestion}
+          difficulty={todayQuest.difficulty}
+          submitting={answering}
+          onStay={() => handleNextRegion(false)}
+          onOpen={() => handleNextRegion(true)}
+        />
+      )}
+
+      {notice && !showNextRegion && (
         <NoticePopup
           notice={notice}
           onClose={() => setNotice(null)}
