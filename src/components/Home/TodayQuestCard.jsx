@@ -14,6 +14,7 @@ export default function TodayQuestCard({
   date = new Date(),
   onClick,
   isSavedPlace = false,
+  onDifficultyClick, // 있으면 난이도 배지 → 누를 수 있는 칩 (수락 전 · 자동 배정 퀘스트)
 }) {
   const isInProgress = status === "IN_PROGRESS";
   const isCompleted = status === "COMPLETED";
@@ -41,6 +42,22 @@ export default function TodayQuestCard({
             <Badge bgColor="#D6CFF5" textColor="#2B2340">
               담아둔 미션
             </Badge>
+          ) : onDifficultyClick ? (
+            <button
+              type="button"
+              onClick={onDifficultyClick}
+              aria-label={`난이도 ${difficulty.label} · 눌러서 바꾸기`}
+              className="inline-flex items-center gap-1 rounded-[5px] border-2 border-[#15121F] px-[7px] py-1 font-pixel text-sm active:translate-y-px"
+              style={{
+                backgroundColor: difficulty.bgColor,
+                color: difficulty.textColor,
+              }}
+            >
+              {difficulty.label}
+              <span aria-hidden="true" className="text-[10px]">
+                ▾
+              </span>
+            </button>
           ) : (
             <Badge
               bgColor={difficulty.bgColor}

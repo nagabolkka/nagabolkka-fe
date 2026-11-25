@@ -7,6 +7,7 @@ export async function getTodayQuest(location) {
 }
 
 // 오늘 퀘스트 동작 : ACCEPT · SPLIT · CHANGE · SKIP · REVISIT(stageNo) → 바뀐 오늘 퀘스트
+// · EASIER · HARDER (난이도 한 단계, 하루 1번) → 바뀐 오늘 퀘스트
 export async function actTodayQuest(type, location, extra = {}) {
   const { data } = await api.post(
     "/api/quests/today/actions",

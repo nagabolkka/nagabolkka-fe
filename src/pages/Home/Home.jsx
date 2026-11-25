@@ -7,10 +7,12 @@ import TodayQuestCard from "../../components/Home/TodayQuestCard";
 import AdventurePath from "../../components/Home/AdventurePath";
 import ShortcutCard from "../../components/Home/ShortcutCard";
 import NoticePopup from "../../components/Home/NoticePopup";
+import DifficultySheet from "../../components/Home/DifficultySheet";
 import PageLoading from "../../components/common/PageLoading/PageLoading";
 import { getHome } from "../../api/home";
 import { getRegion } from "../../mocks/regions";
 import { getHomeLumiMessage } from "../../constants/lumiMessages";
+import { DIFFICULTY } from "../../constants/difficulty";
 import {
   hideNoticeToday,
   isNoticeHiddenToday,
@@ -23,16 +25,24 @@ import { getLocation, getLocationStatus } from "../../utils/location";
 import ConfirmModal from "../../components/common/ConfirmModal/ConfimModal";
 import { actTodayQuest } from "../../api/quests";
 
+// 🆕 난이도 바꾸기 실패 안내
+const DIFFICULTY_ERROR_MESSAGE = {
+  QUEST_DIFFICULTY_LIMIT: "오늘은 난이도를 이미 바꿨어요.",
+  QUEST_DIFFICULTY_LOCKED: "지금은 난이도를 바꿀 수 없어요.",
+  QUEST_ALREADY_DONE: "오늘 퀘스트를 이미 마쳤어요.",
+};
+
 export default function Home() {
   const navigate = useNavigate();
   const [home, setHome] = useState(null);
   const [error, setError] = useState(false);
   const [stayed, setStayed] = useState(false); // "지금이 좋아요" 누름
-  const [answering, setAnswering] = useState(false); // 다음 지역 응답 중 (연타 방지)
+  const [answering, setAnswering] = useState(false); // 다음 지역 응답 · 지나온 계단 · 난이도 바꾸기 중 (연타 방지)
 
   const [notice, setNotice] = useState(null);
 
   const [revisitRegion, setRevisitRegion] = useState(null); // 누른 지나온 계단
+  const [isDifficultyOpen, setIsDifficultyOpen] = useState(false); // 난이도 시트
   const [toast, setToast] = useState("");
 
   const [locationStatus, setLocationStatus] = useState(null); // 위치 안내 카드
@@ -119,6 +129,10 @@ export default function Home() {
   }));
 
   const showNextRegion = Boolean(nextRegionSuggestion) && !stayed;
+
+  // 난이도 칩 : 수락 전 · 자동 배정 퀘스트만 (횟수 0 이어도 열림 → 「오늘 다 바꿈」 시트)
+  const canPickDifficulty =
+    todayQuest.status === "ASSIGNED" && todayQuest.source === "AUTO";
 
   // 진행 중이면 진행 화면으로, 아니면 상세로
   const questPath =
@@ -209,6 +223,31 @@ export default function Home() {
     }
   };
 
+  // 난이도 바꾸기 (EASIER · HARDER) → 오늘 퀘스트 교체 → 홈 다시 불러오기
+  const handleDifficulty = async (type) => {
+    if (answering) return;
+    setAnswering(true);
+    try {
+      const location = await getLocation();
+      const quest = await actTodayQuest(type, location);
+      setHome(await getHome(location));
+      setIsDifficultyOpen(false);
+      const arrow = type === "HARDER" ? "▲" : "▼";
+      showToast(
+        `${arrow} ${DIFFICULTY[quest.difficulty].label} 퀘스트로 바꿨어요`,
+      );
+    } catch (e) {
+      setIsDifficultyOpen(false);
+      const code = e.response?.data?.code;
+      showToast(
+        DIFFICULTY_ERROR_MESSAGE[code] ?? "잠시 후 다시 시도해 주세요.",
+      );
+      setHome(await getHome().catch(() => home)); // 다른 화면에서 이미 바꿨을 수 있음 → 최신으로
+    } finally {
+      setAnswering(false);
+    }
+  };
+
   return (
     <div className="relative flex flex-col pb-3">
       <RegionHeader
@@ -234,6 +273,9 @@ export default function Home() {
         status={todayQuest.status}
         onClick={() => navigate(questPath)}
         isSavedPlace={todayQuest.source === "SAVED_PLACE"}
+        onDifficultyClick={
+          canPickDifficulty ? () => setIsDifficultyOpen(true) : undefined
+        } 
       />
       <AdventurePath
         regions={pathRegions}
@@ -272,6 +314,16 @@ export default function Home() {
           confirmText="이 계단 미션 받기"
           onCancel={() => setRevisitRegion(null)}
           onConfirm={handleRevisit}
+        />
+      )}
+
+      {isDifficultyOpen && (
+        <DifficultySheet
+          current={todayQuest.difficulty}
+          remaining={todayQuest.difficultyChangeRemaining ?? 0}
+          submitting={answering}
+          onClose={() => !answering && setIsDifficultyOpen(false)}
+          onChange={handleDifficulty}
         />
       )}
 
