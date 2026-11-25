@@ -1,13 +1,11 @@
-export default function GuideLumi({ message }) {
+import Lumi from "../common/Lumi/Lumi";
+
+export default function GuideLumi({ message, pose = "salute" }) {
   return (
-    <div className="relative mt-8">
-      <span className="absolute -top-3 left-[19px] rounded-[5px] border border-bg-base bg-gold px-[11px] py-[3px] font-pixel text-sm text-bg-base">
-        루미
-      </span>
-      <div className="rounded-[10px] border-2 border-cream bg-bg-dialog px-[19px] pb-4 pt-5">
-        <p className="font-sans text-sm font-medium leading-5 text-cream break-keep">
-          {message}
-        </p>
+    <div className="mt-6 flex items-center gap-2">
+      <Lumi pose={pose} size={62} decorative className="shrink-0" />
+      <div className="flex-1 rounded-2xl bg-navy px-4 py-3">
+        <p className="text-sm font-semibold leading-5 text-white break-keep">{message}</p>
       </div>
     </div>
   );
