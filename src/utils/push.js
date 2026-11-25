@@ -59,7 +59,8 @@ export async function clearPushOnDevice() {
   if (messaging) await deleteToken(messaging).catch(() => {});
 }
 
-// 앱을 열 때마다 : 토큰이 바뀌었으면 서버에 다시 등록 (시간이 지나면 토큰이 바뀔 수 있음)
+// 앱을 열 때마다 : 서버에 다시 등록 (토큰이 같아도 · 서버 DB 복구 · 로컬 H2 재시작으로 지워져도 되살아나게)
+// 같은 토큰이면 서버가 덮어쓰기만 함 · 토큰이 바뀌었으면 새 토큰으로 교체
 export async function refreshPushToken() {
   const saved = localStorage.getItem(TOKEN_KEY);
   if (!saved) return;
@@ -70,10 +71,8 @@ export async function refreshPushToken() {
   const messaging = await getMessagingSafe();
   if (!messaging) return;
   const token = await fetchToken(messaging);
-  if (token !== saved) {
-    await saveFcmToken(token);
-    localStorage.setItem(TOKEN_KEY, token);
-  }
+  await saveFcmToken(token); // 바뀌었을 때만 → 항상
+  localStorage.setItem(TOKEN_KEY, token);
 }
 
 // 화면이 앞에 있을 때 : FCM 이 자동으로 안 띄우니 서비스 워커로 같은 알림 띄우기
