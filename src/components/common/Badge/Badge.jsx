@@ -1,18 +1,18 @@
 const SIZE = {
-  md: "px-[7px] py-1 text-sm rounded-[5px] border-2", // 기본 
-  sm: "px-1.5 py-0.5 text-xs rounded-[4px] border-[1.5px]", // 작은 태그 
+  md: "px-2.5 py-1 text-xs rounded-full", // 기본
+  sm: "px-2 py-0.5 text-[11px] rounded-full", // 작은 태그
 };
 
 export default function Badge({
   children,
   size = "md",
-  bgColor = "rgba(44, 39, 69, 0.8)", 
-  textColor = "#F4EAD5",
+  bgColor = "#1C2A5E",
+  textColor = "#D2B36B",
   className = "",
 }) {
   return (
     <span
-      className={`inline-flex items-center border-[#15121F] font-pixel font-normal ${SIZE[size]} ${className}`}
+      className={`inline-flex items-center font-sans font-bold ${SIZE[size]} ${className}`}
       style={{ backgroundColor: bgColor, color: textColor }}
     >
       {children}

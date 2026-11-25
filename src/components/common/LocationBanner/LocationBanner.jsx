@@ -57,19 +57,19 @@ export default function LocationBanner({ status, onRetry }) {
   return (
     <section
       role="status"
-      className="mx-3 mt-3 rounded-lg border-2 border-[#15121F] bg-[#2C2745] px-4 py-3"
+      className="mx-4 mt-3 rounded-2xl border border-line bg-ticket px-4 py-3"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-[#F2C14E]">{message.title}</p>
-          <p className="mt-1 text-xs leading-5 text-[#F4EAD5] break-keep">
+          <p className="text-sm font-bold text-navy">{message.title}</p>
+          <p className="mt-1 text-xs leading-5 text-mute break-keep">
             {message.body}
           </p>
         </div>
         <button
           type="button"
           onClick={hide}
-          className="shrink-0 text-xs text-[#B9B0D0]"
+          className="shrink-0 text-xs text-mute cursor-pointer"
         >
           닫기
         </button>
@@ -80,7 +80,7 @@ export default function LocationBanner({ status, onRetry }) {
           type="button"
           onClick={retry}
           disabled={retrying}
-          className="font-semibold text-[#F2C14E] underline disabled:opacity-50"
+          className="font-bold text-navy underline disabled:opacity-50 cursor-pointer"
         >
           {retrying ? "확인 중…" : "다시 시도"}
         </button>
@@ -88,14 +88,14 @@ export default function LocationBanner({ status, onRetry }) {
           type="button"
           onClick={() => setGuideOpen((open) => !open)}
           aria-expanded={guideOpen}
-          className="text-[#B9B0D0] underline"
+          className="text-mute underline cursor-pointer"
         >
           켜는 방법
         </button>
       </div>
 
       {guideOpen && (
-        <ul className="mt-2 list-disc pl-4 text-[11px] leading-5 text-[#B9B0D0] break-keep">
+        <ul className="mt-2 list-disc pl-4 text-[11px] leading-5 text-mute break-keep">
           {GUIDES.map((guide) => (
             <li key={guide}>{guide}</li>
           ))}
