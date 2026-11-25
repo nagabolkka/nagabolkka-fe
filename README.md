@@ -14,7 +14,7 @@ React + Vite 로 만든 SPA(PWA) 이며, API 를 호출해 화면을 그리고 V
 | **인증** | 카카오 인가 코드를 `/oauth/kakao` 에서 받아 백엔드로 넘기고, 받은 Access · Refresh 토큰을 `Authorization` 헤더로 보냅니다. Axios 인터셉터가 401 을 받으면 Refresh 로 토큰을 재발급한 뒤 요청을 다시 보냅니다. |
 | **API 레이어** | `src/api/` 에 도메인별 호출 함수를 두고, 화면은 이 함수만 사용합니다. 에러는 서버의 `code` 값(`QUEST_ALREADY_DONE`, `SPLIT_STEP_REQUIRED` 등)으로 분기합니다. |
 | **디자인 시스템** | 여권 · 마음 군도 세계관으로 색 · 글꼴 토큰(네이비 · 금장 · 종이 · 기분 잉크 5색, Noto Serif KR)을 Tailwind v4 `@theme` 에 두고, 탑승권 · 입국 도장 · 떠 있는 섬 · 기장 루미를 공통 컴포넌트(`components/common`)로 씁니다. 그림은 모두 SVG(`assets/lumi`, `assets/islands`)입니다. |
-| **섬 매핑** | 서버의 지역 `stageNo` 1~5 를 `constants/islands.js` 에서 섬(쉼 · 용기 · 발견 · 연결 · 꿈)의 이름 · 색 · 편명으로 바꿔 보여 줍니다. 복원도(0~100)는 20 단위로 섬 불빛 0~5개가 됩니다. |
+| **섬 매핑** | 서버의 지역 `stageNo` 1-5 를 `constants/islands.js` 에서 섬(쉼 · 용기 · 발견 · 연결 · 꿈)의 이름 · 색 · 편명으로 바꿔 보여 줍니다. 복원도(0-100)는 20 단위로 섬 불빛 0-5개가 됩니다. |
 | **상태 별 화면 분기** | 홈은 서버가 내려주는 `homeState` 에 따라 화면 · 버튼 문구 · 루미 대사를 바꿉니다. 다음 섬 제안(`nextRegionSuggestion`)이 있으면 홈보다 먼저 새 탑승권 전체 화면을 띄웁니다. 고정 문구와 상수 데이터(출국 심사 문항, 꿈 목표, 도움 받기 연락처)는 `src/constants/` 에 둡니다. |
 | **화면 간 결과 전달** | 퀘스트 완료 응답을 `location.state` 로 도장 획득 화면에 넘기고, 새로고침으로 state 가 없으면 홈으로 보냅니다. |
 | **위치** | Geolocation API 로 받은 좌표를 동네 지도 · 홈 · 오늘 퀘스트 요청에만 쓰고 저장하지 않습니다. 권한 거부 · 위치 못 찾음일 때는 `LocationBanner` 로 켜는 방법을 안내하고, 가입한 구 기준으로 계속 사용할 수 있습니다. |
