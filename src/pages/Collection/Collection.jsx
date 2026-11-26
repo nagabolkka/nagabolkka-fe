@@ -1,21 +1,21 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CollectionHeader from "../../components/Collection/CollectionHeader";
-import CurrentChapterCard from "../../components/Collection/CurrentChapterCard";
-import CollectionFilter from "../../components/Collection/CollectionFilter";
-import RegionPieces from "../../components/Collection/RegionPieces";
+import IslandTabs from "../../components/Collection/IslandTabs";
+import StampPage from "../../components/Collection/StampPage";
 import BonusPieces from "../../components/Collection/BonusPieces";
 import PieceSheet from "../../components/Collection/PieceSheet";
 import PageLoading from "../../components/common/PageLoading/PageLoading";
 import { getCollection } from "../../api/collection";
-import { chapterState, missingSlots } from "../../utils/collection";
+import { chapterState } from "../../utils/collection";
 
+// 도장 = 도감 : 섬 우표 탭으로 한 섬씩 · 여권 한 페이지에 기분 잉크 도장
 export default function Collection() {
   const navigate = useNavigate();
   const [collection, setCollection] = useState(null);
   const [error, setError] = useState(false);
+  const [stageNo, setStageNo] = useState(null); // 고른 섬 (처음엔 지금 섬)
   const [selected, setSelected] = useState(null);
-  const [onlyMissing, setOnlyMissing] = useState(false); // 「아직 못 받은 도장만」 보기
 
   useEffect(() => {
     let ignore = false;
@@ -44,39 +44,27 @@ export default function Collection() {
 
   if (!collection) return <PageLoading error={error} />;
 
-  // 응답이 온 뒤에만 꺼냄 (위에서 꺼내면 처음 렌더 때 collection 이 null 이라 에러)
   const { foundCount, total, regions, bonusPieces } = collection;
-  const current = regions.find((region) => chapterState(region.status) === "current");
-  // 못 받은 도장만 : 다 모은 섬은 숨김
-  const shownRegions = onlyMissing
-    ? regions.filter((region) => missingSlots(region).length > 0)
-    : regions;
+  const current =
+    regions.find((region) => chapterState(region.status) === "current") ??
+    regions[0];
+  const shown = regions.find((region) => region.stageNo === stageNo) ?? current;
 
   return (
-    <div className="flex flex-col gap-3.5 bg-sky-paper px-4 pb-8 pt-6 min-h-full">
+    <div className="flex min-h-full flex-col gap-3.5 bg-sky-paper px-4 pb-8 pt-6">
       <CollectionHeader foundCount={foundCount} total={total} />
 
-      {current && <CurrentChapterCard region={current} />}
+      <IslandTabs
+        regions={regions}
+        selected={shown.stageNo}
+        onSelect={setStageNo}
+      />
+      <div className="mt-4"> 
+        <StampPage region={shown} onSelect={setSelected} />
+      </div>
 
-      <CollectionFilter onlyMissing={onlyMissing} onChange={setOnlyMissing} />
-
-      {shownRegions.map((region) => (
-        <RegionPieces
-          key={region.stageNo}
-          region={region}
-          onlyMissing={onlyMissing}
-          onSelect={setSelected}
-        />
-      ))}
-
-      {onlyMissing && shownRegions.length === 0 && (
-        <p className="rounded-2xl border border-dashed border-line py-8 text-center text-sm text-mute">
-          모든 도장을 모았어요!
-        </p>
-      )}
-
-      {/* 도장 25칸 밖 특별 도장 (받은 것만 · 없으면 안 그림 · 못 받은 도장만 보기에서는 숨김) */}
-      {!onlyMissing && <BonusPieces pieces={bonusPieces} />}
+      {/* 도장 25칸 밖 특별 도장 (받은 것만 · 없으면 안 그림) */}
+      <BonusPieces pieces={bonusPieces} />
 
       {selected && (
         <PieceSheet piece={selected} onClose={() => setSelected(null)} />
