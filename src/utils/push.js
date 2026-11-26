@@ -4,10 +4,12 @@ import { deleteFcmToken, saveFcmToken } from "../api/push";
 
 const VAPID_KEY = import.meta.env.VITE_FIREBASE_VAPID_KEY;
 const TOKEN_KEY = "nagabolkka:fcmToken"; // 이 기기에서 서버에 등록한 토큰
+const WANTED_KEY = "nagabolkka:pushWanted"; // 이 기기에서 알림을 켜 둠 (로그아웃해도 남김 → 다시 로그인하면 자동으로 켬)
 
 const isIos = () => /iPhone|iPad|iPod/.test(navigator.userAgent);
 const isStandalone = () =>
   window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+const hasNotification = () => typeof Notification !== "undefined";
 
 let messagingPromise = null;
 const getMessagingSafe = () => {
@@ -25,10 +27,19 @@ async function fetchToken(messaging) {
   return getToken(messaging, { vapidKey: VAPID_KEY, serviceWorkerRegistration: await getSwRegistration() });
 }
 
+// 토큰을 받아 서버에 등록하고 기기에 저장 (권한은 이미 허용된 상태여야 함)
+async function registerToken(messaging) {
+  const token = await fetchToken(messaging);
+  await saveFcmToken(token);
+  localStorage.setItem(TOKEN_KEY, token);
+  localStorage.setItem(WANTED_KEY, "1");
+}
+
 // "unsupported" | "needs-install" (아이폰 브라우저) | "denied" | "on" | "off"
 export async function getPushState() {
   if (isIos() && !isStandalone()) return "needs-install";
-  if (!("serviceWorker" in navigator) || !VAPID_KEY || !(await getMessagingSafe())) return "unsupported";
+  if (!("serviceWorker" in navigator) || !hasNotification() || !VAPID_KEY || !(await getMessagingSafe()))
+    return "unsupported";
   if (Notification.permission === "denied") return "denied";
   return Notification.permission === "granted" && localStorage.getItem(TOKEN_KEY) ? "on" : "off";
 }
@@ -38,15 +49,17 @@ export async function enablePush() {
   const messaging = await getMessagingSafe();
   if (!messaging) return false;
   if ((await Notification.requestPermission()) !== "granted") return false;
-  const token = await fetchToken(messaging);
-  await saveFcmToken(token);
-  localStorage.setItem(TOKEN_KEY, token);
+  await registerToken(messaging);
   return true;
 }
 
-export async function disablePush() {
+// 알림 끄기
+// - 마이페이지에서 끔 · 권한이 꺼짐 : 다시 켜지지 않게 WANTED 도 지움
+// - 로그아웃 (forLogout) : 토큰만 지우고 WANTED 는 남김 → 다시 로그인하면 자동으로 켬
+export async function disablePush({ forLogout = false } = {}) {
   const token = localStorage.getItem(TOKEN_KEY);
   localStorage.removeItem(TOKEN_KEY);
+  if (!forLogout) localStorage.removeItem(WANTED_KEY);
   if (token) await deleteFcmToken(token).catch(() => {}); // 서버 실패해도 기기는 끔
   const messaging = await getMessagingSafe();
   if (messaging) await deleteToken(messaging).catch(() => {});
@@ -55,24 +68,26 @@ export async function disablePush() {
 // 탈퇴 후 : 서버 토큰은 탈퇴 때 같이 지워짐 (CASCADE) → 기기 쪽만 정리 (서버 호출 X)
 export async function clearPushOnDevice() {
   localStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem(WANTED_KEY);
   const messaging = await getMessagingSafe();
   if (messaging) await deleteToken(messaging).catch(() => {});
 }
 
 // 앱을 열 때마다 : 서버에 다시 등록 (토큰이 같아도 · 서버 DB 복구 · 로컬 H2 재시작으로 지워져도 되살아나게)
 // 같은 토큰이면 서버가 덮어쓰기만 함 · 토큰이 바뀌었으면 새 토큰으로 교체
+// 로그아웃 후 다시 로그인 : 토큰은 없지만 WANTED 가 있으면 권한 창 없이 다시 등록
 export async function refreshPushToken() {
   const saved = localStorage.getItem(TOKEN_KEY);
-  if (!saved) return;
+  const wanted = localStorage.getItem(WANTED_KEY);
+  if (!saved && !wanted) return;
+  if (!hasNotification()) return;
   if (Notification.permission !== "granted") {
-    await disablePush(); // 사용자가 브라우저 설정에서 알림을 끔
+    await disablePush(); // 사용자가 기기 설정에서 알림을 끔
     return;
   }
   const messaging = await getMessagingSafe();
   if (!messaging) return;
-  const token = await fetchToken(messaging);
-  await saveFcmToken(token); // 바뀌었을 때만 → 항상
-  localStorage.setItem(TOKEN_KEY, token);
+  await registerToken(messaging);
 }
 
 // 화면이 앞에 있을 때 : FCM 이 자동으로 안 띄우니 서비스 워커로 같은 알림 띄우기
