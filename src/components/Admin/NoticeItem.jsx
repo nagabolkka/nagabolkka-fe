@@ -1,67 +1,72 @@
-const STATUS = {
-  ACTIVE: { label: "게시 중", bg: "#CFE8C4" },
-  STOPPED: { label: "중지", bg: "#E0D6C2" },
-};
-
-export default function NoticeItem({ notice, onToggle, onPreview, onDelete }) {
+// 기내 방송 카드 : 방송 번호 띠 · 상태 · 중지/다시 방송 · 미리보기 · 삭제 · 알림
+export default function NoticeItem({ notice, disabled = false, onToggle, onPreview, onDelete, onPush }) {
   const isActive = notice.status === "ACTIVE";
-  const status = STATUS[notice.status];
+  const code = `NA ${String(notice.noticeId).padStart(3, "0")}`;
 
   return (
-    <li className="rounded-lg border-2 border-[#15121F] bg-[#F4EAD5] px-4 py-3.5">
-      <div className="flex items-center justify-between gap-2">
-        <h3 className="font-pixel text-sm font-normal text-black">
-          {notice.title}
-        </h3>
+    <li className="overflow-hidden rounded-2xl bg-ticket">
+      <div className={`flex h-9 items-center justify-between px-3.5 ${isActive ? "bg-navy" : "bg-[#5B6795]"}`}>
+        <span className={`label-en text-[11px] ${isActive ? "text-brass" : "text-[#D6DBEA]"}`}>📢 {code}</span>
         <span
-          className="shrink-0 h-[19px] rounded-sm border-2 border-[#2B2340] px-2 flex itesm-center text-[10px] font-normal font-pixel text-black"
-          style={{ backgroundColor: status.bg }}
+          className={`flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-bold text-white ${
+            isActive ? "bg-[#2F7A55]" : "bg-[#3C4878]"
+          }`}
         >
-          {status.label}
+          <span className={`h-1.5 w-1.5 rounded-full ${isActive ? "bg-[#8BE0B0]" : "bg-mute-on-navy"}`} />
+          {isActive ? "방송 중" : "중지"}
         </span>
       </div>
-      <p className="mt-[5px] text-sm font-normal font-sans text-black">
-        {notice.content}
-      </p>
 
-      <div className="mt-3 grid grid-cols-[1fr_1.1fr_0.6fr] gap-2">
-        <button
-          type="button"
-          onClick={onToggle}
-          className="w-full h-[34px] rounded-md bg-[#2B2340] border-2 border-[#2B2340] py-[7px] text-xs font-normal font-pixel text-[#F4EAD5]"
-        >
-          {isActive ? "게시 중지" : "다시 게시"}
-        </button>
-        <button
-          type="button"
-          onClick={onPreview}
-          className="w-full h-[34px] rounded-md border-2 border-[#2B2340] py-[7px] font-normal font-pixel text-xs text-[#2B2340]"
-        >
-          팝업 미리보기
-        </button>
-        <button
-          type="button"
-          onClick={onDelete}
-          className="w-full h-[34px] rounded-md border-2 border-[#B5523B] py-[7px] text-xs font-normal font-pixel text-[#B5523B]"
-        >
-          삭제
-        </button>
-      </div>
-      {notice.pushedAt ? (
-        <p className="mt-2 text-center font-pixel text-[11px] text-[#2B2340]/60">
-          🔔 알림 보냄 · {formatPushedAt(notice.pushedAt)}
-        </p>
-      ) : (
-        isActive && (
+      <div className="px-3.5 pt-3 pb-3.5">
+        <h3 className="font-serif text-[15px] font-bold text-navy break-keep">{notice.title}</h3>
+        <p className="mt-1 whitespace-pre-line text-xs leading-[18px] text-mute break-keep">{notice.content}</p>
+
+        <div className="mt-3 grid grid-cols-[1fr_1fr_60px] gap-1.5">
           <button
             type="button"
-            onClick={onPush}
-            className="mt-2 w-full h-[34px] rounded-md border-2 border-[#2B2340] bg-[#E8C06A] py-[7px] text-xs font-normal font-pixel text-[#15121F]"
+            onClick={onToggle}
+            disabled={disabled}
+            className="h-9 rounded-[10px] bg-navy text-xs font-bold text-white cursor-pointer disabled:opacity-50"
           >
-            🔔 알림 보내기
+            {isActive ? "방송 중지" : "다시 방송"}
           </button>
-        )
-      )}
+          <button
+            type="button"
+            onClick={onPreview}
+            className="h-9 rounded-[10px] border-[1.5px] border-navy text-xs font-bold text-navy cursor-pointer"
+          >
+            팝업 미리보기
+          </button>
+          <button
+            type="button"
+            onClick={onDelete}
+            disabled={disabled}
+            className="h-9 rounded-[10px] border-[1.5px] border-stamp-red text-xs font-bold text-stamp-red cursor-pointer disabled:opacity-50"
+          >
+            삭제
+          </button>
+        </div>
+
+        {notice.pushedAt ? (
+          <p className="mt-2.5 flex items-center justify-center gap-2 text-[11px] text-mute">
+            <span className="label-en -rotate-[4deg] rounded border-[1.5px] border-stamp-red px-1.5 text-[10px] text-stamp-red">
+              SENT
+            </span>
+            알림 보냄 · {formatPushedAt(notice.pushedAt)}
+          </p>
+        ) : (
+          isActive && (
+            <button
+              type="button"
+              onClick={onPush}
+              disabled={disabled}
+              className="mt-1.5 h-10 w-full rounded-[10px] bg-brass text-xs font-bold text-navy cursor-pointer disabled:opacity-50"
+            >
+              📣 탑승객에게 알림 보내기
+            </button>
+          )
+        )}
+      </div>
     </li>
   );
 }
