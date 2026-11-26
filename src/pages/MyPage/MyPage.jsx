@@ -81,7 +81,7 @@ export default function MyPage() {
   };
 
   const handleLogout = async () => {
-    await disablePush().catch(() => {}); // 로그아웃한 기기로 알림이 가지 않게
+    await disablePush({ forLogout: true }).catch(() => {}); // 토큰은 지우고, 다시 로그인하면 자동으로 켬
     await logout();
     navigate("/", { replace: true });
   };
@@ -134,7 +134,9 @@ export default function MyPage() {
   return (
     <div className="flex flex-col bg-sky-paper min-h-full">
       <header className="flex h-14 items-center bg-navy px-5">
-        <h1 className="font-serif text-[17px] font-bold text-brass">여권 소지인</h1>
+        <h1 className="font-serif text-[17px] font-bold text-brass">
+          여권 소지인
+        </h1>
       </header>
 
       <div className="flex flex-col gap-3 px-4 pt-4 pb-6">
@@ -143,18 +145,34 @@ export default function MyPage() {
         {showGoalTip && (
           <div>
             <div className="flex items-start gap-3 rounded-2xl bg-navy px-4 py-3 shadow-[0_6px_14px_rgba(14,22,56,0.3)]">
-              <span aria-hidden className="text-xl text-lamp">★</span>
-              <button type="button" onClick={() => navigate("/goals")} className="flex-1 text-left cursor-pointer">
-                <p className="text-[15px] font-bold text-white">여기서 꿈을 설정할 수 있어요</p>
+              <span aria-hidden className="text-xl text-lamp">
+                ★
+              </span>
+              <button
+                type="button"
+                onClick={() => navigate("/goals")}
+                className="flex-1 text-left cursor-pointer"
+              >
+                <p className="text-[15px] font-bold text-white">
+                  여기서 꿈을 설정할 수 있어요
+                </p>
                 <p className="mt-0.5 text-xs leading-5 text-mute-on-navy break-keep">
-                  해보고 싶은 것 하나를 정해두면, 단계마다 체크하며 준비할 수 있어요.
+                  해보고 싶은 것 하나를 정해두면, 단계마다 체크하며 준비할 수
+                  있어요.
                 </p>
               </button>
-              <button type="button" onClick={hideGoalTip} className="shrink-0 text-xs text-mute-on-navy cursor-pointer">
+              <button
+                type="button"
+                onClick={hideGoalTip}
+                className="shrink-0 text-xs text-mute-on-navy cursor-pointer"
+              >
                 닫기 ✕
               </button>
             </div>
-            <span aria-hidden className="ml-8 block h-0 w-0 border-x-[9px] border-t-[10px] border-x-transparent border-t-navy" />
+            <span
+              aria-hidden
+              className="ml-8 block h-0 w-0 border-x-[9px] border-t-[10px] border-x-transparent border-t-navy"
+            />
           </div>
         )}
         <MenuList goal={me.goal} />
