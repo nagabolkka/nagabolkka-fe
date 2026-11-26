@@ -1,11 +1,8 @@
-@import "galmuri/dist/galmuri.css";
 @import "pretendard/dist/web/static/pretendard.css";
 @import "@fontsource/noto-serif-kr/700.css";
 @import "tailwindcss";
 
 @theme {
-  /* 관리자 화면 글꼴 (관리자는 디자인 개편 제외) */
-  --font-pixel: "Galmuri11", monospace;
 
   /* ===== 여권 디자인 ===== */
   --color-navy: #1c2a5e; /* 여권 표지 · 기본 글자 · 버튼 */
