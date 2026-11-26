@@ -1,44 +1,66 @@
 import { useState } from "react";
 
-export default function NoticeForm({ onSubmit }) {
+const TITLE_MAX = 60;
+const CONTENT_MAX = 500;
+
+// 새 기내 방송 : 제목 · 내용 · 홈 팝업 미리보기 → 등록
+export default function NoticeForm({ submitting = false, onSubmit }) {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
-  const canSubmit = title.trim() && content.trim();
-
-  const handleSubmit = () => {
-    onSubmit({ title: title.trim(), content: content.trim() });
-    setTitle("");
-    setContent("");
-  };
+  const canSubmit = title.trim() && content.trim() && !submitting;
 
   return (
-    <section className="w-full min-h-[294px] rounded-lg bg-[#2B2340] pl-[17px] pr-5 py-[23px]">
-      <h2 className="font-pixel text-sm font-normal text-[#F4EAD5]">새 공지</h2>
+    <section className="rounded-2xl bg-navy p-4">
+      <Field label="제목" count={`${title.length} / ${TITLE_MAX}`}>
+        <input
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          maxLength={TITLE_MAX}
+          placeholder="예) 12월 1일 새벽 서버 점검"
+          className="block h-12 w-full rounded-[10px] bg-paper px-3 text-sm text-navy outline-none placeholder:text-mute/70 focus:ring-2 focus:ring-brass"
+        />
+      </Field>
 
-      <input
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        maxLength={60}
-        placeholder="제목"
-        className="mt-[13px] block w-full h-[45px] rounded-md bg-[#F4EAD5] border-2 border-[#2B2340] pl-[11px] pt-4 pb-[15px] text-sm text-[#15121F] outline-none placeholder:text-[#15121F]/40"
-      />
-      <textarea
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        maxLength={500}
-        placeholder="내용"
-        className="mt-[9px] block h-[96px] w-full resize-none rounded-md border-2 border-[#2B2340] bg-[#F4EAD5] pl-[11px] pt-4 text-sm text-[#15121F] outline-none placeholder:text-[#15121F]/40"
-      />
+      <Field label="내용" count={`${content.length} / ${CONTENT_MAX}`} className="mt-3">
+        <textarea
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          maxLength={CONTENT_MAX}
+          placeholder="탑승객에게 전할 내용을 적어 주세요."
+          className="block h-[120px] w-full resize-none rounded-[10px] bg-paper px-3 pt-3 text-sm leading-6 text-navy outline-none placeholder:text-mute/70 focus:ring-2 focus:ring-brass"
+        />
+      </Field>
+
+      <p className="mt-3 text-xs font-bold text-white">홈 팝업 미리보기</p>
+      <div className="mt-2 rounded-xl bg-ticket px-3.5 py-3">
+        <p className="label-en text-[9px] text-brass">NOTICE · 마음 군도 항공</p>
+        <p className="mt-1 font-serif text-sm font-bold text-navy break-keep">{title.trim() || "제목이 여기에 보여요"}</p>
+        <p className="mt-0.5 whitespace-pre-line text-xs leading-5 text-mute break-keep line-clamp-3">
+          {content.trim() || "내용이 여기에 보여요"}
+        </p>
+      </div>
 
       <button
         type="button"
-        onClick={handleSubmit}
         disabled={!canSubmit}
-        className="mt-4 block w-full h-[50px] rounded-[10px] border-2 border-[#15121F] bg-[#F2C14E] py-3 font-pixel font-bold text-base text-[#2B2340] disabled:opacity-40"
+        onClick={() => onSubmit({ title: title.trim(), content: content.trim() })}
+        className="mt-4 h-[50px] w-full rounded-xl bg-brass text-[15px] font-bold text-navy cursor-pointer disabled:cursor-not-allowed disabled:bg-[#2E3F7E] disabled:text-mute-on-navy"
       >
-        공지 등록
+        {submitting ? "방송 등록 중…" : "방송 등록하기"}
       </button>
     </section>
+  );
+}
+
+function Field({ label, count, className = "", children }) {
+  return (
+    <label className={`block ${className}`}>
+      <span className="mb-1.5 flex justify-between">
+        <span className="text-xs font-bold text-white">{label}</span>
+        <span className="text-[11px] text-mute-on-navy">{count}</span>
+      </span>
+      {children}
+    </label>
   );
 }
