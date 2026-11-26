@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import QuestHeader from "../../components/Quest/QuestHeader";
+import CallLumiButton from "../../components/Quest/CallLumiButton";
 import QuestInfoCards from "../../components/Quest/QuestInfoCards";
 import ProgressCard from "../../components/Quest/ProgressCard";
 import QuestBottomBar from "../../components/Quest/QuestBottomBar";
@@ -43,6 +44,7 @@ export default function QuestProgress() {
         progress={0.4}
         onBack={() => navigate("/home")}
       />
+      <CallLumiButton onClick={() => navigate("/quest/call")} />
       <QuestInfoCards mission={mission} />
       <ProgressCard onSplit={handleSplit} />
       <QuestBottomBar
