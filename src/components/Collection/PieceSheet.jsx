@@ -1,10 +1,12 @@
 import InkStamp from "../common/Stamp/InkStamp";
 import { getPieceHowTo, getPieceTypeLabel } from "../../constants/pieceType";
+import { MOODS } from "../../constants/moods";
 
 // 도장 한 칸 자세히
 export default function PieceSheet({ piece, onClose }) {
-  const { found, name, type, count, restoreText, hint, regionName, color, chapterState } = piece;
+  const { found, name, type, count, restoreText, hint, regionName, color, chapterState, acquiredAt, mood } = piece;
   const locked = chapterState === "locked";
+  const moodLabel = MOODS.find((m) => m.value === mood)?.label;
 
   return (
     <div className="fixed inset-0 z-50 flex items-end bg-navy-deep/55" onClick={onClose}>
@@ -40,7 +42,11 @@ export default function PieceSheet({ piece, onClose }) {
         )}
 
         <p className="mt-6 text-xs font-semibold text-mute">
-          {found ? `${count}번 찍음` : "받으면 도장 면에 찍혀요."}
+          {found
+            ? [acquiredAt?.replaceAll("-", ".") && `${acquiredAt.replaceAll("-", ".")} 처음 받음`, moodLabel && `그날 기분 「${moodLabel}」`, `${count}번 찍음`]
+                .filter(Boolean)
+                .join(" · ")
+            : "받으면 그날 기분 잉크로 찍혀요."}
         </p>
       </div>
     </div>
