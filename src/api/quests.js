@@ -26,3 +26,8 @@ export async function completeQuest({ mood, reflection, doneSteps }) {
   });
   return data;
 }
+// 루미 동행 통화 : OpenAI Realtime 임시 키 · 최대 통화 시간(초)
+export async function startQuestCall() {
+  const { data } = await api.post("/api/quests/today/call");
+  return data; // { clientSecret, expiresAt, model, maxSeconds }
+}

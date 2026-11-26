@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-// 입국 도장 (잉크 색 = 그날 기분) · shape : circle · rect · star
+// 입국 도장 (잉크 색 = 그날 기분) · shape : circle · rect · star · triangle · oval
 const SHAPES = {
   circle: (c) => (
     <>
@@ -12,6 +12,17 @@ const SHAPES = {
     <>
       <rect x="10" y="22" width="100" height="76" rx="8" fill="none" stroke={c} strokeWidth="4" />
       <rect x="18" y="30" width="84" height="60" rx="4" fill="none" stroke={c} strokeWidth="1.5" />
+    </>
+  ),
+  triangle: (c) => (
+    <>
+      <path d="M60 10 L113 104 L7 104 Z" fill="none" stroke={c} strokeWidth="4" strokeLinejoin="round" />
+    </>
+  ),
+  oval: (c) => (
+    <>
+      <ellipse cx="60" cy="60" rx="56" ry="40" fill="none" stroke={c} strokeWidth="4" />
+      <ellipse cx="60" cy="60" rx="46" ry="30" fill="none" stroke={c} strokeWidth="1.5" />
     </>
   ),
   star: (c) => (
@@ -39,6 +50,7 @@ export default function InkStamp({
   className = "",
 }) {
   const draw = SHAPES[shape] ?? SHAPES.circle;
+  const dy = shape === "triangle" ? 16 : 0; // 세모는 아래쪽이 넓어서 글자를 조금 내림
   // 글자가 길면 작게
   const titleSize = title && title.length > 5 ? 12 : 16;
 
@@ -64,17 +76,17 @@ export default function InkStamp({
         {draw(color)}
         <g fill={color} fontFamily="Pretendard, sans-serif" textAnchor="middle" stroke="none">
           {top && (
-            <text x="60" y="44" fontSize="7" letterSpacing="1.5" fontWeight="700">
+            <text x="60" y={44 + dy} fontSize="7" letterSpacing="1.5" fontWeight="700">
               {top}
             </text>
           )}
           {title && (
-            <text x="60" y={top ? 66 : 62} fontSize={titleSize} fontWeight="800">
+            <text x="60" y={(top ? 66 : 62) + dy} fontSize={titleSize} fontWeight="800">
               {title}
             </text>
           )}
           {sub && (
-            <text x="60" y={top ? 82 : 80} fontSize="8">
+            <text x="60" y={(top ? 82 : 80) + dy} fontSize="8">
               {sub}
             </text>
           )}

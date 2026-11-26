@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import QuestHeader from "../../components/Quest/QuestHeader";
+import CallLumiButton from "../../components/Quest/CallLumiButton";
 import SplitSteps from "../../components/Quest/SplitSteps";
 import QuestBottomBar from "../../components/Quest/QuestBottomBar";
 import PageLoading from "../../components/common/PageLoading/PageLoading";
@@ -42,6 +43,7 @@ function SplitBody({ quest, mission, region }) {
         progress={(doneSteps.length + 0.5) / (mission.steps.length + 1)}
         onBack={() => navigate("/home")}
       />
+      <CallLumiButton onClick={() => navigate("/quest/call")} />
       <SplitSteps
         steps={mission.steps}
         doneSteps={doneSteps}

@@ -5,6 +5,7 @@ import Ticket from "../../components/common/Ticket/Ticket";
 import InkStamp from "../../components/common/Stamp/InkStamp";
 import QuestMap from "../../components/Quest/QuestMap";
 import QuestActions from "../../components/Quest/QuestActions";
+import BoardingSheet from "../../components/Quest/BoardingSheet";
 import PageLoading from "../../components/common/PageLoading/PageLoading";
 import Toast from "../../components/common/Toast/Toast";
 import useQuest from "../../hooks/useQuest";
@@ -21,6 +22,7 @@ export default function QuestDetail() {
   const { quest, setQuest, mission, region, isRainy, error } = useQuest();
   const [busy, setBusy] = useState(false);
   const [toast, setToast] = useState("");
+  const [boarding, setBoarding] = useState(false); // 탑승 방법 고르기 시트
 
   if (!quest) return <PageLoading error={error} />;
 
@@ -59,8 +61,15 @@ export default function QuestDetail() {
     }
   };
 
-  const handleAccept = async () => {
-    if (await act("ACCEPT")) navigate("/quest/progress");
+  // 탑승하기 → 탑승 방법 고르기 (통화하며 · 혼자)
+  const handleAccept = () => setBoarding(true);
+
+  // 통화하며 : 수락 → 통화 화면 (바로 연결 시작) / 혼자 : 수락 → 비행 중 (원래대로)
+  const handleBoard = async (withCall) => {
+    if (!(await act("ACCEPT"))) return;
+    setBoarding(false);
+    if (withCall) navigate("/quest/call", { state: { autoStart: true } });
+    else navigate("/quest/progress");
   };
 
   const handleSplit = async () => {
@@ -159,6 +168,15 @@ export default function QuestDetail() {
         onChange={handleChange}
         onSkip={handleSkip}
       />
+
+      {boarding && (
+        <BoardingSheet
+          busy={busy}
+          onCall={() => handleBoard(true)}
+          onSolo={() => handleBoard(false)}
+          onClose={() => setBoarding(false)}
+        />
+      )}
 
       <Toast message={toast} bottom="bottom-10" />
     </div>

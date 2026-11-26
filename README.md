@@ -21,9 +21,12 @@ React + Vite 로 만든 SPA(PWA) 이며, API 를 호출해 화면을 그리고 V
 | **날씨** | 홈 요청에 현재 위치를 함께 보내면 백엔드가 기상청 단기예보로 그 위치의 날씨를 내려줍니다. 비 오는 날은 섬에 비 구름을 띄우고 RAINY 상태 화면을 보여 줍니다. 위치가 없으면 가입한 구 기준 날씨를 씁니다. |
 | **지도** | Kakao Maps JavaScript SDK 로 주변 장소를 표시하고, 상세 정보는 목록 응답 데이터로 그립니다. |
 | **PWA · 알림** | `manifest.webmanifest` 와 기장 루미 아이콘으로 홈 화면에 설치할 수 있고, 로그인된 상태로 다시 열면 인트로 없이 바로 홈으로 갑니다. 푸시 알림은 Firebase Cloud Messaging(`firebase-messaging-sw.js`)으로 받습니다. |
+| **루미 동행 통화** | 퀘스트 상세에서 탑승하기를 누르면 탑승 방법 시트(루미랑 통화하며 가기 · 혼자 가 볼게요)를 띄웁니다. 통화를 고르면 백엔드에서 받은 OpenAI Realtime 임시 키로 브라우저가 WebRTC 로 직접 연결하고(`useLumiCall`), 자막 · 음소거 · 남은 시간(최대 10분)을 보여 줍니다. 통화 중에는 Wake Lock 으로 화면이 꺼지지 않게 하고, 비행 중 화면에서도 루미를 다시 부를 수 있습니다. |
+| **도감** | 섬별 도장 칸을 여권 페이지처럼 그리고, 처음 받은 날과 그날 기분 잉크 색으로 도장을 찍습니다. 화면 너비에 따라 좁은 · 넓은 배치를 나눠 씁니다. |
+| **관리자** | 「마음 군도 관제탑」 화면에서 사용자 현황 · 섬 분포 · 플러스 수요 · 공지 관리 · 공지 푸시를 다룹니다. 관리자가 아니면(403) 홈으로, 서버 오류(5xx) · 응답 없음이면 점검 화면으로 보냅니다. |
 | **애니메이션** | 도장을 받을 때 입국 도장이 쾅 찍히는 CSS 애니메이션을 쓰고, 기기의 「동작 줄이기」 설정이 켜져 있으면 생략합니다. |
 | **안전장치** | 회고 · 연습 대화에서 `crisisDetected: true` 를 받으면 도장 · 불빛 연출 없이 도움 받기 화면으로 바로 이동합니다. |
-| **중복 요청 방지** | AI 응답을 기다리는 요청(퀘스트 완료, 연습 대화)과 다음 섬 응답 · 난이도 바꾸기는 요청 중 버튼을 막아 한 번만 보냅니다. |
+| **중복 요청 방지** | AI 응답을 기다리는 요청(퀘스트 완료, 연습 대화)과 다음 섬 응답 · 난이도 바꾸기 · 통화 시작은 요청 중 버튼을 막아 한 번만 보냅니다. |
 
 <br>
 
@@ -40,11 +43,9 @@ React + Vite 로 만든 SPA(PWA) 이며, API 를 호출해 화면을 그리고 V
 ![Pretendard](https://img.shields.io/badge/Pretendard-1C2A5E?style=flat-square)
 ![Noto Serif KR](https://img.shields.io/badge/Noto_Serif_KR-D2B36B?style=flat-square&logo=googlefonts&logoColor=1C2A5E)
 
-**Routing · State · HTTP**
+**Routing · HTTP**
 
 ![React Router](https://img.shields.io/badge/React_Router-CA4245?style=flat-square&logo=reactrouter&logoColor=white)
-![TanStack Query](https://img.shields.io/badge/TanStack_Query-FF4154?style=flat-square&logo=reactquery&logoColor=white)
-![Zustand](https://img.shields.io/badge/Zustand-443E38?style=flat-square)
 ![Axios](https://img.shields.io/badge/Axios-5A29E4?style=flat-square&logo=axios&logoColor=white)
 
 **Map · Auth**
@@ -52,6 +53,12 @@ React + Vite 로 만든 SPA(PWA) 이며, API 를 호출해 화면을 그리고 V
 ![Kakao Map](https://img.shields.io/badge/Kakao_Map-FFCD00?style=flat-square&logo=kakao&logoColor=black)
 ![Kakao Login](https://img.shields.io/badge/Kakao_Login-FFCD00?style=flat-square&logo=kakao&logoColor=black)
 ![JWT](https://img.shields.io/badge/JWT-000000?style=flat-square&logo=jsonwebtokens&logoColor=white)
+
+**Voice**
+
+![WebRTC](https://img.shields.io/badge/WebRTC-333333?style=flat-square&logo=webrtc&logoColor=white)
+![OpenAI Realtime](https://img.shields.io/badge/OpenAI_Realtime-412991?style=flat-square&logo=openai&logoColor=white)
+![MediaRecorder](https://img.shields.io/badge/MediaRecorder-1C2A5E?style=flat-square)
 
 **PWA · Push**
 
@@ -78,12 +85,11 @@ src/
 ├── assets/       # 기장 루미 · 섬 SVG (lumi/ · islands/)
 ├── components/   # 화면별 · 공통 UI 컴포넌트 (common/ : 탑승권 · 입국 도장 · 떠 있는 섬 · 루미 · 버튼)
 ├── constants/    # 고정 데이터 (섬 · 기분 잉크 · 출국 심사 문항 · 꿈 목표 · 도움 받기 연락처 등)
-├── hooks/        # 오늘 퀘스트 · 음성 녹음 훅
+├── hooks/        # 오늘 퀘스트 · 음성 녹음 · 루미 동행 통화(WebRTC) 훅
 ├── layout/       # 공통 레이아웃
 ├── pages/        # 화면 단위 컴포넌트
-├── router/       # 라우트 정의
-├── stores/       # 전역 상태 (Zustand)
 ├── utils/        # 위치 · 스토리지 · 조사 등 유틸
+├── App.jsx       # 라우트 정의
 ├── firebase.js   # FCM 초기화
 └── main.jsx
 public/
@@ -149,6 +155,7 @@ npm run lint      # ESLint
   - `develop` push → Preview 배포
 - 빌드 설정은 Vite 기본값 (`npm run build`, 출력 `dist`)
 - 환경 변수는 Vercel **Settings → Environment Variables** 에서 관리하며, 바꾸면 **Redeploy** 해야 적용됩니다.
+- 루미 동행 통화 · 음성 입력은 마이크 권한이 필요해 HTTPS(Vercel) 또는 `localhost` 에서만 동작합니다.
 - PWA 아이콘을 바꾸면 이미 설치한 아이폰은 홈 화면 앱을 지우고 다시 추가해야 새 아이콘이 보입니다.
 
 <br>
