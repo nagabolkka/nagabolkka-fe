@@ -1,22 +1,23 @@
-const TABS = [
-  { key: "users", label: "사용자 현황" },
-  { key: "notices", label: "공지 관리" },
+const ADMIN_TABS = [
+  { key: "users", label: "탑승객" },
+  { key: "notices", label: "기내 방송" },
+  { key: "plus", label: "플러스 수요" },
 ];
 
 export default function AdminTabs({ activeTab, onChange }) {
   return (
-    <div className="grid grid-cols-2 gap-1 rounded-lg bg-[#15121F] p-1">
-      {TABS.map(({ key, label }) => {
+    <div role="tablist" className="relative grid grid-cols-3 gap-1 rounded-2xl bg-navy p-1">
+      {ADMIN_TABS.map(({ key, label }) => {
         const isActive = activeTab === key;
         return (
           <button
             key={key}
             type="button"
+            role="tab"
+            aria-selected={isActive}
             onClick={() => onChange(key)}
-            className={`rounded-md py-2 font-pixel text-xs ${
-              isActive
-                ? "bg-[#F2C14E] font-bold text-[#2B2340]"
-                : "text-[#B9B0D0]"
+            className={`h-9 rounded-xl text-[13px] font-bold cursor-pointer transition ${
+              isActive ? "bg-brass text-navy" : "text-mute-on-navy"
             }`}
           >
             {label}
