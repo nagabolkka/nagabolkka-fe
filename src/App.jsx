@@ -10,6 +10,7 @@ import Home from "./pages/Home/Home";
 import QuestDetail from "./pages/Quest/QuestDetail";
 import QuestSplit from "./pages/Quest/QuestSplit";
 import QuestProgress from "./pages/Quest/QuestProgress";
+import QuestCall from "./pages/Quest/QuestCall";
 import QuestRecord from "./pages/Quest/QuestRecord";
 import QuestResult from "./pages/Quest/QuestResult";
 import Maintenance from "./pages/Maintenance/Maintenance";
@@ -40,6 +41,7 @@ export default function App() {
           <Route path="/start-check/result" element={<StartCheckResult />} />
           <Route path="/quest" element={<QuestDetail />} />
           <Route path="/quest/progress" element={<QuestProgress />} />
+          <Route path="/quest/call" element={<QuestCall />} />
           <Route path="/quest/split" element={<QuestSplit />} />
           <Route path="/quest/record" element={<QuestRecord />} />
           <Route path="/quest/result" element={<QuestResult />} />
